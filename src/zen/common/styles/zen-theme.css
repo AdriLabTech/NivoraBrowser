@@ -370,3 +370,6 @@
 
 %include squircle-exclusions.inc.css
 }
+
+/* Nivora: interface rules gated by preferences. */
+%include ../../../nivora/theme/nivora-ui.inc.css

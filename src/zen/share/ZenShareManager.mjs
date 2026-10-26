@@ -44,7 +44,11 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   get enabled() {
-    return !gZenWorkspaces.privateWindowOrDisabled;
+    // Nivora: sharing needs a share service; without one the UI stays hidden.
+    return (
+      !gZenWorkspaces.privateWindowOrDisabled &&
+      !!Services.prefs.getStringPref("zen.share.base-url", "").trim()
+    );
   }
 
   // Mark: sharing

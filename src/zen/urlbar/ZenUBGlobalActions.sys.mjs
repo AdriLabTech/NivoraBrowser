@@ -21,7 +21,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
 );
 
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
-  return new Localization(["browser/zen-command-palette.ftl"], true);
+  return new Localization(
+    ["browser/zen-command-palette.ftl", "browser/nivora.ftl"],
+    true
+  );
 });
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -336,6 +339,18 @@ const globalActionsTemplate = [
     },
   },
 ];
+
+// Nivora: commands from its central registry. A failure here must never take
+// Zen's own actions down with it.
+try {
+  globalActionsTemplate.push(
+    ...ChromeUtils.importESModule(
+      "resource:///modules/nivora/NivoraCommands.sys.mjs"
+    ).nivoraGlobalActions
+  );
+} catch (e) {
+  console.error("Nivora commands are unavailable", e);
+}
 
 export function formatValueSync(l10nId) {
   return lazy.l10n.formatValueSync(l10nId);

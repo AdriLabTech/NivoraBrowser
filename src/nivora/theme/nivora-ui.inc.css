@@ -1,0 +1,22 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - interface rules that are not design tokens.
+ *
+ * Preprocessed into the end of zen-theme.css (top level), so they reach the
+ * browser window and every chrome page that imports it.
+ *
+ * Each rule is gated by a preference and targets one element by a stable
+ * attribute or id. Nothing here hides a control the user needs to browse. */
+
+/* Controls that lead to services operated by the Zen project. Off by setting
+ * nivora.ui.hide-zen-services to false. */
+@media -moz-pref("nivora.ui.hide-zen-services") {
+  /* The donate button at the bottom of the Library. */
+  toolbarbutton[data-l10n-id="library-footer-donate-button"],
+  /* The link to the Zen mods website in preferences. */
+  #zenThemeMarketplaceLink {
+    display: none !important;
+  }
+}

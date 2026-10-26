@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Nivora's own preferences. They are listed in the central settings schema
+# (src/nivora/modules/NivoraSettingsCore.mjs) so they can be exported, imported
+# and reset together with the Zen preferences Nivora manages.
+
+# Hide the interface that leads to services operated by the Zen project (the
+# donate button in the Library, the link to the mods website in preferences).
+# Share is not covered: it hides itself while `zen.share.base-url` is empty.
+- name: nivora.ui.hide-zen-services
+  value: true
