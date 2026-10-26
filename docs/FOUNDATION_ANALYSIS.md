@@ -124,23 +124,21 @@ Status as of this report. Order follows dependency, then impact.
 (written, not yet run), Zen's mochitests (not run), a network audit (F-09, not run), performance
 baselines (not started).
 
-## 11. Decisions pending for the owner
+## 11. Decisions
 
-1. **Logo and application icon.** A proposal exists (eclipse crescent in a ring, generated from the
-   palette). Approve it, or give a direction for another. It is generic enough to resemble many
-   crescent icons.
-2. **License for entirely new Nivora files.** Currently MPL-2.0 headers, which is the safe default
-   next to MPL code; the choice is yours.
-3. **Base line.** Confirm Zen `stable`/1.23.4b (recommended, ADR 0002) rather than `dev`.
-4. **Policy for Firefox security releases that Zen has not yet shipped:** wait for Zen, or maintain
-   a re-based patch set. (Needed before the Stable phase.)
-5. **Hide Zen-service UI** (share, marketplace link, donate button, About links) now, or leave until
-   the Productivity UI pass.
-6. **Repository settings:** enable GitHub private vulnerability reporting (the root `SECURITY.md`
-   points to it); decide a code owner for `CODEOWNERS` (removed because it named a Zen maintainer).
-7. **Distribution name identifiers** (`io.github.adrilabtech.nivora`): keep, or give a domain.
-8. **Packaging format for Arch / Ryoku Arch** (Stable phase): source `PKGBUILD`, binary package, or
-   portable tarball.
+All proposals in the first version of this report were accepted by the owner on 2026-10-26, who
+asked for the remaining work to be done without further questions. How each was settled:
+
+| Decision | Outcome |
+|---|---|
+| Logo and application icon | The generated eclipse mark is accepted as the logo |
+| License of new files | MPL-2.0 (the header they already carry) |
+| Base line | Zen `stable` 1.23.4b on Firefox 158.0.1 ([ADR 0002](decisions/0002-upstream-base.md)) |
+| Firefox security releases ahead of Zen | Wait for Zen by default; rebase the patches only for a critical, exploited vulnerability; warn users otherwise ([MAINTENANCE.md](MAINTENANCE.md)) |
+| Hide Zen-service interface | Done: share (until a share service is configured), donate button and mods link; About-dialog links to Zen and Firefox stay, as attribution |
+| Private vulnerability reporting, code owner | **Needs the owner**: a repository setting that cannot be changed from here. `SECURITY.md` points to it; no `CODEOWNERS` exists (Zen's entry named a Zen maintainer) |
+| Distribution identifiers | `io.github.adrilabtech.nivora` kept |
+| Packaging for Arch / Ryoku Arch | Tarball + binary `PKGBUILD` ([DISTRIBUTION.md](DISTRIBUTION.md)) |
 
 ## 12. Blockers needing intervention
 

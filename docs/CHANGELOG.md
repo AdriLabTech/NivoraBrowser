@@ -4,7 +4,7 @@ Notable changes per version. Nivora follows [Semantic Versioning](https://semver
 release; pre-release versions carry `a<N>` (alpha). Zen's own changelog is not reproduced here:
 see https://github.com/zen-browser/desktop/releases.
 
-## [Unreleased] - 0.1.0a1 (Foundation, in progress)
+## [Unreleased] - 0.1.0a1 (pre-alpha)
 
 ### Added
 - Unmodified import of Zen Browser 1.23.4b (`541ee55`, Firefox 158.0.1) as the first commit.
@@ -15,6 +15,15 @@ see https://github.com/zen-browser/desktop/releases.
   every Zen icon in `configs/branding/release/`.
 - Documentation set: vision, architecture, design system, roadmap, development, building, testing,
   security, upstream tracking, Foundation analysis report, decision records 0001-0005.
+
+- Command registry (`NivoraCommandsCore.mjs`) and eight commands for Zen's palette; central
+  settings (25 managed preferences, versioned export, validated import, reset, startup repair);
+  duplicate-tab detection that never crosses spaces or containers.
+- Interface icons regenerated from Phosphor Icons (MIT): Zen's Nucleo icons are not redistributable.
+- `tools/nivora/upstream_check.py` and a weekly read-only workflow; static-checks workflow.
+- Arch Linux packaging: tarball assembly script, `PKGBUILD`, `.desktop`, AppStream metadata,
+  update-disabling policy. License inventory and texts (`licenses/`).
+- Documentation: productivity audit, privacy, Linux, distribution, maintenance, licenses, security review.
 
 ### Changed
 - Application identity: Nivora Browser, binary `nivora`, vendor AdriLabTech, distribution id
@@ -30,7 +39,13 @@ see https://github.com/zen-browser/desktop/releases.
 - Zen's CI workflows, funding manifest, code owner entry, issue labeler, issue statistics and logo
   assets from `docs/`.
 
+- **The default profile and user directory were `zen`** (Zen's configure patch); they are now `nivora`,
+  so a Nivora build no longer shares `~/.zen` with Zen.
+- Share UI hides itself while no share service is configured; the Library donate button and the mods
+  website link are hidden by `nivora.ui.hide-zen-services`.
+
 ### Known problems
-- The icon is a proposal pending approval.
-- Dark mapping not yet seen rendered. No Nivora build has been started in a browser yet.
-- No update channel.
+- Not yet seen in a running browser: the rendering of the theme, the icons, the commands (the build
+  is not finished). Browser tests are written and not run.
+- No update channel: packages are the update path.
+- Items marked "review" in docs/LICENSES.md.
