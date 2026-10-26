@@ -1,0 +1,504 @@
+{
+ "_comment": "Maps each icon file Zen ships (nucleo/<name>.svg) to the Phosphor Icons (MIT) glyph that replaces it. 'weight': 'fill' picks the filled weight; 'slash' overlays a diagonal slash for blocked states; 'flip' mirrors horizontally.",
+ "icons": {
+  "algorithm": {
+   "icon": "tree-structure"
+  },
+  "arrow-corner-down-right": {
+   "icon": "arrow-elbow-down-right"
+  },
+  "arrow-down": {
+   "icon": "caret-down"
+  },
+  "arrow-left": {
+   "icon": "caret-left"
+  },
+  "arrow-right": {
+   "icon": "caret-right"
+  },
+  "arrow-rotate-anticlockwise": {
+   "icon": "arrow-counter-clockwise"
+  },
+  "arrow-up": {
+   "icon": "caret-up"
+  },
+  "arrows-collapse": {
+   "icon": "arrows-in-line-vertical"
+  },
+  "arrows-expand": {
+   "icon": "arrows-out-line-vertical"
+  },
+  "autoplay-media": {
+   "icon": "speaker-simple-high"
+  },
+  "autoplay-media-blocked": {
+   "slash": true,
+   "icon": "speaker-simple-high"
+  },
+  "autoplay-media-fill": {
+   "weight": "fill",
+   "icon": "speaker-simple-high"
+  },
+  "back": {
+   "icon": "arrow-left"
+  },
+  "block": {
+   "icon": "prohibit"
+  },
+  "blocked-element": {
+   "slash": true,
+   "icon": "code"
+  },
+  "bolt": {
+   "icon": "lightning"
+  },
+  "bookmark": {
+   "weight": "fill",
+   "icon": "bookmark-simple"
+  },
+  "bookmark-hollow": {
+   "icon": "bookmark-simple"
+  },
+  "bookmark-star-on-tray": {
+   "icon": "bookmarks-simple"
+  },
+  "boost": {
+   "icon": "paint-roller"
+  },
+  "brackets-curly": {
+   "icon": "brackets-curly"
+  },
+  "camera": {
+   "icon": "camera"
+  },
+  "camera-blocked": {
+   "icon": "camera-slash"
+  },
+  "camera-fill": {
+   "weight": "fill",
+   "icon": "camera"
+  },
+  "canvas": {
+   "icon": "image"
+  },
+  "canvas-blocked": {
+   "slash": true,
+   "icon": "image"
+  },
+  "chevron": {
+   "icon": "caret-double-right"
+  },
+  "circle-bars-filter": {
+   "icon": "funnel"
+  },
+  "close": {
+   "icon": "x"
+  },
+  "close-filled-round": {
+   "weight": "fill",
+   "icon": "x-circle"
+  },
+  "container-tab": {
+   "icon": "browsers"
+  },
+  "cookies-fill": {
+   "weight": "fill",
+   "icon": "cookie"
+  },
+  "customize": {
+   "icon": "squares-four"
+  },
+  "dart-down": {
+   "icon": "arrow-down"
+  },
+  "desktop-notification": {
+   "icon": "bell"
+  },
+  "desktop-notification-blocked": {
+   "icon": "bell-slash"
+  },
+  "desktop-notification-fill": {
+   "weight": "fill",
+   "icon": "bell"
+  },
+  "developer": {
+   "icon": "code"
+  },
+  "dice": {
+   "icon": "dice-five"
+  },
+  "downloads": {
+   "icon": "download-simple"
+  },
+  "drag-indicator": {
+   "icon": "dots-six-vertical"
+  },
+  "duplicate-tab": {
+   "icon": "copy"
+  },
+  "edit-copy": {
+   "icon": "copy-simple"
+  },
+  "edit-cut": {
+   "icon": "scissors"
+  },
+  "edit-delete": {
+   "icon": "trash"
+  },
+  "edit-paste": {
+   "icon": "clipboard"
+  },
+  "edit-theme": {
+   "icon": "note-pencil"
+  },
+  "essential-add": {
+   "icon": "heart-straight"
+  },
+  "essential-remove": {
+   "icon": "heart-straight-break"
+  },
+  "expand-sidebar": {
+   "icon": "sidebar-simple"
+  },
+  "extension": {
+   "icon": "puzzle-piece"
+  },
+  "extension-blocked": {
+   "slash": true,
+   "icon": "puzzle-piece"
+  },
+  "extension-fill": {
+   "weight": "fill",
+   "icon": "puzzle-piece"
+  },
+  "eyedropper": {
+   "icon": "eyedropper"
+  },
+  "face-sun": {
+   "icon": "sun"
+  },
+  "folder": {
+   "icon": "folder-simple"
+  },
+  "forget": {
+   "icon": "broom"
+  },
+  "forward": {
+   "icon": "arrow-right"
+  },
+  "fullscreen": {
+   "icon": "arrows-out"
+  },
+  "fullscreen-exit": {
+   "icon": "arrows-in"
+  },
+  "geo": {
+   "icon": "map-pin"
+  },
+  "geo-blocked": {
+   "slash": true,
+   "icon": "map-pin"
+  },
+  "geo-fill": {
+   "weight": "fill",
+   "icon": "map-pin"
+  },
+  "hammer": {
+   "icon": "hammer"
+  },
+  "heart-circle-fill": {
+   "weight": "fill",
+   "icon": "heart"
+  },
+  "help": {
+   "icon": "question"
+  },
+  "history": {
+   "icon": "clock-counter-clockwise"
+  },
+  "home": {
+   "icon": "house"
+  },
+  "info": {
+   "icon": "info"
+  },
+  "library": {
+   "icon": "books"
+  },
+  "lightbulb": {
+   "icon": "lightbulb"
+  },
+  "link": {
+   "icon": "link"
+  },
+  "mail": {
+   "icon": "envelope-simple"
+  },
+  "manage": {
+   "icon": "sliders-horizontal"
+  },
+  "media-mute": {
+   "icon": "speaker-simple-slash"
+  },
+  "media-next": {
+   "weight": "fill",
+   "icon": "skip-forward"
+  },
+  "media-pause": {
+   "weight": "fill",
+   "icon": "pause"
+  },
+  "media-play": {
+   "weight": "fill",
+   "icon": "play"
+  },
+  "media-previous": {
+   "weight": "fill",
+   "icon": "skip-back"
+  },
+  "media-unmute": {
+   "icon": "speaker-simple-high"
+  },
+  "menu": {
+   "icon": "dots-three"
+  },
+  "microphone": {
+   "icon": "microphone"
+  },
+  "microphone-blocked": {
+   "icon": "microphone-slash"
+  },
+  "microphone-blocked-fill": {
+   "weight": "fill",
+   "icon": "microphone-slash"
+  },
+  "microphone-fill": {
+   "weight": "fill",
+   "icon": "microphone"
+  },
+  "midi": {
+   "icon": "piano-keys"
+  },
+  "moon-stars": {
+   "weight": "fill",
+   "icon": "moon-stars"
+  },
+  "move-cursor": {
+   "icon": "arrows-out-cardinal"
+  },
+  "new-tab-image": {
+   "icon": "app-window"
+  },
+  "open": {
+   "icon": "arrow-square-out"
+  },
+  "page-portrait": {
+   "icon": "file"
+  },
+  "paintbrush": {
+   "icon": "paint-brush"
+  },
+  "paintbrush-fill": {
+   "weight": "fill",
+   "icon": "paint-brush"
+  },
+  "palette": {
+   "icon": "palette"
+  },
+  "passwords": {
+   "icon": "key"
+  },
+  "permissions": {
+   "icon": "sliders"
+  },
+  "permissions-fill": {
+   "weight": "fill",
+   "icon": "sliders"
+  },
+  "persistent-storage": {
+   "icon": "hard-drive"
+  },
+  "persistent-storage-blocked": {
+   "slash": true,
+   "icon": "hard-drive"
+  },
+  "persistent-storage-fill": {
+   "weight": "fill",
+   "icon": "hard-drive"
+  },
+  "pin": {
+   "icon": "push-pin"
+  },
+  "plus": {
+   "icon": "plus"
+  },
+  "popup": {
+   "slash": true,
+   "icon": "app-window"
+  },
+  "popup-fill": {
+   "weight": "fill",
+   "icon": "app-window"
+  },
+  "print": {
+   "icon": "printer"
+  },
+  "private-window": {
+   "icon": "detective"
+  },
+  "private-window-small": {
+   "icon": "detective"
+  },
+  "privateBrowsing": {
+   "icon": "detective"
+  },
+  "reader-mode": {
+   "icon": "article"
+  },
+  "reload": {
+   "icon": "arrow-clockwise"
+  },
+  "save": {
+   "icon": "floppy-disk"
+  },
+  "screen": {
+   "icon": "monitor"
+  },
+  "screen-blocked": {
+   "slash": true,
+   "icon": "monitor"
+  },
+  "screenshot": {
+   "icon": "camera"
+  },
+  "search-glass": {
+   "icon": "magnifying-glass"
+  },
+  "search-page": {
+   "icon": "file-magnifying-glass"
+  },
+  "security": {
+   "icon": "lock"
+  },
+  "security-broken": {
+   "icon": "warning"
+  },
+  "security-warning": {
+   "icon": "lock-open"
+  },
+  "send-to-device": {
+   "icon": "monitor-arrow-up"
+  },
+  "settings": {
+   "icon": "gear"
+  },
+  "settings-fill": {
+   "weight": "fill",
+   "icon": "gear"
+  },
+  "share": {
+   "icon": "export"
+  },
+  "sidebar": {
+   "icon": "sidebar"
+  },
+  "sidebar-right": {
+   "flip": true,
+   "icon": "sidebar"
+  },
+  "sidebars-right": {
+   "flip": true,
+   "icon": "sidebar-simple"
+  },
+  "sliders": {
+   "icon": "sliders"
+  },
+  "sparkles": {
+   "weight": "fill",
+   "icon": "sparkle"
+  },
+  "spell-check": {
+   "icon": "text-a-underline"
+  },
+  "split": {
+   "icon": "square-split-horizontal"
+  },
+  "square-wand-sparkle": {
+   "icon": "magic-wand"
+  },
+  "tab": {
+   "icon": "browser"
+  },
+  "tab-audio-blocked-small": {
+   "icon": "music-notes"
+  },
+  "tab-audio-muted-small": {
+   "icon": "speaker-simple-slash"
+  },
+  "tab-audio-playing-small": {
+   "icon": "speaker-simple-high"
+  },
+  "text-lowercase": {
+   "icon": "text-aa"
+  },
+  "text-size": {
+   "icon": "text-aa"
+  },
+  "text-title-case": {
+   "icon": "text-t"
+  },
+  "text-uppercase": {
+   "icon": "text-a-underline"
+  },
+  "tool-profiler": {
+   "icon": "gauge"
+  },
+  "tracking-protection": {
+   "icon": "shield"
+  },
+  "tracking-protection-fill": {
+   "weight": "fill",
+   "icon": "shield"
+  },
+  "translations": {
+   "icon": "translate"
+  },
+  "trash": {
+   "icon": "trash"
+  },
+  "u-turn-to-left": {
+   "icon": "arrow-u-up-left"
+  },
+  "unpin": {
+   "icon": "push-pin-slash"
+  },
+  "video-blocked-fill": {
+   "weight": "fill",
+   "icon": "video-camera-slash"
+  },
+  "video-fill": {
+   "weight": "fill",
+   "icon": "video-camera"
+  },
+  "wand-sparkle": {
+   "icon": "magic-wand"
+  },
+  "window": {
+   "icon": "browser"
+  },
+  "xr": {
+   "icon": "goggles"
+  },
+  "xr-blocked": {
+   "slash": true,
+   "icon": "goggles"
+  },
+  "xr-fill": {
+   "weight": "fill",
+   "icon": "goggles"
+  },
+  "zoom-out": {
+   "icon": "minus"
+  }
+ }
+}

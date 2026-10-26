@@ -1,3 +1,4 @@
 # Notice
 
-MacOS icons are using Nucleo icons. This until we figure out how sizing works with SF Pro icons.
+macOS uses the same icons as the other platforms (`../nucleo/`, which Nivora generates from Phosphor
+Icons, MIT). Zen's note here said they were Nucleo icons: those are not shipped by Nivora.

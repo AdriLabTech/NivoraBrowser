@@ -20,5 +20,9 @@ jobs:
         run: |
           python3 -I tools/nivora/check_contrast.py --list
           python3 -I -m unittest discover -s tools/nivora/tests -v
+      - name: Icons contain only licensed (Phosphor) glyphs
+        run: python3 -I tools/nivora/generate_icons.py --check
+      - name: Command registry and settings (Node)
+        run: node --test tools/nivora/js-tests/*.test.mjs
       - name: ffprefs unit tests
         run: cargo test --manifest-path tools/ffprefs/Cargo.toml
