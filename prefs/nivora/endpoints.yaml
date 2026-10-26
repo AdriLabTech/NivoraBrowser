@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Nivora: endpoints inherited from the build tooling.
+#
+# `surfer import` writes browser/branding/<brand>/pref/firefox-branding.js with
+# URLs hardcoded to zen-browser.app (welcome page, "what's new" tab, release
+# notes, manual update page). Nivora is not operated by the Zen project, so these
+# are overridden here. The preference files generated from `prefs/` are loaded
+# after firefox-branding.js (see docs/decisions/0004-upstream-service-isolation.md).
+
+# No welcome / what's-new tabs: nothing is opened on first run or after an update.
+- name: startup.homepage_override_url
+  value: ""
+
+- name: startup.homepage_welcome_url
+  value: ""
+
+- name: startup.homepage_welcome_url.additional
+  value: ""
+
+# Release information lives on the project's GitHub releases page until Nivora
+# has its own website.
+- name: app.update.url.manual
+  value: "https://github.com/AdriLabTech/nivoraBrowser/releases"
+
+- name: app.update.url.details
+  value: "https://github.com/AdriLabTech/nivoraBrowser/releases"
+
+- name: app.releaseNotesURL
+  value: "https://github.com/AdriLabTech/nivoraBrowser/releases"
+
+- name: app.releaseNotesURL.aboutDialog
+  value: "https://github.com/AdriLabTech/nivoraBrowser/releases"
+
+- name: app.releaseNotesURL.prompt
+  value: "https://github.com/AdriLabTech/nivoraBrowser/releases"
+
+# There is no Nivora update service yet (surfer.json has no updateHostname), so the
+# in-app updater must never install anything on its own. Updates are delivered
+# through the distribution package until that changes (docs/SECURITY.md).
+- name: app.update.auto
+  value: false

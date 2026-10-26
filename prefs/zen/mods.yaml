@@ -9,13 +9,12 @@
   value: 20 # In days
 
 - name: zen.mods.auto-update
-  value: "@cond"
-  condition: "defined(MOZILLA_OFFICIAL)"
+  value: false
 
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls
-  value: "https://zen-browser.app/*"
+  value: "about:preferences"
   locked: true
   condition: "defined(MOZILLA_OFFICIAL)"
 
