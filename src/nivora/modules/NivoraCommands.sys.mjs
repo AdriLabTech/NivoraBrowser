@@ -51,6 +51,7 @@ function describeTabs(window) {
     empty: tab.hasAttribute("zen-empty-tab"),
     selected: !!tab.selected,
     spaceId: tab.getAttribute("zen-workspace-id") ?? "",
+    containerId: tab.userContextId ?? 0,
   }));
   return { tabs, described };
 }

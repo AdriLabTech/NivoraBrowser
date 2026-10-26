@@ -136,12 +136,15 @@ export const NivoraSettings = {
     }
     let text;
     try {
-      const { size } = await IOUtils.stat(path);
-      if (size > MAX_SETTINGS_BYTES) {
+      // The limit is enforced by the read itself (IOUtils.read honours maxBytes;
+      // readUTF8 does not), so a file that grows after it was chosen cannot make
+      // Nivora read more than one byte past the limit.
+      const bytes = await IOUtils.read(path, { maxBytes: MAX_SETTINGS_BYTES + 1 });
+      if (bytes.length > MAX_SETTINGS_BYTES) {
         Services.prompt.alert(window, t("nivora-dialog-title"), t("nivora-settings-import-too-large"));
         return null;
       }
-      text = await IOUtils.readUTF8(path);
+      text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
     } catch (e) {
       console.error("[Nivora] settings import: file unreadable", e);
       Services.prompt.alert(window, t("nivora-dialog-title"), t("nivora-settings-import-unreadable"));

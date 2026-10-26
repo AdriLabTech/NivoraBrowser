@@ -34,9 +34,13 @@ const IGNORED_URLS = new Set(["about:blank", "about:newtab", "about:home", ""]);
  *
  * Pinned and essential tabs are never proposed, and neither are empty tabs or
  * blank pages. In each group the selected tab is kept, otherwise the first.
+ * Tabs in different containers are never duplicates of each other: the same
+ * address in two containers is two separate sessions (two logins), and closing
+ * one would lose the other's state.
  *
  * @param {{ id: string, url: string, pinned?: boolean, essential?: boolean,
- *           selected?: boolean, empty?: boolean, spaceId?: string }[]} tabs
+ *           selected?: boolean, empty?: boolean, spaceId?: string,
+ *           containerId?: number }[]} tabs
  * @returns {{ groups: { url: string, keep: string, close: string[] }[], closeIds: string[] }}
  */
 export function findDuplicateTabs(tabs) {
@@ -45,7 +49,7 @@ export function findDuplicateTabs(tabs) {
     if (tab.pinned || tab.essential || tab.empty || IGNORED_URLS.has(tab.url)) {
       continue;
     }
-    const key = `${tab.spaceId ?? ""}\u0000${normalizeUrl(tab.url)}`;
+    const key = [tab.spaceId ?? "", tab.containerId ?? 0, normalizeUrl(tab.url)].join("\u0000");
     if (!buckets.has(key)) {
       buckets.set(key, []);
     }

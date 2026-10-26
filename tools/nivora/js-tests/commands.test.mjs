@@ -212,3 +212,12 @@ test("isAvailable answers per command and is false for unknown ids", () => {
     [true, false, false]
   );
 });
+
+test("the same address in different containers is not a duplicate", () => {
+  const tab = (id, containerId, over = {}) => ({ id, url: "https://bank.example/", spaceId: "s1", containerId, ...over });
+  const result = findDuplicateTabs([tab("1", 0), tab("2", 5), tab("3", 5), tab("4", 7)]);
+  assert.deepEqual(result.groups, [{ url: "https://bank.example/", keep: "2", close: ["3"] }]);
+  assert.deepEqual(findDuplicateTabs([tab("1", 0), tab("2", 5)]).closeIds, []);
+  // A tab without a container id counts as the default container (0).
+  assert.deepEqual(findDuplicateTabs([{ id: "1", url: "https://a.example/" }, { id: "2", url: "https://a.example/", containerId: 0 }]).closeIds, ["2"]);
+});
