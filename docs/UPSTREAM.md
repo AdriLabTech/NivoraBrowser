@@ -1,0 +1,131 @@
+# Upstream tracking
+
+Nivora is derived from two projects. This file records where the code came from, how it differs,
+and how newer upstream versions will be absorbed. It is the document to read before any upstream
+update.
+
+## 1. Provenance
+
+| | Zen Browser | Firefox |
+|---|---|---|
+| Repository | https://github.com/zen-browser/desktop | https://github.com/mozilla-firefox/firefox (GitHub mirror of Mozilla's source; the release tarball on `archive.mozilla.org` was unreachable from the build environment) |
+| Revision | tag `1.23.4b` = branch `stable`, commit `541ee55196395ee8082862b83c84c90ab41d9f6d` (2026-10-20) | tag `FIREFOX_158_0_1_RELEASE`, commit `9378fbc58660847fbc02c3486a0ecd6049978e25` |
+| Version | 1.23.4b | 158.0.1 |
+| License | MPL-2.0 (`LICENSE`) | MPL-2.0, with third-party components under their own licenses |
+| How it is stored here | Entire tree as the **root commit** of this repository, unmodified (tree hash equals the upstream tag's) | Not stored. Fetched into the git-ignored `engine/` |
+| Requested by | `surfer.json` `version` | `surfer.json` `version` |
+
+### Why `stable` and not `dev`
+
+Zen's default branch `dev` (commit `fc54449` when inspected) tracks the *next* Firefox, 159.0
+release candidate. It was imported first and tested: its 272 patches apply to Firefox 159.0 and
+**do not** apply to 158.0.1. A browser meant to be maintained should rest on released components,
+and Zen's `stable` branch is exactly the tagged release. The decision and evidence are in
+[ADR 0002](decisions/0002-upstream-base.md).
+
+## 2. Seeing what Nivora changed
+
+The first commit is the upstream snapshot, so the full inventory is always:
+
+```sh
+ROOT=$(git rev-list --max-parents=0 HEAD)
+git diff --stat "$ROOT"..HEAD                      # everything
+git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivora' ':!docs'   # inherited files only
+```
+
+### Inherited files modified (Foundation, so far)
+
+| File | Change | Why |
+|---|---|---|
+| `surfer.json` | Name, vendor, `appId`, `binaryName`, brand names and colors, repo; `updateHostname` and the `twilight` brand removed | [ADR 0005](decisions/0005-application-identity.md), [0004](decisions/0004-upstream-service-isolation.md) |
+| `configs/common/mozconfig` | App basename, distribution id, source repo, API-key directory `~/.nivora-keys` | Identity |
+| `prefs/zen/share.yaml` | `zen.share.base-url` empty | No data to Zen's share service |
+| `prefs/zen/mods.yaml` | `zen.injections.match-urls` = `about:preferences`; `zen.mods.auto-update` false | No privileged actor on zen-browser.app; no background fetches |
+| `prefs/zen/updates.yaml` | `zen.updates.show-update-notification` false | The notification links to Zen's donation page |
+| `prefs/zen/theme.yaml` | `zen.theme.accent-color` = `#858585` | Neutral accent: monochrome derived palette |
+| `prefs/zen/view.yaml` | `zen.view.window.scheme` = 0 (dark) | Dark identity |
+| `src/zen/common/styles/zen-theme.css` | +3 lines: `%include` of the Nivora tokens | Token entry point |
+| `src/zen/common/styles/schemes/dark.inc.css` | +2 lines: `%include` of the dark mapping | Dark scheme entry point |
+| `tools/ffprefs/src/main.rs` | Quote values starting with `#`; unit tests | Digit-only hex colors corrupted `zen.js`. Candidate for an upstream pull request |
+| `locales/en-US/browser/**` (5 files) | "Zen" replaced by "Nivora" or removed where it names the app | Visible product name. "Donate to Zen" and the share-server sentence are deliberately left (accurate, or inactive) |
+| `package.json`, `package-lock.json` | Package name, repository URLs | Identity |
+| `README.md`, `SECURITY.md` | Replaced | Identity |
+| `.github/ISSUE_TEMPLATE/*` | Replaced | Zen-branded, hotlinked Zen images |
+
+### Inherited files removed
+
+`.github/workflows/*` (Zen's build, signing, release, sync and scheduled jobs),
+`.github/advanced-issue-labeler.yml`, `CODEOWNERS` (a Zen maintainer), `.well-known/funding-manifest-urls`,
+`docs/issue-metrics/` (Zen's issue statistics), `docs/assets/{zen-*.svg,blacksmith-yellow.png}`
+(Zen's logos and a sponsor's).
+
+### Inherited, known to need work (not yet done)
+
+| Item | Location | Note |
+|---|---|---|
+| Zen logo and icons | `configs/branding/release/**`, `configs/branding/twilight/**` | **Must be replaced before any distribution.** The Zen logo is not to be reused |
+| Linux packaging | `build/AppDir/`, `build/flatpak/` | Name, ids, URLs still Zen's; adapted in the Stable phase |
+| Windows and macOS | `build/windows/`, `build/signing/`, `configs/{windows,macos}/` | Out of scope; surfer itself hardcodes Zen URLs for the Windows installer |
+| Zen links in the UI | About dialog (`aboutDialog-xhtml.patch`), Library donate button, preferences "Mods" marketplace link | User-clicked links to Zen's sites; to be reviewed in the Productivity UI pass |
+| Other locales | `locales/*` | Still say "Zen"; only `en-US` is in scope |
+| `crowdin.yml` | root | Zen's translation project configuration |
+
+## 3. License and attribution
+
+Nivora files that modify inherited files remain under MPL-2.0 (file-level copyleft). Files created
+by Nivora currently carry the same MPL-2.0 header; the license of entirely new files is the
+owner's decision and has not been made. Third-party
+material inherited from Zen that is **not yet reviewed** for redistribution terms:
+
+| Material | Location | Likely license | State |
+|---|---|---|---|
+| `motion.min.mjs` (Motion animation library) | `src/zen/vendor/` | MIT | v13.2.0 per `motion.dep`; confirm notice file |
+| Junicode variable fonts | `src/zen/fonts/` | SIL OFL 1.1 | Confirm and keep notice |
+| Emoji data | `src/zen/common/emojis/` (`fetch_emojis.py`) | Unicode / emoji data licenses | Confirm source and notice |
+| Welcome video, images, grain texture | `src/zen/welcome/`, `src/zen/images/` | Unknown (Zen's own?) | **Needs review before distribution**; replace if unclear |
+| Icon set | `src/browser/themes/shared/zen-icons/` | Unknown | **Needs review** |
+| Firefox third-party components | `engine/` | Listed by Firefox in `about:license` | Ships with Firefox's own notices |
+
+Nothing here is a legal conclusion. Before the first public release a licensing review of this
+table is required (specification section 27).
+
+## 4. Updating Zen or Firefox (procedure)
+
+Never edit the root commit. Absorb a new upstream version on a separate vendor branch so that git
+can three-way merge it with Nivora's changes.
+
+1. **Detect.** `git ls-remote --tags https://github.com/zen-browser/desktop` for a new release tag;
+   read its `surfer.json` for the Firefox version it needs.
+2. **Import the snapshot.**
+   ```sh
+   ROOT=$(git rev-list --max-parents=0 HEAD)
+   git switch -c vendor/zen-<tag> "$ROOT"
+   git rm -rq . && git -C <zen clone> archive <tag> | tar -x && git add -f -A
+   git commit -m "vendor: import zen-browser/desktop <tag> (unmodified snapshot)"
+   ```
+3. **Merge.** On an update branch: `git merge vendor/zen-<tag>`. Git's merge base is the old
+   snapshot, so only Nivora's modifications conflict. Resolve by understanding each change
+   (section 2 table), never by discarding one.
+4. **Check the Firefox side.** Get the Firefox tag named in the new `surfer.json`; run
+   `surfer import`; every patch must apply. If one fails, the Zen revision and the Firefox version
+   do not match.
+5. **Static checks.** `tools/nivora/tests`, `check_contrast.py`, `ffprefs` tests, preprocessing of
+   the theme CSS.
+6. **Build** and run the **regression suite** ([TESTING.md](TESTING.md)).
+7. **Compatibility report:** patches that moved, Nivora hooks that conflicted, Zen variables or
+   globals renamed, failing tests compared with the previous baseline.
+8. **Approve** the merge into the release line. Nothing is distributed automatically.
+
+CI levels (Stable phase): every push runs the static checks (seconds); a pull request that touches
+the theme or prefs runs the import and a UI-only build; only an upstream update or a release runs a
+full build. A full build on every event is not proportionate.
+
+## 5. Risks
+
+| Risk | Mitigation |
+|---|---|
+| Zen releases only against a specific Firefox; a Firefox security release may arrive before Zen's | Track both feeds. Security-critical Firefox fixes may force a Nivora-maintained rebase of Zen's patches (cost: large). Decide the policy before the first release |
+| Nivora hooks in Zen files conflict on update | Hooks are one or two lines each and listed above |
+| Zen renames `--zen-*` variables or globals | The mapping file is a flat list of assignments; breaks visibly in review |
+| Upstream becomes inactive | Fork is self-contained; the cost is maintaining 263 patches |
+| Zen-operated hosts reappear in new upstream code | `tools/nivora/tests` fails if a pref default points at `zen-browser.*`; extend to a source scan |

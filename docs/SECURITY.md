@@ -1,0 +1,100 @@
+# Security
+
+Nivora inherits a large attack surface from Firefox and Zen, and its own changes can add to it.
+This document says what is trusted, what changed, what is known to be weak, and what has and has
+not been verified. It never claims the browser is "secure".
+
+Reporting a vulnerability: see the root [SECURITY.md](../SECURITY.md).
+
+## 1. Trust boundaries
+
+| Boundary | Trusted side | Untrusted side |
+|---|---|---|
+| Content process sandbox | Parent (chrome) process | Web content, extensions' content scripts |
+| Privileged UI (`chrome://`, `resource://`, JS modules) | Code shipped in the build (Firefox, Zen, Nivora) | Everything loaded from the web or the profile |
+| Preferences | Defaults compiled into the build | User profile files, `about:config` edits, policies |
+| Profile directory | The user | Other local users and processes |
+| Build inputs | Pinned source: Firefox tag, Zen tag, npm lockfile, Cargo lockfiles | Anything fetched at build time without a lockfile or hash |
+
+## 2. Inherited components
+
+Gecko and all of Firefox's security machinery (site isolation, sandboxing, TLS, Safe Browsing,
+extension signing policy, Remote Settings) are used unmodified except where Zen's 263 patches
+change them. Zen's patches touch widget, layout, session store, urlbar and tab code, which are
+privileged. Nivora has **not** audited them; it relies on Zen's review and on the unmodified
+upstream state being the reference.
+
+## 3. Nivora's changes and their security relevance
+
+| Change | Relevance |
+|---|---|
+| `surfer.json`, `mozconfig`: names, update host removed, distribution id | Update channel; see section 5 |
+| Pref defaults (`prefs/zen/{share,mods,updates}.yaml`, `prefs/nivora/endpoints.yaml`) | Removes outbound traffic to Zen-operated hosts; reduces the privileged-page match list for the mods actor |
+| `tools/ffprefs` hex quoting | Prevents a malformed `zen.js`. A malformed pref file can silently drop later prefs |
+| Theme CSS includes | Style only; no script, no new privileges |
+| Removal of Zen CI, funding and code-owner files | Prevents this repository from running Zen's signing/release workflows or notifying Zen maintainers |
+
+No Nivora code runs with privileges yet. Productivity-phase code will (urlbar provider, command
+registry) and must be reviewed against section 6.
+
+## 4. External services in the inherited code
+
+| Service | Used for | Nivora treatment | State |
+|---|---|---|---|
+| `updates.zen-browser.app` | Application updates (MAR) | Host removed from `surfer.json`; surfer writes a non-resolving placeholder (`localhost:7648`). `app.update.auto=false` | Config verified; runtime unverified |
+| `share.zen-browser.app` | Sharing spaces/folders/boosts | `zen.share.base-url` set to empty | Feature has no backend; UI entry points still visible |
+| `zen-browser.app/*` injection | Mods marketplace site talks to the browser | `zen.injections.match-urls` = `about:preferences` only | Config verified |
+| `zen-browser.github.io/theme-store` | Fetching installed mods and updates | `zen.mods.auto-update=false`; requests only happen for mods the user installs | Residual: user-initiated installs still contact it |
+| `zen-browser.app/whatsnew`, `/welcome`, `/privacy-policy`, `/about`, `/download` | Opened tabs and links | Welcome and what's-new prefs emptied. About-dialog links and the donate link in Library remain as visible, user-clicked links to Zen | Open item |
+| `zen-browser.app/donate` | Sidebar "updated" notification | Notification disabled (`zen.updates.show-update-notification=false`) | Config verified |
+| Mozilla: Sync, Remote Settings, AMO, Safe Browsing, search, captive portal, telemetry endpoints | Standard Firefox services | Unchanged. Zen's mozconfig already disables telemetry/data reporting at build time | **Not yet audited** by traffic capture (test F-09) |
+| Windows installer URLs (`links.zen-browser.app`, etc.) | Windows only | Not addressed | Out of scope for now |
+
+The accountability for this table is the manual test F-09 in [TESTING.md](TESTING.md): it must be
+run on the first working build and again before every release.
+
+## 5. Updates
+
+Nivora currently has **no update channel**. Removing the update host was necessary: pointing a
+Nivora build at Zen's server would let Zen's binaries replace Nivora's. The consequence is that
+security fixes only reach users when a new Nivora build is made and installed, for example through
+a distribution package. This is a real risk, accepted for pre-alpha and not acceptable for a
+stable release. [ROADMAP.md](ROADMAP.md) puts the decision in Phase III. Until then Nivora must not
+be presented as safe for daily use.
+
+## 6. Rules for new code
+
+- Treat web content, page titles, URLs, filenames, imported settings and any model output as
+  untrusted input. Validate before use; never `eval`, never build code from strings.
+- The command palette executes commands from a registry with stable ids. It never runs
+  user-supplied code or shell commands. Operating-system actions need an explicit allow-list,
+  argument validation and confirmation.
+- Settings import is schema-validated, versioned, size-limited, and never contains secrets
+  (passwords, cookies, tokens, keys).
+- No new third-party dependency without recording its origin, license, maintenance state and why a
+  built-in alternative does not do. Pin versions and hashes.
+- No API keys, tokens or credentials in the repository. Zen's `~/.zen-keys` mechanism is renamed
+  `~/.nivora-keys`; Nivora builds do not use Zen's keys and ship without Google API keys unless the
+  maintainer supplies their own.
+- Do not weaken a Firefox protection to make development easier. A preference that lowers
+  protection must say so in its description.
+
+## 7. Dependencies
+
+| Dependency | Origin | Pinned by | Note |
+|---|---|---|---|
+| Firefox 158.0.1 | `mozilla-firefox/firefox` tag `FIREFOX_158_0_1_RELEASE` | `surfer.json` | Not yet compared byte-for-byte with the official tarball |
+| `@zen-browser/surfer` 1.14.9 | npm | `package-lock.json` | Hardcodes Zen URLs in generated branding files |
+| `formal-git`, `husky`, `typescript`, prettier plugin | npm | `package-lock.json` | Dev tooling. `npm audit --omit=dev`: 0 findings. Full tree: 5 (1 low, 1 moderate, 3 high), including `sharp`/libvips CVEs; `sharp` only resizes the repository's own logo files in `surfer import`. Not triaged further |
+| `serde`, `serde_yaml` | crates.io | `tools/ffprefs/Cargo.lock` | `serde_yaml` is archived upstream; only used at build time |
+| cbindgen 0.29.4 | crates.io | `--locked` | Build tool |
+
+## 8. Pending and out of scope
+
+- No audit of Zen's native patches, of Firefox itself, or of the build output.
+- No fuzzing, no dependency scanning beyond the above, no reproducible-build check.
+- Traffic audit (F-09) not yet run.
+- Secret scanning of the repository: not yet run (a one-off scan is planned before the first push
+  to a public branch).
+- Legal compliance is not reviewed. See [UPSTREAM.md](UPSTREAM.md) for the license items that need
+  specialist review.
