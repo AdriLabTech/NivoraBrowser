@@ -256,7 +256,11 @@ fn get_value(pref: &Preference) -> String {
     // we should wrap it in double quotes.
     let letters_inside_value =
         value.chars().any(|c| c.is_alphabetic() || c == '.') && value != "true" && value != "false";
-    if value.is_empty() || value.contains([' ', '\n', '\t', '"']) || letters_inside_value {
+    if value.is_empty()
+        || value.starts_with('#')
+        || value.contains([' ', '\n', '\t', '"'])
+        || letters_inside_value
+    {
         format!("\"{}\"", value.replace('"', "\\\""))
     } else {
         value.to_string()
@@ -373,4 +377,43 @@ fn main() {
     let mut preferences = load_preferences();
     expand_pref_values(&mut preferences);
     write_preferences(&preferences);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn string_pref(value: &str) -> Preference {
+        Preference {
+            name: "test.pref".into(),
+            value: value.into(),
+            r#type: None,
+            condition: None,
+            hidden: None,
+            cpptype: None,
+            mirror: None,
+            locked: None,
+            sticky: None,
+        }
+    }
+
+    #[test]
+    fn numbers_and_booleans_stay_bare() {
+        assert_eq!(get_value(&string_pref("8")), "8");
+        assert_eq!(get_value(&string_pref("true")), "true");
+    }
+
+    #[test]
+    fn words_are_quoted() {
+        assert_eq!(get_value(&string_pref("AccentColor")), "\"AccentColor\"");
+        assert_eq!(get_value(&string_pref("")), "\"\"");
+    }
+
+    // Nivora: a hex color made only of digits (e.g. #858585) has no letters, so it used
+    // to be written unquoted, which is not a valid pref value.
+    #[test]
+    fn hex_colors_without_letters_are_quoted() {
+        assert_eq!(get_value(&string_pref("#858585")), "\"#858585\"");
+        assert_eq!(get_value(&string_pref("#8a8a8a")), "\"#8a8a8a\"");
+    }
 }
