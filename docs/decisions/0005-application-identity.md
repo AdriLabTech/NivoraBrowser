@@ -39,6 +39,12 @@ both defaults are now `nivora`. Verified: the patch applies cleanly to Firefox 1
 `#define MOZ_USER_DIR "nivora"`. `MOZ_USER_DIR` is a compile-time define, so the build in progress was
 stopped and restarted; changing it later costs a full rebuild.
 
+Independent evidence for the cause: the `application.ini` inside the official Zen 1.23.4b release
+tarball (downloaded, extracted, **not run**) reads `Vendor=Mozilla`, `Name=Zen`, `RemotingName=zen`,
+`Profile=zen`, `SourceStamp=541ee55...`. The binary was not executed: the environment's safety policy
+declined running a downloaded executable, so the profile directory of the official Zen was inferred
+from this file and from the source, not observed.
+
 Still not verified at run time: that the browser really creates `~/.nivora` and does not touch
 `~/.zen` (test F-10). `MOZ_APP_VENDOR` stays `Mozilla`: Firefox's `browser/moz.configure` implies
 it, so changing it needs a patch of its own; on Linux the vendor is not part of the profile path.
