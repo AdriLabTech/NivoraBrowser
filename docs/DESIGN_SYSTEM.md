@@ -68,7 +68,7 @@ Nothing selects Zen elements by structure. Adding a variable mapping is one line
 | Variable mapping into Zen's dark scheme | Implemented; preprocessed with Gecko's real preprocessor; **not yet seen rendered** |
 | Typography | Not decided. Candidates: the system UI font stack Zen already uses; evaluate once a build runs |
 | Iconography | Not started. Zen ships its own monochrome set (`zen-icons/`) that can be reused |
-| Logo and application icon | Not started. The shipped icons are still Zen's and **must not be distributed** |
+| Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |
 | New tab page, preferences, dialogs, tabs states | Not started |
 | Reduced motion | Not started; Zen has a `gReduceMotion` flag to build on |
 

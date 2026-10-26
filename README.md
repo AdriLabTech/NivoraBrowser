@@ -71,8 +71,8 @@ tracked honestly in [docs/TESTING.md](docs/TESTING.md).
 
 - No Nivora release exists, and no update service: the in-app updater is inert by design until
   the Stable phase defines a distribution channel ([docs/SECURITY.md](docs/SECURITY.md)).
-- The logo and icons are still Zen's. They must be replaced before any distribution
-  ([docs/UPSTREAM.md](docs/UPSTREAM.md)).
+- The logo is a generated proposal awaiting approval; wordmarks are text placeholders
+  ([docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)).
 - Zen features that depend on Zen-operated services (sharing spaces, the mods marketplace) are
   disabled or point nowhere. Their entry points are still visible; hiding them is planned.
 - Linux is the only platform being worked on. Windows and macOS packaging files are inherited and

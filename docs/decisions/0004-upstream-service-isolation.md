@@ -40,5 +40,7 @@ Zen's binaries, replacing Nivora with Zen.
   for a stable release; decided in Phase III.
 - Share and marketplace UI entry points remain visible and do nothing useful. Hiding them is
   tracked in the roadmap.
+- Packaging should ship `distribution/policies.json` with `DisableAppUpdate: true`, as Zen's AppImage
+  skeleton (`build/AppDir/distribution/policies.json`) already does, until an update service exists.
 - A future Nivora update service needs: signing keys, a host in `surfer.json`, `app.update.auto`
   reconsidered, and a threat model.

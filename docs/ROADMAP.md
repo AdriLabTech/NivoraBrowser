@@ -43,7 +43,7 @@ Legend: `[x]` done and verified · `[~]` implemented, not yet verified · `[ ]` 
 - [ ] New tab page (no remote content by default).
 - [ ] Preferences pages.
 - [ ] Typography decision, icon set audit.
-- [ ] Original logo and icons (the shipped ones are Zen's; blocks any distribution).
+- [~] Original logo and icons: proposal generated and tested (18 unit tests); needs the owner's approval; not yet seen in a build.
 - [ ] Reduced-motion handling for Nivora's own animations.
 - [ ] Narrow-window and high-DPI checks.
 

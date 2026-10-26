@@ -113,7 +113,7 @@ Status as of this report. Order follows dependency, then impact.
 | 8 | Tabs: states not conveyed by color alone | blocked on 7 |
 | 9 | Address bar, menus, dialogs, downloads panel restyle | blocked on 7 |
 | 10 | New tab page, preferences panes | blocked on 7 |
-| 11 | Original logo, icons, remove Zen's | needs owner approval of the design |
+| 11 | Original logo, icons, remove Zen's | done as a proposal (all Zen icons replaced); needs the owner's approval |
 | 12 | Typography and icon decisions | blocked on 7 |
 | 13 | Zen baseline run of the mochitest suite, then Nivora's; compare | blocked on 5 |
 | 14 | Foundation acceptance check and phase report | after 5–13 |
@@ -126,8 +126,9 @@ baselines (not started).
 
 ## 11. Decisions pending for the owner
 
-1. **Logo and application icon.** An original mark is required before any distribution. Provide a
-   direction, or approve a proposal to be produced. (Blocks task 11.)
+1. **Logo and application icon.** A proposal exists (eclipse crescent in a ring, generated from the
+   palette). Approve it, or give a direction for another. It is generic enough to resemble many
+   crescent icons.
 2. **License for entirely new Nivora files.** Currently MPL-2.0 headers, which is the safe default
    next to MPL code; the choice is yours.
 3. **Base line.** Confirm Zen `stable`/1.23.4b (recommended, ADR 0002) rather than `dev`.

@@ -11,6 +11,8 @@ see https://github.com/zen-browser/desktop/releases.
 - Obsidian Eclipse design tokens (`src/nivora/theme/`), dark scheme mapping, neutral accent and
   dark default; contrast validation tool with unit tests (`tools/nivora/`).
 - `prefs/nivora/endpoints.yaml`: overrides for the URLs `surfer` writes into the branding prefs.
+- Generated application icons (`tools/nivora/generate_branding.py`): a proposed Nivora mark replaces
+  every Zen icon in `configs/branding/release/`.
 - Documentation set: vision, architecture, design system, roadmap, development, building, testing,
   security, upstream tracking, Foundation analysis report, decision records 0001-0005.
 
@@ -29,6 +31,6 @@ see https://github.com/zen-browser/desktop/releases.
   assets from `docs/`.
 
 ### Known problems
-- Logo and icons are still Zen's.
+- The icon is a proposal pending approval.
 - Dark mapping not yet seen rendered. No Nivora build has been started in a browser yet.
 - No update channel.
