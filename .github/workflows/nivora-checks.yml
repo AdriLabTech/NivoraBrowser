@@ -1,0 +1,24 @@
+name: Nivora checks
+
+# Cheap static checks only. A full browser build needs ~30 GB of disk and hours of CPU, so it is
+# deliberately not run on every push (docs/UPSTREAM.md, "CI levels").
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Palette contrast and Nivora unit tests
+        run: |
+          python3 -I tools/nivora/check_contrast.py --list
+          python3 -I -m unittest discover -s tools/nivora/tests -v
+      - name: ffprefs unit tests
+        run: cargo test --manifest-path tools/ffprefs/Cargo.toml

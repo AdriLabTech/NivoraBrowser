@@ -2,8 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Nivora: neutral accent (--nivora-ash-500). Zen derives its palette from this
+# color, so a neutral value keeps the whole UI monochrome. tools/nivora/tests
+# checks that it equals the token.
 - name: zen.theme.accent-color
-  value: "AccentColor"
+  value: "#858585"
 
 - name: zen.theme.content-element-separation
   value: 8

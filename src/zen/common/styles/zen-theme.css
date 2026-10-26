@@ -304,6 +304,9 @@
   @media (-moz-platform: windows) {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+
+  /* Nivora: Obsidian Eclipse design tokens. */
+%include ../../../nivora/theme/nivora-tokens.inc.css
 }
 
 #main-window[windowtype="navigator:browser"]:not([popup-window]) {

@@ -1,0 +1,22 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - Obsidian Eclipse: dark scheme mapping.
+ *
+ * Declarations only. Included from Zen's schemes/dark.inc.css (browser window,
+ * panels and popups) and from nivora-tokens.inc.css (in-content pages).
+ * Each line re-points one of Zen's own theme variables at an Obsidian Eclipse
+ * token; no selector depends on the structure of Zen's UI.
+ *
+ * Zen derives most other colors from --zen-primary-color (the accent) and
+ * --zen-branding-dark through color-mix(), so those two are the main levers:
+ * a neutral accent (see prefs/nivora/theme.yaml) makes the derived palette gray. */
+
+--zen-branding-dark: var(--nivora-surface-1);
+--zen-main-browser-background: var(--nivora-surface-base);
+--zen-themed-toolbar-bg-transparent: var(--nivora-surface-2);
+--zen-dialog-background: var(--nivora-surface-raised);
+--arrowpanel-background: var(--nivora-surface-raised) !important;
+--zen-urlbar-background-base: var(--nivora-surface-2);
+--zen-input-border-color: var(--nivora-separator-strong);

@@ -1,0 +1,52 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - Obsidian Eclipse design tokens.
+ *
+ * This file is preprocessed into zen-theme.css, inside its `:root` block, so the
+ * tokens are available in the browser window and in every chrome page that imports
+ * zen-theme.css. It is the single source of truth for the palette: colors are
+ * written as hex values only here, and checked by tools/nivora/check_contrast.py.
+ *
+ * Do not use the raw palette tokens from components. Use the semantic roles.
+ * See docs/DESIGN_SYSTEM.md. */
+
+/* Raw palette */
+--nivora-obsidian-950: #050505;
+--nivora-obsidian-900: #0a0a0a;
+--nivora-obsidian-850: #101010;
+--nivora-graphite-800: #181818;
+--nivora-graphite-700: #242424;
+--nivora-graphite-600: #353535;
+/* ash-500 was #777777 in the first proposal; that gives 4.42:1 on obsidian-900 and
+ * 3.97:1 on graphite-800, below the 4.5:1 AA minimum for text. See ADR 0003. */
+--nivora-ash-500: #858585;
+--nivora-silver-300: #b8b8b8;
+--nivora-white-100: #f0f0f0;
+--nivora-pure-white: #ffffff;
+
+/* Semantic roles: surfaces, from the back of the window to the front. */
+--nivora-surface-base: var(--nivora-obsidian-950);
+--nivora-surface-1: var(--nivora-obsidian-900);
+--nivora-surface-2: var(--nivora-obsidian-850);
+--nivora-surface-raised: var(--nivora-graphite-800);
+
+/* Semantic roles: lines. Separators are decorative and intentionally quiet;
+ * the boundary of an interactive control uses --nivora-control-border (>= 3:1). */
+--nivora-separator: var(--nivora-graphite-700);
+--nivora-separator-strong: var(--nivora-graphite-600);
+--nivora-control-border: var(--nivora-ash-500);
+
+/* Semantic roles: text and state. */
+--nivora-text-primary: var(--nivora-white-100);
+--nivora-text-secondary: var(--nivora-silver-300);
+--nivora-text-muted: var(--nivora-ash-500);
+--nivora-selected: var(--nivora-pure-white);
+--nivora-focus-ring: var(--nivora-pure-white);
+
+/* In-content pages (about:preferences, about:newtab, ...) have no #main-window, so
+ * the dark mapping is applied here by the color scheme the page resolved to. */
+@media (prefers-color-scheme: dark) {
+%include nivora-dark.inc.css
+}

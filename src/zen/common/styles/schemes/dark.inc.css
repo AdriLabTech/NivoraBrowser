@@ -5,3 +5,5 @@
 color-scheme: dark;
 --zen-backdrop-underlay: url("chrome://browser/content/zen-styles/zen-backdrop-filters.svg#underlay-dark");
 --zen-urlbar-outline-offset: -1px;
+/* Nivora: Obsidian Eclipse dark mapping. */
+%include ../../../../nivora/theme/nivora-dark.inc.css

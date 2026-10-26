@@ -1,0 +1,13 @@
+{
+  "_comment": "Foreground/background pairs that must keep a minimum WCAG 2.x contrast ratio. Names are --nivora-* semantic roles from src/nivora/theme/nivora-tokens.inc.css (without the leading dashes). 'min' is 4.5 for text (AA), 3.0 for the boundary of an interactive control or a focus indicator (WCAG 1.4.11).",
+  "surfaces": ["surface-base", "surface-1", "surface-2", "surface-raised"],
+  "pairs": [
+    { "fg": "text-primary",   "on": "surfaces", "min": 7.0, "note": "body text, AAA" },
+    { "fg": "text-secondary", "on": "surfaces", "min": 4.5, "note": "secondary text, AA" },
+    { "fg": "text-muted",     "on": "surfaces", "min": 4.5, "note": "tertiary text, AA" },
+    { "fg": "selected",       "on": "surfaces", "min": 3.0, "note": "selected indicator" },
+    { "fg": "focus-ring",     "on": "surfaces", "min": 3.0, "note": "focus indicator, WCAG 1.4.11" },
+    { "fg": "control-border", "on": "surfaces", "min": 3.0, "note": "boundary of an interactive control, WCAG 1.4.11" }
+  ],
+  "decorative": ["separator", "separator-strong"]
+}
