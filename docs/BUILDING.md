@@ -75,7 +75,6 @@ Result: `surfer import` reported 273 steps, 0 failures.
 
 ```sh
 # mozconfig at the repository root; surfer appends it to the generated engine/mozconfig
-ac_add_options --disable-tests
 ac_add_options --disable-crashreporter
 ac_add_options --disable-debug-symbols
 ac_add_options --disable-geckodriver
@@ -95,6 +94,8 @@ unset MOZ_STDCXX_COMPAT
 
 This is not the release configuration (that is `configs/common/mozconfig` with `ZEN_RELEASE=1`,
 which enables LTO, PGO on x86_64 and Widevine, and needs `mach bootstrap` toolchains).
+Tests are left enabled (`--disable-tests` would make Zen's mochitest suite impossible to run);
+the first build attempt had them disabled and was restarted after about 25 minutes for that reason.
 `--disable-updater` and `--without-wasm-sandboxed-libraries` exist only because the matching
 toolchain downloads were unreachable; a release build must make a deliberate decision on both.
 
