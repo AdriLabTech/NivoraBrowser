@@ -75,21 +75,15 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 ## 3. License and attribution
 
 Nivora files that modify inherited files remain under MPL-2.0 (file-level copyleft). Files created
-by Nivora currently carry the same MPL-2.0 header; the license of entirely new files is the
-owner's decision and has not been made. Third-party
-material inherited from Zen that is **not yet reviewed** for redistribution terms:
+by Nivora carry the same MPL-2.0 header; the maintainer accepted that default.
 
-| Material | Location | Likely license | State |
-|---|---|---|---|
-| `motion.min.mjs` (Motion animation library) | `src/zen/vendor/` | MIT | v13.2.0 per `motion.dep`; confirm notice file |
-| Junicode variable fonts | `src/zen/fonts/` | SIL OFL 1.1 | Confirm and keep notice |
-| Emoji data | `src/zen/common/emojis/` (`fetch_emojis.py`) | Unicode / emoji data licenses | Confirm source and notice |
-| Welcome video, images, grain texture | `src/zen/welcome/`, `src/zen/images/` | Unknown (Zen's own?) | **Needs review before distribution**; replace if unclear |
-| Icon set | `src/browser/themes/shared/zen-icons/` | Unknown | **Needs review** |
-| Firefox third-party components | `engine/` | Listed by Firefox in `about:license` | Ships with Firefox's own notices |
+See [LICENSES.md](LICENSES.md) for the full inventory, the texts in `licenses/`, and the items
+that need review (Motion notice, Junicode, emoji data, website logos, welcome and Library artwork).
+The Nucleo interface icons Zen ships are **not redistributable** and were replaced by Phosphor Icons
+(MIT); the unmodified first commit still contains them, as Zen's repository does.
 
-Nothing here is a legal conclusion. Before the first public release a licensing review of this
-table is required (specification section 27).
+Nothing here is a legal conclusion. Before the first public release a licensing review of the
+items marked "review" in LICENSES.md is required (specification section 27).
 
 ## 4. Updating Zen or Firefox (procedure)
 

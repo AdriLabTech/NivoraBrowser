@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.adrilabtech.nivora</id>
+  <name>Nivora Browser</name>
+  <summary>A focused, private, monochrome web browser</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MPL-2.0</project_license>
+  <description>
+    <p>Nivora is a web browser for people who value focus, privacy and control. It is built on Zen Browser and Mozilla Firefox and adds a dark, monochrome interface and a few productivity commands.</p>
+    <p>Nivora is an independent project. It is not an official product of Mozilla or of the Zen project.</p>
+  </description>
+  <launchable type="desktop-id">nivora.desktop</launchable>
+  <url type="homepage">https://github.com/AdriLabTech/nivoraBrowser</url>
+  <url type="bugtracker">https://github.com/AdriLabTech/nivoraBrowser/issues</url>
+  <provides>
+    <binary>nivora</binary>
+  </provides>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0a1" date="2026-10-26"/>
+  </releases>
+</component>

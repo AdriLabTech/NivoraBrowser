@@ -1,0 +1,79 @@
+# Distribution
+
+## 1. Decision
+
+The first distribution format is a **portable tarball produced by `mach package`, installed on Arch
+Linux by a `PKGBUILD` that consumes it** (`packaging/arch/PKGBUILD`, assembled by
+`tools/nivora/make_arch_package.sh`).
+
+Why this one, and not the others:
+
+| Option | Verdict |
+|---|---|
+| Tarball + binary `PKGBUILD` (chosen) | One build, many installs; the checksum in the `PKGBUILD` pins exactly the artifact; pacman is the update channel, which matches [ADR 0004](decisions/0004-upstream-service-isolation.md) (no in-app updater); uninstall is `pacman -R` and leaves user data alone; no new infrastructure |
+| `PKGBUILD` that builds from source | Honest but impractical: about 30 GB of disk, hours of CPU and a toolchain bootstrap per install. Possible later, once the build is reproducible; not the first target |
+| Flatpak | Zen's template exists (`build/flatpak/`), but it is Zen's identity and its sandbox changes how file dialogs, portals and profiles behave; a second thing to verify. Later |
+| AppImage | Zen's `build/AppDir/` skeleton exists. Self-updating archives conflict with the "pacman is the update channel" rule. Not chosen |
+| `.deb` / `.rpm` | Not the target platform |
+
+Not done here: publishing. No release has been made and no package has been uploaded to GitHub
+Releases or the AUR. Publishing is the maintainer's action.
+
+## 2. What the package contains
+
+| Path | Content |
+|---|---|
+| `/opt/nivora/` | The application exactly as `mach package` leaves it, including Firefox's own license notices |
+| `/opt/nivora/distribution/policies.json` | `DisableAppUpdate: true` and the related policies: no in-app updating |
+| `/usr/bin/nivora` | Symlink to `/opt/nivora/nivora` |
+| `/usr/share/applications/nivora.desktop` | Launcher; handles `http`, `https` and the usual document and media types; "New Window" and "New Private Window" actions |
+| `/usr/share/icons/hicolor/<size>/apps/nivora.png` | 16 to 512 px, from the generated mark |
+| `/usr/share/metainfo/io.github.adrilabtech.nivora.metainfo.xml` | AppStream description for software centers |
+| `/usr/share/licenses/nivora-browser-bin/` | `LICENSE`, `LICENSES.md` and `licenses/` |
+
+Nothing is written outside `/opt` and `/usr`. Dependencies (`gtk3`, `libxt`, `dbus-glib`, `nss`,
+`mime-types`, `ttf-font`) are the ones Arch's Firefox package declares, from memory of that
+package: **unverified on Arch**.
+
+## 3. Where user data lives
+
+| Kind | Location | Notes |
+|---|---|---|
+| Application | `/opt/nivora` | owned by the package; replaced on upgrade |
+| Profile (settings, bookmarks, history, cookies, passwords, extensions) | the browser's profile directory under the user's home | **to be confirmed by test F-10** (expected to be separate from Zen's `~/.zen` and Firefox's `~/.mozilla`) |
+| Caches | the profile's cache directory under `~/.cache` | disposable |
+| Logs | none persistent by default | `MOZ_LOG` for debugging |
+
+Neither installing, upgrading nor removing the package touches profile data. Upgrading never runs
+anything against the profile; first start after an upgrade is the browser's normal profile upgrade.
+**Before a major version, back up the profile directory.**
+
+## 4. Updates
+
+There is no in-app updater. `app.update.auto` is `false`, `surfer.json` has no update host, and the
+packaged policy disables updating. A new version reaches users as a new package. The consequence,
+recorded in [SECURITY.md](SECURITY.md) section 5, is that **security fixes depend on the maintainer
+building and publishing a new package**. Rolling back is `pacman -U` on the previous package file.
+
+## 5. Making a package (maintainer)
+
+```sh
+npx surfer build                      # or the release configuration, see BUILDING.md
+./engine/mach package                 # leaves engine/obj-*/dist/nivora
+tools/nivora/make_arch_package.sh engine/obj-x86_64-pc-linux-gnu/dist/nivora out/
+cd out && makepkg -si                 # on Arch
+```
+
+Never package a development build as if it were a release: the sandbox configuration in
+[BUILDING.md](BUILDING.md) disables the updater and the wasm sandbox and does no LTO or PGO.
+A release package needs the release configuration, and the decisions listed there.
+
+## 6. Verified and not verified
+
+| | State |
+|---|---|
+| Assembly script, checksums, `package()` layout, desktop file, policy, icons, licenses | **Verified** by 11 tests that simulate `makepkg` (and fail when the symlink or the policy is wrong) |
+| `makepkg`, `pacman`, namcap, `desktop-file-validate`, `appstreamcli validate` | **Not run** (not available here) |
+| Install, start and uninstall on Arch Linux or Ryoku Arch | **Not run** |
+| A package built from the real build | see the results section of [BUILDING.md](BUILDING.md) |
+| Reproducibility of the tarball | **Not verified** |

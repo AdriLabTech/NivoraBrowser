@@ -1,0 +1,14 @@
+{
+  "_comment": "The upstream revisions this tree is built on. Updated only through the procedure in docs/UPSTREAM.md, in the same commit as the vendor merge.",
+  "zen": {
+    "repo": "https://github.com/zen-browser/desktop",
+    "tag": "1.23.4b",
+    "commit": "541ee55196395ee8082862b83c84c90ab41d9f6d",
+    "firefox": "158.0.1"
+  },
+  "firefox": {
+    "repo": "https://github.com/mozilla-firefox/firefox",
+    "tag": "FIREFOX_158_0_1_RELEASE",
+    "commit": "9378fbc58660847fbc02c3486a0ecd6049978e25"
+  }
+}

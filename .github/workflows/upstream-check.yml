@@ -1,0 +1,29 @@
+name: Upstream check
+
+# Step 1 of the update procedure (docs/UPSTREAM.md): look for a newer Zen release and prove the
+# vendored tree is still the pinned one. It only reads; it never updates anything.
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check upstream
+        run: |
+          set +e
+          python3 tools/nivora/upstream_check.py --verify-root | tee "$GITHUB_STEP_SUMMARY"
+          status=${PIPESTATUS[0]}
+          # 10 means "a newer Zen release exists": information, not a failure.
+          if [ "$status" -eq 10 ]; then exit 0; fi
+          exit "$status"

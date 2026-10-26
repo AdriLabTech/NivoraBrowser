@@ -1,0 +1,22 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=Nivora Browser
+GenericName=Web Browser
+Comment=A focused, private, monochrome web browser
+Exec=nivora %u
+Icon=nivora
+Terminal=false
+StartupNotify=true
+StartupWMClass=nivora
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;application/json;application/pdf;application/x-xpinstall;image/avif;image/gif;image/jpeg;image/png;image/svg+xml;image/webp;audio/flac;audio/ogg;audio/webm;video/ogg;video/webm;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/chrome;
+Actions=new-window;new-private-window;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=nivora --new-window %u
+
+[Desktop Action new-private-window]
+Name=New Private Window
+Exec=nivora --private-window %u

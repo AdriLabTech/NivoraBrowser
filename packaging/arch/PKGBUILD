@@ -1,0 +1,60 @@
+# Maintainer: AdriLabTech
+#
+# Nivora Browser, installed from a tarball produced by `mach package` (see docs/DISTRIBUTION.md).
+# Building the browser from source takes hours and about 30 GB of disk, so this package installs a
+# tarball the maintainer built; the checksum below pins exactly which one.
+#
+# `tools/nivora/make_arch_package.sh` writes the real checksum into this file.
+
+pkgname=nivora-browser-bin
+pkgver=0.1.0a1
+pkgrel=1
+pkgdesc="A focused, private, monochrome web browser built on Zen Browser and Firefox"
+arch=('x86_64')
+url="https://github.com/AdriLabTech/nivoraBrowser"
+license=('MPL-2.0')
+depends=('gtk3' 'libxt' 'dbus-glib' 'nss' 'mime-types' 'ttf-font')
+optdepends=('libnotify: desktop notifications'
+            'xdg-desktop-portal: file dialogs and URL handlers through portals'
+            'pulseaudio: audio output'
+            'ffmpeg: additional media codecs')
+provides=("nivora-browser=${pkgver}")
+conflicts=('nivora-browser')
+options=('!strip' '!debug')
+source=("nivora-${pkgver}.linux-x86_64.tar.xz"
+        "nivora-licenses-${pkgver}.tar.xz"
+        "nivora.desktop"
+        "io.github.adrilabtech.nivora.metainfo.xml"
+        "policies.json")
+sha256sums=('REPLACE_WITH_SHA256_OF_THE_BROWSER_TARBALL'
+            'REPLACE_WITH_SHA256_OF_THE_LICENSES_TARBALL'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+package() {
+  # Application files stay together under /opt/nivora; the updater is disabled by policy because
+  # pacman is the update channel (docs/decisions/0004).
+  install -d "${pkgdir}/opt/nivora" "${pkgdir}/usr/bin"
+  cp -a "${srcdir}/nivora/." "${pkgdir}/opt/nivora/"
+  ln -s /opt/nivora/nivora "${pkgdir}/usr/bin/nivora"
+
+  install -Dm644 "${srcdir}/policies.json" "${pkgdir}/opt/nivora/distribution/policies.json"
+
+  install -Dm644 "${srcdir}/nivora.desktop" "${pkgdir}/usr/share/applications/nivora.desktop"
+  install -Dm644 "${srcdir}/io.github.adrilabtech.nivora.metainfo.xml" \
+    "${pkgdir}/usr/share/metainfo/io.github.adrilabtech.nivora.metainfo.xml"
+
+  local size icons="${srcdir}/nivora/browser/chrome/icons/default"
+  for size in 16 22 24 32 48 64 128 256 512; do
+    if [ -f "${icons}/default${size}.png" ]; then
+      install -Dm644 "${icons}/default${size}.png" \
+        "${pkgdir}/usr/share/icons/hicolor/${size}x${size}/apps/nivora.png"
+    fi
+  done
+
+  # Licenses: the project's own text and notices (Firefox's are already inside /opt/nivora).
+  install -Dm644 "${srcdir}/nivora-licenses/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 "${srcdir}/nivora-licenses/LICENSES.md" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSES.md"
+  cp -a "${srcdir}/nivora-licenses/licenses" "${pkgdir}/usr/share/licenses/${pkgname}/licenses"
+}
