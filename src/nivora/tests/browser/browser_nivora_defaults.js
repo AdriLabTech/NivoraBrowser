@@ -21,6 +21,7 @@ const DEFAULTS = {
   "app.releaseNotesURL": "https://github.com/AdriLabTech/nivoraBrowser/releases",
   "app.releaseNotesURL.prompt": "https://github.com/AdriLabTech/nivoraBrowser/releases",
   "nivora.ui.hide-zen-services": true,
+  "xpinstall.signatures.required": true,
 };
 
 function defaultValue(name) {

@@ -50,6 +50,8 @@ machine). Record the build id from `about:support`.
 | F-06 | Change a setting in preferences, restart | Setting persists (use a named profile for this step) |
 | F-07 | `about:config`: `zen.theme.accent-color`, `zen.view.window.scheme`, `zen.share.base-url`, `app.update.auto`, `startup.homepage_override_url` | `#858585`, `0`, empty, `false`, empty |
 | F-08 | `about:preferences`, `about:addons`, `about:downloads`, `about:history`, new private window | Open without visual breakage |
+| F-10 | Start with `HOME` set to an empty directory, then list it | A `.nivora` directory appears; no `.zen` and no `.mozilla`. With a pre-existing `~/.zen`, Nivora does not read or modify it (compare a checksum of the directory before and after) |
+| F-11 | `about:config`: `xpinstall.signatures.required`; try installing an unsigned `.xpi` | `true`; the install is refused |
 | F-09 | Network: start with a packet capture or a proxy log, browse nothing for 5 minutes | No connection to `zen-browser.app`, `updates.zen-browser.app`, `share.zen-browser.app`, `zen-browser.github.io` |
 
 ### 3.2 Identity

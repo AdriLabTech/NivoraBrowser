@@ -24,6 +24,14 @@ change them. Zen's patches touch widget, layout, session store, urlbar and tab c
 privileged. Nivora has **not** audited them; it relies on Zen's review and on the unmodified
 upstream state being the reference.
 
+### Inherited reductions found in Zen's build configuration
+
+| Item | Where | Effect | Nivora |
+|---|---|---|---|
+| Extension signing not enforced by the build | `src/toolkit/moz-configure.patch` (`require_signing` returns False), `configs/common/mozconfig` (`MOZ_REQUIRE_SIGNING=`) | The preference `xpinstall.signatures.required` is `true` by default (Zen sets it in `prefs/firefox/extensions.yaml`), but because the build does not enforce signing, the user (or anything that can change preferences) can turn it off | Left as is; a release must decide whether to restore build-level enforcement (a change to Zen's patch). `browser_nivora_defaults.js` and test F-11 check the default |
+| Unsigned add-ons accepted in the application and system scopes | `--with-unsigned-addon-scopes=app,system` | Only matters to someone who can already write to the installation directory | Left as is |
+| Default profile and user directory named `zen` | `src/toolkit/moz-configure.patch` | A Nivora build would have used Zen's `~/.zen` profile | Fixed: `nivora` ([ADR 0005](decisions/0005-application-identity.md)); runtime check F-10 pending |
+
 ## 3. Nivora's changes and their security relevance
 
 | Change | Relevance |

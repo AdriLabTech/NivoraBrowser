@@ -15,6 +15,11 @@ export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}
 
 ac_add_options --with-distribution-id=io.github.adrilabtech.nivora
 
+# Profile and user-directory names ("zen" in Zen's patch to toolkit/moz.configure, which would make a
+# Nivora build read and write Zen's ~/.zen) are set to "nivora" in src/toolkit/moz-configure.patch:
+# MOZ_APP_PROFILE cannot be set from a mozconfig. MOZ_USER_DIR is a compile-time define; changing
+# it needs a clean build. See docs/decisions/0005.
+
 # Uncomment if builds are too resource hungry
 # mk_add_options MOZ_MAKE_FLAGS="-j4"
 # ac_add_options --enable-linker=gold
