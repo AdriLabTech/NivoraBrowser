@@ -15,7 +15,9 @@ replace an independent one. Date: 2026-10-26, on commit `f91e906` and earlier.
 | `ZenShareManager.enabled` change | Chrome | A preference | Hides share UI when no service is set |
 | `nivora-ui.inc.css` | Chrome CSS | A preference (media query) | Hides two controls |
 | Token CSS | Chrome CSS | none | Variables |
-| `tools/`, packaging | Developer machine / package build | repository files | none at run time |
+| `src/widget/nsXPLookAndFeel-cpp.patch` | Native (parent and content processes) | none | Six color constants of the dark system palette; no logic changed |
+| Replacement SVG and PNG artwork (`generate_ui_artwork.py`) | Chrome resources | none | Static drawings; a test refuses `<script>`, `<style>`, `<use>`, `<image>`, `href` and external `url()` in them |
+| `tools/`, packaging | Developer machine / package build | repository files | none at run time. `smoke.py`, `net_audit.py` and `screenshots.py` start the built browser with a throw-away `HOME` and only open local pages |
 
 No Nivora code runs in a content process, accepts a URL, a web message or a network response, or opens
 a socket.
@@ -30,6 +32,8 @@ a socket.
 | 4 | Zen's build does not enforce extension signing; the default preference is `true` but can be turned off | Medium, inherited | **Documented**; decision left for the release configuration |
 | 5 | A first draft of this work claimed Zen "loses" the signing default; it does not (Zen sets it). The mistaken preference file was removed before publication | n/a | Corrected |
 | 6 | Zen-operated hosts in defaults (update, share, injection, welcome pages) | Medium (privacy, supply chain) | **Fixed**; test fails if a default points at a Zen host |
+| 7 | **The branding file overrode the endpoint defaults.** `surfer import` writes Zen's update, release-notes and homepage URLs into `browser/branding/<brand>/pref/firefox-branding.js`, which Firefox loads after `zen.js`, so finding 6's fix was silently ineffective at run time (found by `browser_nivora_defaults.js` on the first real run; the static test only reads the YAML) | Medium (privacy) | **Fixed**: `tools/nivora/post_import.py` removes those prefs and fails the import if a Zen URL remains; the browser test now passes |
+| 8 | A build made earlier in the session still carried Zen's logo in the settings page: the engine had been imported before the branding was regenerated (found by looking at a screenshot) | Low (identity) | **Fixed** by a clean re-import; `npm run import` always regenerates it |
 
 ## 3. What was checked, per component
 
@@ -55,8 +59,8 @@ actions; the share gate only ever hides UI.
 ## 4. Not reviewed or not possible here
 
 - Anything inside Firefox or Zen, including the 263 patches, the native code, the session store.
-- Interaction effects in a running browser: the Nivora browser tests exist but **have not been run**
-  (the build is not finished); until they run, the integration is reviewed by reading only.
+- Interaction effects in a running browser beyond what the Nivora browser tests, the smoke test and
+  the network audit exercise (results in [TESTING.md](TESTING.md)).
 - `makepkg`/`pacman` behaviour of the package, and the installed file permissions on a real system.
 - Fuzzing, dependency scanning beyond `npm audit`, reproducibility of builds.
 - Whether another process can write the profile's preferences between `repair()` and use (it can; the
