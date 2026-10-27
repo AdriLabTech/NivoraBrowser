@@ -72,7 +72,7 @@ Arch. Anything that behaves differently on Ryoku is exactly what is worth report
 cd "$(dirname "$(find ~/nivora-pkg -name '*.pkg.tar.zst' | head -1)")"     # the `out` directory of the zip
 sha256sum -c SHA256SUMS
 sudo pacman -U ./nivora-browser-bin-0.1.0a1-1-x86_64.pkg.tar.zst
-nivora --no-remote --profile "$(mktemp -d)"      # first start with a throw-away profile
+P=$(mktemp -d); nivora --no-remote --profile "$P"; rm -rf "$P"      # first start with a throw-away profile
 ```
 
 ### 1. What you need
@@ -164,10 +164,12 @@ The package writes only under `/opt/nivora` and `/usr`. `makepkg` and `pacman` a
 
 ### 4. First start
 
-Start with a **throw-away profile**, so nothing is written to your real profile directory:
+Start with a **throw-away profile**, so that all the browser's data (history, cookies, settings) goes into a
+temporary directory that you delete afterwards. Only two empty folders, `~/.config/nivora` and
+`~/.cache/nivora`, are still created (checked):
 
 ```sh
-nivora --no-remote --profile "$(mktemp -d)"
+P=$(mktemp -d); nivora --no-remote --profile "$P"; rm -rf "$P"
 ```
 
 Run from a terminal, it prints Firefox's usual console messages (D-Bus and GPU lines are normal).
