@@ -21,10 +21,12 @@ missing or ungoverned, and does not duplicate the rest.
 How it is wired: `ZenUBGlobalActions.sys.mjs` loads `NivoraCommands.sys.mjs` and appends its list
 (`nivoraGlobalActions`) to Zen's template. Labels come from `locales/en-US/browser/browser/nivora.ftl`.
 
-Verified: 30 Node unit tests cover the registry (spec validation, argument validation, availability,
+Verified: 31 Node unit tests cover the registry (spec validation, argument validation, availability,
 confirmation, prepare, error containment) and three mutation checks confirmed the tests fail when
 the safeguards are removed. `src/nivora/tests/browser/browser_nivora_commands.js` covers the browser
-integration; **not yet run** (needs the build).
+integration (palette entries registered, close-duplicates with and without confirmation, reset with
+confirmation, error codes); **passes** in the built browser (2026-10-27, [TESTING.md](TESTING.md)).
+The commands are visible in the palette in a screenshot.
 
 Not done: a user-configurable shortcut for opening the palette (Zen's own shortcut editor handles
 Zen's commands; Nivora's commands appear in the palette but have no assignable key), and command
@@ -53,7 +55,8 @@ Format:
 
 Verified: Node tests for export, import, round trip, rejection of oversized / malformed / newer /
 mis-typed input, `__proto__` keys, secrets, unknown preferences, reset and repair;
-`browser_nivora_settings.js` repeats the key cases against the real preference service (**not yet run**).
+`browser_nivora_settings.js` repeats the key cases against the real preference service (**passes** in
+the built browser). The export and import **file pickers** were not driven by a test: they need a person.
 
 Not done: a settings page in `about:preferences`. Settings are reachable through the palette and
 Zen's existing preference panes; adding a Nivora pane is a markup change in privileged preference

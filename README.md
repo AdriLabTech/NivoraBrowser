@@ -15,11 +15,12 @@ which is itself a derivative of Mozilla Firefox. Nivora adds its own visual iden
 features, while keeping the rendering engine and most of the interface of its parents.
 
 > **Status: pre-alpha (`0.1.0a1`). Nothing is released.**
-> Done and checked without a running browser: the upstream base, the identity, the visual tokens,
-> the icon set, a command registry and central settings, Arch packaging files, license inventory
-> and the documentation. Still to be checked in a running build (one is compiling): that it starts
-> and browses, how the interface looks, and the browser tests. [docs/ROADMAP.md](docs/ROADMAP.md) lists
-> every item with its state, and [docs/TESTING.md](docs/TESTING.md) what was and was not run.
+> The browser **builds and runs** in a Linux container (X11): it starts, loads pages, keeps its own
+> profile directory, resolves no Zen-operated host on a first start, and shows the Obsidian Eclipse
+> palette. Nivora's own browser tests and a subset of Zen's pass. Not done: a release (LTO/PGO)
+> build, performance baselines, Wayland, Arch and Ryoku Arch, an independent security review.
+> [docs/ROADMAP.md](docs/ROADMAP.md) lists every item with its state and
+> [docs/TESTING.md](docs/TESTING.md) exactly what was and was not run.
 
 ## What Nivora is built on
 
@@ -78,19 +79,23 @@ npm start
 ```sh
 python3 -I -m unittest discover -s tools/nivora/tests   # Nivora checks, seconds
 python3 -I tools/nivora/check_contrast.py --list        # palette contrast report
+node --test tools/nivora/js-tests/*.test.mjs            # command registry and settings
 ```
 
-Zen's browser test suite (`npm test`) needs a finished build. What has and has not been run is
-tracked honestly in [docs/TESTING.md](docs/TESTING.md).
+With a finished build: `cd engine && ./mach test nivora/tests/browser` (Nivora's browser tests),
+`npm test` (Zen's), `tools/nivora/smoke.py`, `tools/nivora/net_audit.py`. What has and has not been
+run is tracked honestly in [docs/TESTING.md](docs/TESTING.md).
 
 ## Known limitations
 
 - No Nivora release exists, and no update service: the in-app updater is inert by design until
   the Stable phase defines a distribution channel ([docs/SECURITY.md](docs/SECURITY.md)).
-- Wordmarks are text placeholders; the interface beyond the color tokens has not been restyled
-  ([docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)).
+- Wordmarks are text placeholders. The palette, in-content pages, icons and the main artwork are
+  restyled; tab states, menus, the downloads panel, typography and the new tab page have not been
+  reviewed ([docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)).
 - Zen features that depend on Zen-operated services (sharing spaces, the mods marketplace) are
-  disabled or point nowhere. Their entry points are still visible; hiding them is planned.
+  disabled or point nowhere. The share entry points hide themselves and the donate button and mods
+  link are hidden by a preference; the About dialog still links to Zen and Firefox as attribution.
 - Linux is the only platform being worked on. Windows and macOS packaging files are inherited and
   untouched. Only an X11 session in a container has been used; Wayland, Arch and Ryoku Arch are
   untested ([docs/LINUX.md](docs/LINUX.md)).

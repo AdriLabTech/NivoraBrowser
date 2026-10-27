@@ -24,8 +24,18 @@ see https://github.com/zen-browser/desktop/releases.
 - Arch Linux packaging: tarball assembly script, `PKGBUILD`, `.desktop`, AppStream metadata,
   update-disabling policy. License inventory and texts (`licenses/`).
 - Documentation: productivity audit, privacy, Linux, distribution, maintenance, licenses, security review.
+- Runtime tooling: `smoke.py` (starts the build, loads a page, checks the profile directory),
+  `net_audit.py` (host names resolved on a first start), `screenshots.py` (visual review),
+  `post_import.py` (removes branding-file prefs that override Nivora's endpoints).
+- Interface artwork: Firefox's logo and mascot, and Zen's window-layout screenshots, replaced by
+  generated palette-only drawings (`generate_ui_artwork.py`, 15 files).
+- Nivora browser tests (3 files, 117 checks) and a CI step that checks the generated artwork.
 
 ### Changed
+- In-content pages (settings, errors, dialogs) and blank dark pages use the neutral surfaces:
+  gray-ramp mapping in `nivora-dark.inc.css` and a six-constant patch of
+  `widget/nsXPLookAndFeel.cpp`.
+- `npm run import` also runs `update_en_US_packs.py` (packages the `.ftl` files) and `post_import.py`.
 - Application identity: Nivora Browser, binary `nivora`, vendor AdriLabTech, distribution id
   `io.github.adrilabtech.nivora`, version `0.1.0a1`.
 - No update host is configured; `app.update.auto` is off.
