@@ -41,7 +41,7 @@ rest to be completed without further questions.
 - [~] Tabs: active, inactive, pinned and hover are distinguishable by fill and position, not hue (screenshots); loading, audio and warning states not exercised.
 - [~] Address bar, menus, settings and new tab reviewed in screenshots; one violet banner fixed. Dialogs and the downloads panel with a download not reviewed.
 - [ ] Typography decision.
-- [ ] Reduced-motion handling of Nivora's own animations (it has none yet).
+- [x] Motion language: tokens, generated springs, off switch and reduced-motion handling, cascades for the palette, menus, dialogs, tabs and settings, a gliding palette highlight ([ANIMATIONS.md](ANIMATIONS.md)). [ ] Not done: a palette exit animation; measurements on a GPU; a designer's review.
 - [x] Narrow-window (420 px) and high-DPI (2x) checks: nothing clipped, icons crisp.
 
 ### Foundation acceptance (specification section 10)
@@ -65,7 +65,7 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 [PRODUCTIVITY.md](PRODUCTIVITY.md) for what Zen already covers, per area.
 
 - [x] Command registry with stable ids, checked specs, argument validation, error containment, confirmation for sensitive commands; 31 Node tests + mutation checks. Browser integration test passes.
-- [x] Eight commands added to Zen's palette (new tab, history, downloads, search open tabs, close duplicate tabs, export / import / reset settings). Seen in the palette (screenshot); Zen's `browser_ub_actions_search.js`, which iterates every action, passes.
+- [x] Nine commands added to Zen's palette (new tab, history, downloads, search open tabs, close duplicate tabs, toggle animations, export / import / reset settings). Seen in the palette (screenshot); Zen's `browser_ub_actions_search.js`, which iterates every action, passes.
 - [x] Central settings: 25 whitelisted preferences, versioned export, validated all-or-nothing import, reset, startup repair. Node tests incl. hostile input. Browser test passes.
 - [x] Duplicate tabs: detection never crosses spaces, containers, pinned or essential tabs; closing needs confirmation. Node tests. Browser test passes.
 - [x] Spaces: audited against the requirements ([PRODUCTIVITY.md](PRODUCTIVITY.md) section 3). Met by Zen except recovery of a deleted space [!] left out: it needs a change to `ZenSpaceManager.mjs` (privileged, ~3,700 lines).

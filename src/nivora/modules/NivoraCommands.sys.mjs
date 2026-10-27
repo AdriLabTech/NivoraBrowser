@@ -124,6 +124,17 @@ const SPECS = [
     },
   },
   {
+    id: "nivora:toggle-animations",
+    l10nId: "nivora-action-toggle-animations",
+    category: "settings",
+    icon: `${ICONS}sparkles.svg`,
+    // The master switch of Nivora's motion (docs/ANIMATIONS.md); it takes effect in every window at once.
+    run: () => {
+      const pref = "nivora.ui.animations";
+      Services.prefs.setBoolPref(pref, !Services.prefs.getBoolPref(pref, true));
+    },
+  },
+  {
     id: "nivora:export-settings",
     l10nId: "nivora-action-export-settings",
     category: "settings",

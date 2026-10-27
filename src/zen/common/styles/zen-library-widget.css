@@ -7,7 +7,7 @@
 
 #zen-sidebar-foot-buttons,
 #TabsToolbar-customization-target {
-  --zen-library-open-duration: 0.3s;
+  --zen-library-open-duration: var(--nivora-d-base, 0.3s);
   --zen-library-open-easing: cubic-bezier(0.22, 1, 0.36, 1);
   --zen-library-entry-easing: linear(0, 0.34 12%, 0.7 24%, 0.93 38%, 1.03 55%, 1);
 }

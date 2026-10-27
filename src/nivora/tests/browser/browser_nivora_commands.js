@@ -16,6 +16,7 @@ const EXPECTED_IDS = [
   "nivora:open-downloads",
   "nivora:search-open-tabs",
   "nivora:close-duplicate-tabs",
+  "nivora:toggle-animations",
   "nivora:export-settings",
   "nivora:import-settings",
   "nivora:reset-settings",
@@ -111,4 +112,17 @@ add_task(async function test_reset_settings_asks_first() {
   Assert.ok(accepted.ok, accepted.message);
   Assert.ok(!Services.prefs.prefHasUserValue("zen.view.window.scheme"), "reset after confirmation");
   Assert.equal(notices.length, 1, "the result is announced once");
+});
+
+add_task(async function test_toggle_animations_flips_the_master_switch_and_back() {
+  const pref = "nivora.ui.animations";
+  const initial = Services.prefs.getBoolPref(pref);
+  try {
+    Assert.ok((await nivoraRegistry.execute("nivora:toggle-animations", contextFor(window))).ok, "it runs");
+    Assert.equal(Services.prefs.getBoolPref(pref), !initial, "it flips the setting");
+    await nivoraRegistry.execute("nivora:toggle-animations", contextFor(window));
+    Assert.equal(Services.prefs.getBoolPref(pref), initial, "and flips it back");
+  } finally {
+    Services.prefs.setBoolPref(pref, initial);
+  }
 });

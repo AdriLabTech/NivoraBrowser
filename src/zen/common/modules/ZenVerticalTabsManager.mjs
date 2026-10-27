@@ -151,30 +151,40 @@ window.gZenVerticalTabsManager = {
    */
   _startItemOpenAnimation(aItem, marginBottom) {
     try {
-      gZenUIManager.motion
-        .animate(
-          aItem,
-          {
-            opacity: [0, 1],
-            transform: ["scale(0.95)", "scale(1)"],
-            marginBottom,
-          },
-          {
-            duration: 0.12,
-            easing: "easeOut",
-          }
-        )
-        .then(() => {})
-        .catch(err => {
-          console.error(err);
-        })
+      const { NivoraMotion } = ChromeUtils.importESModule(
+        "resource:///modules/nivora/NivoraMotion.sys.mjs"
+      );
+      // The item springs in from the side while the space it takes opens smoothly under it, so
+      // the items below glide down instead of following the spring's overshoot.
+      const arrival = aItem.animate(
+        {
+          opacity: [0, 1],
+          transform: ["translateX(-18px) scale(0.88)", "translateX(0) scale(1)"],
+        },
+        {
+          duration: 560,
+          easing: NivoraMotion.springEasing(window, "bouncy"),
+          fill: "both",
+        }
+      );
+      const room = aItem.animate(
+        { marginBottom },
+        { duration: 380, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }
+      );
+      Promise.all([arrival.finished, room.finished])
+        .catch(() => {})
         .finally(() => {
           aItem.style.removeProperty("margin-bottom");
           aItem.style.removeProperty("transform");
           aItem.style.removeProperty("opacity");
+          arrival.cancel();
+          room.cancel();
         });
     } catch (e) {
       console.error(e);
+      // The item was held collapsed and invisible for the animation; never leave it that way.
+      aItem.style.removeProperty("margin-bottom");
+      aItem.style.removeProperty("opacity");
     }
   },
 
@@ -188,25 +198,36 @@ window.gZenVerticalTabsManager = {
     ) {
       return Promise.resolve();
     }
+    const { NivoraMotion } = ChromeUtils.importESModule(
+      "resource:///modules/nivora/NivoraMotion.sys.mjs"
+    );
     const height = window.windowUtils.getBoundsWithoutFlushing(aItem).height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aItem;
-    return gZenUIManager.motion.animate(
-      aItem,
+    // The item steps aside and fades quickly; the space it leaves closes a beat later, so the
+    // items below glide up into it. Both end with the item gone (fill: "forwards") until it is removed.
+    const departure = aItem.animate(
       {
         opacity: [1, 0],
-        transform: ["scale(1)", "scale(0.95)"],
-        ...(isLastItem
-          ? {}
-          : {
-              marginBottom: [`0px`, `-${height}px`],
-            }),
+        transform: ["translateX(0) scale(1)", "translateX(-12px) scale(0.9)"],
       },
-      {
-        duration: 0.1,
-        easing: "easeOut",
-      }
+      { duration: 200, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" }
     );
+    const closing = [departure.finished];
+    if (!isLastItem) {
+      closing.push(
+        aItem.animate(
+          { marginBottom: ["0px", `-${height}px`] },
+          {
+            duration: 240,
+            delay: 20,
+            easing: "cubic-bezier(0.83, 0, 0.17, 1)",
+            fill: "forwards",
+          }
+        ).finished
+      );
+    }
+    return Promise.all(closing).catch(() => {});
   },
 
   get actualWindowButtons() {

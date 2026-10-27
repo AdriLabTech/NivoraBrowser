@@ -338,7 +338,9 @@ export const SETTINGS_SCHEMA = defineSchema([
   { pref: "zen.glance.enabled", type: "bool", group: "behavior" },
   { pref: "zen.glance.activation-method", type: "string", group: "behavior", values: ["ctrl", "alt", "shift"] },
   { pref: "zen.urlbar.suggestions.quick-actions", type: "bool", group: "behavior" },
-  // Animations (milliseconds; 0 turns the animation off)
+  // Animations (milliseconds; 0 turns the animation off). The first one is the master switch of
+  // Nivora's own motion (docs/ANIMATIONS.md).
+  { pref: "nivora.ui.animations", type: "bool", group: "animation" },
   { pref: "zen.workspaces.switch-animation-duration", type: "int", group: "animation", min: 0, max: 2000 },
   { pref: "zen.glance.animation-duration", type: "int", group: "animation", min: 0, max: 2000 },
   { pref: "zen.downloads.download-animation", type: "bool", group: "animation" },

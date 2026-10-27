@@ -11,6 +11,7 @@ nivora-action-open-history = Open History
 nivora-action-open-downloads = Open Downloads
 nivora-action-search-open-tabs = Search Open Tabs
 nivora-action-close-duplicate-tabs = Close Duplicate Tabs
+nivora-action-toggle-animations = Toggle Animations
 nivora-action-export-settings = Export Nivora Settings
 nivora-action-import-settings = Import Nivora Settings
 nivora-action-reset-settings = Reset Nivora Settings to Defaults

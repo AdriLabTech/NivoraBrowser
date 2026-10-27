@@ -87,7 +87,7 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 | Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |
 | Tab states, menus | Reviewed in screenshots (active, inactive, pinned, hover; main and context menus): consistent with the palette; loading/audio/warning states and dialogs not yet |
 | New tab page, dialogs | New tab is Zen's search overlay on the neutral canvas; dialogs not reviewed |
-| Reduced motion | Not started; Zen has a `gReduceMotion` flag to build on |
+| Motion | Implemented and tested: duration, stagger and curve tokens, four generated spring curves, one switch (`nivora.ui.animations`, the system's reduced motion) that zeroes every duration and distance. See [ANIMATIONS.md](ANIMATIONS.md) for the inventory, the measurements and what was not done |
 
 ## Rules for contributors
 
@@ -96,4 +96,6 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
   luminance alone cannot carry the meaning.
 - Never communicate state with color alone: pair it with shape, weight, an icon or position.
 - Depth is a step in the surface ladder (`base` < `1` < `2` < `raised`), not a shadow.
-- Animations are short, explain a state change, and respect the reduced-motion preference.
+- Animations explain a state change and have character (a spring, a cascade), not a fade. Take every
+  duration, distance and curve from the motion tokens; never write `0.2s` or a `cubic-bezier` in a rule.
+  Animate `transform`, `opacity` and `filter` only. Never leave motion on when `--nivora-motion-scale` is 0.

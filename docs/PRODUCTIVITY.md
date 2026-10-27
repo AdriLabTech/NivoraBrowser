@@ -36,7 +36,7 @@ parameters are supported by the registry but no shipped command uses one.
 
 | Requirement | State |
 |---|---|
-| Theme, density, visibility, tab behavior, animations, spaces behavior | A schema of **25 real preferences** (Zen's plus `nivora.ui.hide-zen-services`) in 6 groups: appearance, layout, tabs, spaces, behavior, animation. Defaults stay in the preference system; the schema holds types and limits only |
+| Theme, density, visibility, tab behavior, animations, spaces behavior | A schema of **26 real preferences** (Zen's plus `nivora.ui.hide-zen-services` and `nivora.ui.animations`) in 6 groups: appearance, layout, tabs, spaces, behavior, animation. Defaults stay in the preference system; the schema holds types and limits only |
 | Persistent | Preferences persist in the profile as usual |
 | Validation, safe fallback, corrupt configuration never blocks startup | `repairSettings` runs when Nivora's commands load: a managed preference whose value is out of range or of the wrong type is cleared, so the default applies. Import is parsed as JSON, never evaluated, size-limited to 64 KiB, all-or-nothing |
 | Export / import: documented, versioned, validated, no secrets | Format `nivora-settings` version 1 (section below). Only managed preferences that the user changed are exported. Any schema entry whose name looks like a secret (`password`, `token`, `cookie`, `session`, `private`, ...) is refused when the schema is defined. Unknown keys in an imported file are ignored with a warning, never applied. A file from a newer version is rejected |

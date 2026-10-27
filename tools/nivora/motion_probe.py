@@ -50,8 +50,22 @@ SCENARIOS = {
     "sidebar-toggle": {"urls": ["/Alpha"], "settle": 8, "actions": [("key", "ctrl+b")], "record": 3},
     "app-menu": {"urls": ["/Alpha"], "settle": 8, "actions": [("click", 18, 21)], "record": 2.5},
     "tab-context-menu": {"urls": ["/Alpha", "/Beta"], "settle": 8, "actions": [("rclick", 90, 206)], "record": 2.5},
-    "settings-pane": {"urls": ["about:preferences"], "settle": 12, "actions": [("click", 300, 320)], "record": 2.5},
+    # about:preferences cannot be passed on the command line, so it is opened from the address bar; the
+    # click then switches to the "Privacy and security" category (the icon column of the narrow layout).
+    "settings-pane": {"urls": ["about:blank"], "settle": 8,
+                      "pre": [("key", "ctrl+l"), ("type", "about:preferences"), ("key", "Return"), ("wait", 9),
+                              ("move", 1200, 400), ("wait", 3)],
+                      "keep_mouse": True, "actions": [("click", 242, 342)], "record": 2.5},
+    # A tab opens in the sidebar: the address is typed first, so only Enter is inside the recording.
+    "open-tab": {"urls": ["/Alpha"], "settle": 8, "pre": [("key", "ctrl+t"), ("wait", 2), ("type", "about:blank"), ("wait", 1.5)],
+                 "actions": [("key", "Return")], "record": 2.5},
+    # The window assembling itself: recording starts before the browser does.
+    "boot": {"urls": ["/Alpha"], "boot": True, "settle": 0, "actions": [], "record": 9},
 }
+
+# The same interactions with the setting off: the motion must be gone, not just shorter.
+for _name in ("palette-open", "app-menu", "close-tab", "settings-pane", "open-tab"):
+    SCENARIOS[f"{_name}-off"] = {**SCENARIOS[_name], "prefs": {"nivora.ui.animations": False}}
 
 
 def decode(path):
@@ -97,21 +111,47 @@ def record(binary, out, name, scenario, port, display, fps):
     env = {**os.environ, "HOME": str(home), "DISPLAY": display, "GDK_BACKEND": "x11", "MOZ_ENABLE_WAYLAND": "0",
            "XDG_CONFIG_HOME": str(home / ".config"), "XDG_CACHE_HOME": str(home / ".cache")}
     urls = [u if u.startswith("about:") else f"http://127.0.0.1:{port}{u}" for u in scenario["urls"]]
-    browser = subprocess.Popen([str(binary), "--no-remote", "--profile", str(profile), *urls], env=env, cwd=home,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    browser_cmd = [str(binary), "--no-remote", "--profile", str(profile), *urls]
+    browser = None
     video = out / f"{name}.mkv"
+
+    def start_grab():
+        return subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "x11grab", "-framerate", str(fps), "-video_size", f"{W}x{H}",
+                                 "-i", f"{display}+0,0", "-t", str(scenario["record"] + 1), "-c:v", "libx264", "-preset", "ultrafast",
+                                 "-crf", "18", "-pix_fmt", "yuv420p", str(video)], env=env)
+
     try:
+        if scenario.get("boot"):
+            return boot(browser_cmd, env, home, scenario, start_grab, video)
+        browser = subprocess.Popen(browser_cmd, env=env, cwd=home, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(scenario["settle"])
         for action in scenario.get("pre", []):
             shots.act(env, display, browser.pid, action)
-        subprocess.run(["xdotool", "mousemove", "700", "500"], env=env, timeout=30)
+        if not scenario.get("keep_mouse"):
+            subprocess.run(["xdotool", "mousemove", "700", "500"], env=env, timeout=30)
         time.sleep(1)
-        grab = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "x11grab", "-framerate", str(fps), "-video_size", f"{W}x{H}",
-                                 "-i", f"{display}+0,0", "-t", str(scenario["record"] + 1), "-c:v", "libx264", "-preset", "ultrafast",
-                                 "-crf", "18", "-pix_fmt", "yuv420p", str(video)], env=env)
+        grab = start_grab()
         time.sleep(0.7)  # ffmpeg needs a moment before the first frame
         for action in scenario["actions"]:
             shots.act(env, display, browser.pid, action)
+        grab.wait(timeout=60)
+    finally:
+        if browser and browser.poll() is None:
+            browser.send_signal(signal.SIGTERM)
+            try:
+                browser.wait(timeout=30)
+            except subprocess.TimeoutExpired:
+                browser.kill()
+        shutil.rmtree(home, ignore_errors=True)
+    return video
+
+
+def boot(browser_cmd, env, home, scenario, start_grab, video):
+    """Record the screen from before the browser starts until `record` seconds later."""
+    grab = start_grab()
+    time.sleep(0.7)
+    browser = subprocess.Popen(browser_cmd, env=env, cwd=home, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
         grab.wait(timeout=60)
     finally:
         if browser.poll() is None:
@@ -124,10 +164,11 @@ def record(binary, out, name, scenario, port, display, fps):
     return video
 
 
-def sheet(video, frames_dir, target):
-    """A contact sheet: every other frame of the recording, 6 per row."""
+def sheet(video, frames_dir, target, start=0):
+    """A contact sheet: every other frame of the recording from frame `start`, 6 per row."""
     frames_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-vf", "select='not(mod(n\\,2))',scale=420:-1,tile=6x5",
+    pick = f"select='gte(n\\,{start})*not(mod(n-{start}\\,2))'"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-vf", f"{pick},scale=420:-1,tile=6x5",
                     "-frames:v", "1", str(target)], timeout=120)
 
 
@@ -162,7 +203,8 @@ def main(argv=None):
             try:
                 video = record(binary, out, name, SCENARIOS[name], server.server_address[1], args.display, args.fps)
                 report[name] = analyse(decode(video), args.fps)
-                sheet(video, out / "frames", out / f"{name}.png")
+                first = (report[name] or {}).get("first_change_frame", 0)
+                sheet(video, out / "frames", out / f"{name}.png", start=max(0, first - 3))
                 print(f"{name:18} {report[name]}")
             except Exception as e:  # keep going: one failing scenario should not hide the others
                 report[name] = {"error": str(e)}

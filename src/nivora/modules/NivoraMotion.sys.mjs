@@ -5,10 +5,16 @@
 /**
  * The parts of Nivora's motion that CSS cannot do on its own (docs/ANIMATIONS.md).
  *
- * Today: the command palette's highlight. CSS draws a bar behind the selected row and springs it
- * from row to row; this module only tells the stylesheet where the selected row is, in two custom
- * properties. The rows keep their own layout and selection: if this script does not run, or motion
- * is off, the selected row keeps its normal background and nothing else changes.
+ * - The command palette's highlight. CSS draws a bar behind the selected row and springs it from
+ *   row to row; this module only tells the stylesheet where the selected row is, in two custom
+ *   properties. The rows keep their own layout and selection: if this script does not run, or
+ *   motion is off, the selected row keeps its normal background and nothing else changes.
+ * - The off switch for the animations that scripts start. Zen and Firefox ask `gReduceMotion` before
+ *   they animate, and it honours the `gReduceMotionOverride` hook, so turning `nivora.ui.animations`
+ *   off puts the window in the same state as the system's "reduce motion" setting.
+ * - Helpers for the animations that scripts start (tabs opening and closing): whether motion is on
+ *   in a window, and the same spring curves the stylesheets use, so a scripted animation moves
+ *   like a styled one.
  *
  * Importing this module must never throw.
  */
@@ -21,18 +27,19 @@ const log = {
 };
 
 /**
- * Where the highlight bar goes: the selected row's offset and height inside the results list.
- * Layout offsets are used, not bounding boxes, so a row that is still sliding in by its entrance
- * animation is measured where it will rest.
+ * Where the highlight bar goes: the area a selected row paints its background on, which is its
+ * padding box (the row has a transparent border), measured inside the results list. Layout offsets
+ * are used, not bounding boxes, so a row that is still sliding in by its entrance animation is
+ * measured where it will rest.
  *
- * @param {{ offsetTop: number, offsetHeight: number } | null} row
+ * @param {{ offsetTop: number, clientTop: number, clientHeight: number } | null} row
  * @returns {{ y: number, height: number, opacity: number }}
  */
 export function highlightFor(row) {
   if (!row) {
     return { y: 0, height: 0, opacity: 0 };
   }
-  return { y: row.offsetTop, height: row.offsetHeight, opacity: 1 };
+  return { y: row.offsetTop + row.clientTop, height: row.clientHeight, opacity: 1 };
 }
 
 class PaletteHighlight {
@@ -109,7 +116,7 @@ class PaletteHighlight {
     }
     // The bar is positioned relative to the list, which the stylesheet makes positioned while gliding.
     urlbar.setAttribute("nivora-glide", "");
-    const row = results.querySelector(".urlbarView-row-inner[selected]")?.closest(".urlbarView-row");
+    const row = results.querySelector(".urlbarView-row[selected]");
     const box = highlightFor(row);
     const first = box.opacity === 1 && !this.#visible;
     if (first) {
@@ -118,9 +125,69 @@ class PaletteHighlight {
     results.style.setProperty("--nivora-sel-y", `${box.y}px`);
     results.style.setProperty("--nivora-sel-h", `${box.height}px`);
     results.style.setProperty("--nivora-sel-o", String(box.opacity));
+    if (row) {
+      results.style.setProperty("--nivora-sel-r", this.#window.getComputedStyle(row).borderTopLeftRadius);
+    }
     this.#visible = box.opacity === 1;
     if (first) {
       this.#window.requestAnimationFrame(() => urlbar.removeAttribute("nivora-glide-snap"));
+    }
+  }
+}
+
+/** Motion is on in `window`: the setting is on and the system does not ask for reduced motion. */
+function motionOn(window) {
+  return (
+    Services.prefs.getBoolPref(ANIMATIONS_PREF, true) &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+/**
+ * The easing of a spring token (`smooth`, `snappy`, `bouncy`, `elastic`) as `linear(...)`, ready
+ * for Element.animate. Falls back to a plain ease-out when the stylesheet does not provide it.
+ *
+ * @param {Window} window
+ * @param {string} name
+ */
+function springEasing(window, name) {
+  try {
+    const value = window
+      .getComputedStyle(window.document.documentElement)
+      .getPropertyValue(`--nivora-spring-${name}`)
+      .trim();
+    return value.startsWith("linear(") ? value : "ease-out";
+  } catch (e) {
+    return "ease-out";
+  }
+}
+
+/**
+ * Mirrors the `nivora.ui.animations` setting into the window's reduce-motion state. It only ever
+ * undoes what it did itself, so a window that asked for reduced motion some other way keeps it.
+ */
+class MotionSwitch {
+  #window;
+  #owned = false;
+  #observer = () => this.#apply();
+
+  constructor(window) {
+    this.#window = window;
+    this.#apply();
+    Services.prefs.addObserver(ANIMATIONS_PREF, this.#observer);
+    window.addEventListener("unload", () => Services.prefs.removeObserver(ANIMATIONS_PREF, this.#observer), {
+      once: true,
+    });
+  }
+
+  #apply() {
+    const off = !Services.prefs.getBoolPref(ANIMATIONS_PREF, true);
+    if (off) {
+      this.#owned = true;
+      this.#window.gReduceMotionOverride = true;
+    } else if (this.#owned) {
+      this.#owned = false;
+      this.#window.gReduceMotionOverride = undefined;
     }
   }
 }
@@ -132,16 +199,21 @@ function attach(window) {
     return;
   }
   attached.add(window);
-  try {
-    new PaletteHighlight(window);
-  } catch (e) {
-    log.error("could not attach the palette highlight", e);
+  for (const Feature of [PaletteHighlight, MotionSwitch]) {
+    try {
+      new Feature(window);
+    } catch (e) {
+      log.error(`could not attach ${Feature.name}`, e);
+    }
   }
 }
 
 let started = false;
 
 export const NivoraMotion = {
+  motionOn,
+  springEasing,
+
   /** Attach to every browser window, now and later. Safe to call more than once. */
   init() {
     if (started) {

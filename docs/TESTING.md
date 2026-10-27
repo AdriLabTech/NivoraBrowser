@@ -24,8 +24,8 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 
 | Date | Check | Result | Notes |
 |---|---|---|---|
-| 2026-10-27 | Nivora Python tests (74) | **pass** | `python3 -I -m unittest discover -s tools/nivora/tests`: contrast, prefs vs tokens, icons, branding, artwork, upstream check, Arch packaging (simulated `makepkg`), post-import, network-audit parsing |
-| 2026-10-27 | Command registry and settings, Node (31) | **pass** | `node --test tools/nivora/js-tests/*.test.mjs`; mutation checks done when written |
+| 2026-10-27 | Nivora Python tests (114) | **pass** | `python3 -I -m unittest discover -s tools/nivora/tests`: contrast, prefs vs tokens, icons, branding, artwork, spring curves, motion probe, upstream check, Arch packaging (simulated `makepkg`), post-import, network-audit parsing |
+| 2026-10-27 | Command registry, settings and palette-highlight geometry, Node (34) | **pass** | `node --test tools/nivora/js-tests/*.test.mjs`; mutation checks done when written |
 | 2026-10-27 | Contrast, shipped palette | **24/24 pass** | The original `#777777` proposal fails 3 pairs (4.42, 4.25, 3.97): why ADR 0003 exists |
 | 2026-10-27 | `ffprefs` unit tests (3) | **pass** | the hex-quoting test failed before the fix |
 | 2026-10-27 | Icons are Phosphor-only; interface artwork equals the generator | **pass** | `generate_icons.py --check`, `generate_ui_artwork.py --check` |
@@ -37,7 +37,7 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Check | Result | Notes |
 |---|---|---|
 | Build | **completed**, exit 0 | 76 min wall time on 4 cores; [BUILDING.md](BUILDING.md) |
-| Nivora browser tests: commands, defaults, settings, hidden Zen-service controls, dark mapping | **123 checks pass, 0 fail** (two full runs in a row) | `cd engine && xvfb-run -a ./mach test nivora/tests/browser`. A test that read a computed style straight after a preference change failed once in a full run and now waits for the restyle. The first run (before fixes, three files) had 41 pass and 28 fail; the failures were two real defects (finding 7 in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), missing `.ftl` packaging) and test mistakes |
+| Nivora browser tests: commands, defaults, settings, hidden Zen-service controls, dark mapping, motion | **166 checks pass, 0 fail** (5 files; the last full run, after the motion work; the 123 before it passed twice in a row) | `cd engine && xvfb-run -a ./mach test nivora/tests/browser`. A test that read a computed style straight after a preference change failed once in a full run and now waits for the restyle. The first run (before fixes, three files) had 41 pass and 28 fail; the failures were two real defects (finding 7 in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), missing `.ftl` packaging) and test mistakes |
 | F-01, F-02: starts, shows a window, loads and titles a local page | **pass** | `tools/nivora/smoke.py` |
 | Wayland: window, page title, profile directory, clean exit | **pass** | `tools/nivora/smoke_wayland.py` under headless `sway`: a window with application id `nivora` shows the page title; only `~/.config/nivora` created; exits when asked |
 | F-10: profile directory | **pass** | With an empty `HOME`, only `~/.config/nivora` is created; no `.zen`, `.config/zen` or `.mozilla`. Not checked: behaviour when a `~/.zen` already exists |
@@ -50,6 +50,8 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Settings export/import/repair | **pass** (prefs backend) | `browser_nivora_settings.js`. The **file pickers** were not driven: the dialogs need a person |
 | Visual review (screenshots, `tools/nivora/screenshots.py`) | **done** for the screens in section 3.2 | One defect found and fixed (a violet banner in the main menu); the rest is grayscale, with no Firefox or Zen logo or mascot. Not reviewed: loading, audio and warning tab states; compact mode; dialogs; the downloads panel with a download; the Library; `about:privatebrowsing` |
 | Dark mapping reaches the window | **pass** | `browser_nivora_ui.js` (computed values of five mapped variables) |
+| Motion language ([ANIMATIONS.md](ANIMATIONS.md)) | **pass** | `browser_nivora_motion.js` (11 tests): tokens, off switch, the system's reduced motion, palette entrance and gliding highlight (including its color), tabs, settings cascade, reaching `gReduceMotion`. Measured with `tools/nivora/motion_probe.py` (screen recording, software rendering): the numbers are in [ANIMATIONS.md](ANIMATIONS.md) section 4. A first version of the highlight was blue; a screenshot showed it, and a test now guards the color |
+| Zen's groups touched by the motion changes | **pass**: `compact_mode` 13, `folders` 135, `tabs` 32, `urlbar` 97, `ub-actions` 92, `ui` 59, `glance` 27, `library` 224, `spaces` 112, `pinned` 70 | `python3 scripts/run_tests.py <group>`. `ub-actions` failed once with 6 checks when the new palette command's translation was not yet packaged (`python3 scripts/update_en_US_packs.py` must run after editing a `.ftl`); it passes after packaging. `library` failed once (7 checks in `browser_library_rapid_toggle.js` and `browser_library_toggle_sidebar_width.js`: "settles" timed out) in a run that overlapped other CPU work on the machine, and passed (224, 0 failures) in the two clean reruns that followed; the Library's open duration went from 0.3 s to 0.42 s in this work, so a timing sensitivity of those two tests to it is possible and not ruled out |
 | Zen's own tests (all 26 groups) | **26,288 browser checks pass, 31 fail**; xpcshell: Sync and remote-settings fail for inherited reasons | see 2.3 for each failure |
 | `npm run lint` | **not run** | needs node modules inside `engine/` |
 | Performance baseline of Nivora itself | **measured, one environment** | `tools/nivora/perf_baseline.py`, 3 runs each, raw data in `docs/perf-baseline-2026-10-27.json`. Fresh profile: start-up 2.3 s (2.2-2.3), memory 533 MiB PSS (529-536), idle CPU 1.9 % of one core. Existing profile: 1.4 s (1.3-1.4), 512 MiB (508-514), idle 0.6 %. One local page open, software rendering, development build without LTO/PGO, 4 cores, 30 s idle window. Useful only to compare a later Nivora build on the same machine |
@@ -140,7 +142,7 @@ machine). Record the build id from `about:support`.
 | I-02 | **Partly.** Active tab: lighter fill; inactive: transparent; pinned: a separate section above the divider; hover: a lighter fill. Loading, audio and warning states were **not** exercised, so "not by color alone" is not shown for them |
 | I-03 | **Not done** beyond seeing the white focus ring on the settings search field |
 | I-04 | **Pass for width**: at 420 px the sidebar keeps its width and the page narrows; nothing clipped. Compact mode not tried |
-| I-05 | **Not verifiable yet**: Nivora adds no animation; Zen's were not tested with reduced motion |
+| I-05 | **Pass for Nivora's own motion**: with `ui.prefersReducedMotion` or `nivora.ui.animations` off, every Nivora duration and distance is 0 (`browser_nivora_motion.js`) and a settings pane switches in one step (screen recording). Zen's own CSS micro-transitions of 80-200 ms remain; the system setting was tried through its preference, not through a desktop environment |
 | I-06 | **Pass**: at 2x (`GDK_SCALE=2`) icons and text are crisp and targets large |
 | I-07 | **Partly**: the main menu and a tab context menu are consistent and readable; dialogs and the downloads panel with a download were not seen |
 

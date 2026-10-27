@@ -10,7 +10,7 @@ replace an independent one. Date: 2026-10-26, on commit `f91e906` and earlier.
 | Component | Privilege | Input it accepts | Reaches |
 |---|---|---|---|
 | `NivoraCommands.sys.mjs` and the registry | Chrome (privileged) | Commands chosen by the user in the palette; nothing from web content | Tabs, address bar, native commands, dialogs |
-| `NivoraSettings.sys.mjs` | Chrome | A JSON file the user picks | A fixed list of 25 preferences |
+| `NivoraSettings.sys.mjs` | Chrome | A JSON file the user picks | A fixed list of 26 preferences |
 | `ZenUBGlobalActions` hook | Chrome | none | Appends the Nivora commands to Zen's list |
 | `ZenShareManager.enabled` change | Chrome | A preference | Hides share UI when no service is set |
 | `nivora-ui.inc.css`, `nivora-dark.inc.css` | Chrome CSS | A preference (media query) | Hides two controls; remaps color variables (both verified by `browser_nivora_ui.js`) |
@@ -44,7 +44,7 @@ contains every exception, and never runs a `sensitive` command without `context.
 returning true. `prepare` is read-only by contract. Mutation checks: removing the confirmation gate,
 the version check or the secret-name guard each made tests fail.
 
-**Settings.** Whitelist of 25 preferences with types and bounds; import is JSON only, 64 KiB, all or
+**Settings.** Whitelist of 26 preferences with types and bounds; import is JSON only, 64 KiB, all or
 nothing, ignores unknown keys, refuses newer versions; `__proto__` keys do not pollute (tested);
 the schema refuses names that look like secrets; export lists only changed whitelisted values.
 `repair()` only ever deletes an invalid user value.

@@ -482,7 +482,7 @@ window.gZenCompactModeManager = {
               ease: "easeIn",
               type: "spring",
               bounce: 0,
-              duration: 0.1,
+              duration: 0.34,
             }
           )
           .then(() => {
@@ -530,7 +530,7 @@ window.gZenCompactModeManager = {
               ease: "easeOut",
               type: "spring",
               bounce: 0,
-              duration: 0.1,
+              duration: 0.34,
             }
           )
           .then(() => {

@@ -1682,11 +1682,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   get #folderAnimationDuration() {
-    return this._dontAnimateFolder ? 0 : 0.18;
+    return this._dontAnimateFolder ? 0 : 0.34;
   }
 
   get #folderRevealDuration() {
-    return this._dontAnimateFolder ? 0 : 0.2;
+    return this._dontAnimateFolder ? 0 : 0.36;
   }
 
   async animateCollapse(group) {

@@ -81,8 +81,8 @@
       z-index: 10;
       translate: var(--zen-compact-hidden-translate);
       transition:
-        translate 0.15s ease,
-        visibility 0.15s ease;
+        translate var(--nivora-d-fast, 0.15s) var(--nivora-ease-in-out, ease),
+        visibility var(--nivora-d-fast, 0.15s) ease;
       bottom: var(--zen-compact-float);
       padding: 0 var(--zen-compact-float) !important;
       width: unset !important;
@@ -150,7 +150,7 @@
       min-width: var(--zen-toolbox-max-width);
     }
     position: relative;
-    transition: visibility 0.15s; /* Same as the toolbox */
+    transition: visibility var(--nivora-d-fast, 0.15s); /* Same as the toolbox */
     visibility: hidden;
     :root[zen-sidebar-expanded='true'] & {
       width: var(--zen-sidebar-width);
@@ -272,7 +272,7 @@
         1.003674 99%,
         1.003423 100%
       );
-      --zen-compact-mode-time: 0.25s;
+      --zen-compact-mode-time: var(--nivora-d-base, 0.25s);
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
       @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce))  {

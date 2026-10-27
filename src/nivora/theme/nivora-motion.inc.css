@@ -236,8 +236,9 @@
 /* ---- Palette: the highlight glides between rows ------------------------------------------------- */
 
 /* NivoraMotion.sys.mjs keeps --nivora-sel-y and --nivora-sel-h equal to the position and height of the
- * selected row. The row's own background is hidden and this bar, which springs from row to row, takes
- * its place. Without the script (or with motion off) the row keeps its normal background. */
+ * selected row's background. The row's own background is hidden and this bar, which springs from row to
+ * row, takes its place with the same colour. Without the script (or with motion off) the row keeps its
+ * normal background. */
 #urlbar[zen-floating-urlbar="true"][nivora-glide] .urlbarView-results {
   position: relative;
   isolation: isolate;
@@ -246,12 +247,12 @@
 #urlbar[zen-floating-urlbar="true"][nivora-glide] .urlbarView-results::before {
   content: "";
   position: absolute;
-  inset-inline: 6px;
+  inset-inline: 0;
   top: 0;
   height: var(--nivora-sel-h, 0px);
-  border-radius: 10px;
-  background: var(--urlbarview-background-color-selected, color-mix(in srgb, currentColor 14%, transparent));
-  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent), 0 8px 24px color-mix(in srgb, black 35%, transparent);
+  border-radius: var(--nivora-sel-r, 8px);
+  /* The colour Zen gives a selected row (zen-omnibox.css). */
+  background: color-mix(in srgb, var(--zen-accent-button-background), transparent 40%);
   opacity: var(--nivora-sel-o, 0);
   transform: translateY(var(--nivora-sel-y, 0px));
   transition:
@@ -267,6 +268,31 @@
   transition: none;
 }
 
-#urlbar[zen-floating-urlbar="true"][nivora-glide] .urlbarView-row-inner[selected] {
-  background: transparent !important;
+#urlbar[zen-floating-urlbar="true"][nivora-glide] .urlbarView-row[selected] {
+  background-color: transparent !important;
 }
+
+/* ---- Settings ------------------------------------------------------------------------------------- */
+
+/* A settings pane is shown by removing its `hidden` attribute, which starts these animations again, so
+ * every category the user opens assembles itself: the header first, then each group a step later. */
+@keyframes nivora-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(22px * var(--nivora-lift))) scale(0.985);
+  }
+}
+
+setting-pane:not([hidden]) > section > :is(moz-page-header, setting-group),
+#mainPrefPane > :is(.subcategory, groupbox)[data-category]:not([hidden]) {
+  animation: nivora-card-in var(--nivora-d-slow) var(--nivora-spring-smooth) backwards;
+  animation-delay: var(--nivora-stagger);
+}
+
+setting-pane:not([hidden]) > section > :nth-child(2) { animation-delay: calc(var(--nivora-stagger) * 2); }
+setting-pane:not([hidden]) > section > :nth-child(3) { animation-delay: calc(var(--nivora-stagger) * 3); }
+setting-pane:not([hidden]) > section > :nth-child(4) { animation-delay: calc(var(--nivora-stagger) * 4); }
+setting-pane:not([hidden]) > section > :nth-child(5) { animation-delay: calc(var(--nivora-stagger) * 5); }
+setting-pane:not([hidden]) > section > :nth-child(6) { animation-delay: calc(var(--nivora-stagger) * 6); }
+setting-pane:not([hidden]) > section > :nth-child(7) { animation-delay: calc(var(--nivora-stagger) * 7); }
+setting-pane:not([hidden]) > section > :nth-child(n + 8) { animation-delay: calc(var(--nivora-stagger) * 8); }

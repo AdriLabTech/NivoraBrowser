@@ -60,10 +60,13 @@ Development build, X11 under Xvfb, taken by `tools/nivora/screenshots.py`.
 
 - **Obsidian Eclipse:** a monochrome dark identity; palette checked against WCAG; original icon set
   and logo ([docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)).
+- **Motion:** one motion language (generated spring curves, cascades, a gliding highlight in the
+  command palette, tabs that spring in and step aside, settings panes that assemble themselves),
+  switchable as a whole ([docs/ANIMATIONS.md](docs/ANIMATIONS.md)).
 - **Commands:** a checked command registry feeding Zen's palette: new tab, history, downloads,
-  search open tabs, close duplicate tabs (asks first), export / import / reset settings
+  search open tabs, close duplicate tabs (asks first), toggle animations, export / import / reset settings
   ([docs/PRODUCTIVITY.md](docs/PRODUCTIVITY.md)).
-- **Central settings:** 25 managed preferences with validated, versioned export and import that
+- **Central settings:** 26 managed preferences with validated, versioned export and import that
   never contain secrets.
 - **Independence from Zen's services:** no update host, share service, mods injection or
   welcome pages of the Zen project; its own profile directory

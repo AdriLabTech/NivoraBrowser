@@ -45,5 +45,24 @@ class AnalyseTest(unittest.TestCase):
         self.assertEqual(mp.change(a, bytes([120] * SIZE)), 1)
 
 
+class ScenarioTest(unittest.TestCase):
+    def test_every_scenario_can_be_replayed(self):
+        for name, scenario in mp.SCENARIOS.items():
+            for key in ("urls", "settle", "actions", "record"):
+                self.assertIn(key, scenario, f"{name} lacks {key}")
+
+    def test_each_off_scenario_repeats_an_interaction_with_the_setting_off(self):
+        off = {name: s for name, s in mp.SCENARIOS.items() if name.endswith("-off")}
+        self.assertGreaterEqual(len(off), 4)
+        for name, scenario in off.items():
+            base = mp.SCENARIOS[name[: -len("-off")]]
+            self.assertEqual(scenario["prefs"], {"nivora.ui.animations": False}, name)
+            self.assertEqual(scenario["actions"], base["actions"], name)
+            self.assertNotIn("nivora.ui.animations", base.get("prefs", {}), name)
+
+    def test_the_boot_scenario_records_from_before_the_browser_starts(self):
+        self.assertTrue(mp.SCENARIOS["boot"]["boot"])
+
+
 if __name__ == "__main__":
     unittest.main()
