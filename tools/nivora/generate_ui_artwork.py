@@ -22,6 +22,8 @@ src/nivora/theme/nivora-tokens.inc.css.
 
 import argparse
 import io
+import json
+import math
 import sys
 from pathlib import Path
 
@@ -93,22 +95,49 @@ def glyph(width, height, fill):
     )
 
 
-def emblem(width, height, display_height=None):
-    """The eclipse mark without its plate, centered, using the grid of generate_branding."""
+def crescent_path():
+    """The bright disc minus the dark occluder of the mark, as one closed path on the 1024 grid.
+
+    A path rather than a mask: an SVG that uses <mask> drew nothing when shown as an <img> in the network
+    error page of the built browser, and a plain path is cheaper to draw as well.
+    """
+    (x1, y1, r1), (x2, y2, r2) = [(c["cx"], c["cy"], c["r"]) for c in (gb.DISC, gb.OCCLUDER)]
+    d = math.hypot(x2 - x1, y2 - y1)
+    a = (r1 * r1 - r2 * r2 + d * d) / (2 * d)
+    h = math.sqrt(r1 * r1 - a * a)
+    ux, uy = (x2 - x1) / d, (y2 - y1) / d
+    mx, my = x1 + a * ux, y1 + a * uy
+    p1 = (mx + h * uy, my - h * ux)
+    p2 = (mx - h * uy, my + h * ux)
+    # Outer edge: the long way round the disc, away from the occluder; inner edge: the occluder's arc back.
+    return (f"M{_num(p1[0])} {_num(p1[1])}A{r1} {r1} 0 1 0 {_num(p2[0])} {_num(p2[1])}"
+            f"A{r2} {r2} 0 0 1 {_num(p1[0])} {_num(p1[1])}Z")
+
+
+def emblem(width, height, display_height=None, attrs=None):
+    """The eclipse mark without its plate, centered, using the grid of generate_branding.
+
+    `width` and `height` are those of the viewBox. The size attributes follow the original file:
+    both by default, only the height when `display_height` is given, and exactly `attrs` (a dict,
+    possibly empty) when that is given.
+    """
     scale = 0.8 * min(width, height) / 700
     ox, oy = width / 2 - 512 * scale, height / 2 - 512 * scale
     disc, occ, ring = gb.DISC, gb.OCCLUDER, gb.RING
-    size = f'height="{display_height}"' if display_height else f'width="{width}" height="{height}"'
+    if attrs is not None:
+        size = " ".join(f'{k}="{v}"' for k, v in attrs.items() if v is not None)
+    elif display_height:
+        size = f'height="{display_height}"'
+    else:
+        size = f'width="{width}" height="{height}"'
+    size = (size + " ") if size else ""
     return (
-        f'{LICENSE}<svg xmlns="http://www.w3.org/2000/svg" {size} '
+        f'{LICENSE}<svg xmlns="http://www.w3.org/2000/svg" {size}'
         f'viewBox="0 0 {width} {height}" fill="none">\n'
         f'  <g transform="translate({_num(ox)} {_num(oy)}) scale({_num(scale)})">\n'
-        '    <mask id="eclipse"><rect width="1024" height="1024" fill="#fff"/>'
-        f'<circle cx="{occ["cx"]}" cy="{occ["cy"]}" r="{occ["r"]}" fill="#000"/></mask>\n'
         f'    <circle cx="{ring["cx"]}" cy="{ring["cy"]}" r="{ring["r"]}" stroke="{gb.color("text-muted")}" '
         f'stroke-width="{ring["width"]}"/>\n'
-        f'    <circle cx="{disc["cx"]}" cy="{disc["cy"]}" r="{disc["r"]}" fill="{gb.color("text-primary")}" '
-        'mask="url(#eclipse)"/>\n'
+        f'    <path fill="{gb.color("text-primary")}" d="{crescent_path()}"/>\n'
         "  </g>\n"
         "</svg>\n"
     )
@@ -180,9 +209,20 @@ def preview_bytes(layout):
     return buffer.getvalue()
 
 
+TARGETS = HERE / "artwork_targets.json"
+
+
+def scanned_targets():
+    """The illustrations found by scan_mozilla_artwork.py: [{path, vw, vh, width, height}]."""
+    return json.loads(TARGETS.read_text(encoding="utf-8")) if TARGETS.exists() else []
+
+
 def build():
     """-> {path in the Firefox tree: file content}"""
     files = {}
+    for entry in scanned_targets():
+        if entry["path"] not in ARTWORK:
+            files[entry["path"]] = emblem(entry["vw"], entry["vh"], attrs={"width": entry["width"], "height": entry["height"]})
     for path, (kind, width, height, fill, *rest) in ARTWORK.items():
         if kind == "glyph":
             files[path] = glyph(width, height, fill)
@@ -231,7 +271,7 @@ def main(argv=None):
             print(f"stale or missing: {path}")
         print("OK" if not stale else f"{len(stale)} file(s) differ; run without --check")
         return 1 if stale else 0
-    print(f"wrote {len(ARTWORK) + len(PREVIEWS)} files under {args.src}")
+    print(f"wrote {len(build()) + len(PREVIEWS)} files under {args.src}")
     return 0
 
 

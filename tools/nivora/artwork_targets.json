@@ -1,0 +1,576 @@
+[
+ {
+  "path": "browser/base/content/kit-signed-out.svg",
+  "vw": 30,
+  "vh": 30,
+  "width": 30,
+  "height": 30
+ },
+ {
+  "path": "browser/base/content/logos/lockwise.svg",
+  "vw": 64,
+  "vh": 64,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/base/content/logos/monitor.svg",
+  "vw": 64,
+  "vh": 64,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/base/content/logos/relay.svg",
+  "vw": 77.2,
+  "vh": 79.73,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/base/content/logos/send.svg",
+  "vw": 80,
+  "vh": 80,
+  "width": 80,
+  "height": 80
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-amo-fox-paint.svg",
+  "vw": 351,
+  "vh": 322,
+  "width": 351,
+  "height": 322
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-backup-fox-in-box.svg",
+  "vw": 438,
+  "vh": 286,
+  "width": 438,
+  "height": 286
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-backup-fox-outside-box.svg",
+  "vw": 438,
+  "vh": 437,
+  "width": 438,
+  "height": 437
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-fxa-fox-mirror.svg",
+  "vw": 411,
+  "vh": 322,
+  "width": 411,
+  "height": 322
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-gratitude-fox-rock.svg",
+  "vw": 324,
+  "vh": 307,
+  "width": 324,
+  "height": 307
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-import-fox-house.svg",
+  "vw": 242,
+  "vh": 279,
+  "width": 242,
+  "height": 279
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-kit-with-heart.svg",
+  "vw": 76,
+  "vh": 81,
+  "width": 76,
+  "height": 81
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-migration-fox-juggle.svg",
+  "vw": 302,
+  "vh": 493,
+  "width": 302,
+  "height": 493
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/br-set-default-fox-heart.svg",
+  "vw": 262,
+  "vh": 279,
+  "width": 262,
+  "height": 279
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/confetti.svg",
+  "vw": 574,
+  "vh": 210,
+  "width": 574,
+  "height": 210
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/euo-chatbot.svg",
+  "vw": 400,
+  "vh": 550,
+  "width": 400,
+  "height": 550
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/euo-tab-orientation.svg",
+  "vw": 400,
+  "vh": 550,
+  "width": 400,
+  "height": 550
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/kit-sit-look-up.svg",
+  "vw": 406,
+  "vh": 323,
+  "width": 406,
+  "height": 323
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/mr-kit-smart-window.svg",
+  "vw": 485,
+  "vh": 424,
+  "width": 485,
+  "height": 424
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/mr-rtamo-background-image.svg",
+  "vw": 400,
+  "vh": 550,
+  "width": 400,
+  "height": 550
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/person-typing.svg",
+  "vw": 191,
+  "vh": 186,
+  "width": 191,
+  "height": 186
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/pic-cursor.svg",
+  "vw": 16,
+  "vh": 16,
+  "width": 16,
+  "height": 16
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/pic-shield.svg",
+  "vw": 16,
+  "vh": 17,
+  "width": 16,
+  "height": 17
+ },
+ {
+  "path": "browser/components/aboutwelcome/assets/splash-logo.svg",
+  "vw": 1109,
+  "vh": 432,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/agent-watch-empty.svg",
+  "vw": 200,
+  "vh": 100,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/agent-watch-kit.svg",
+  "vw": 140,
+  "vh": 98,
+  "width": 140,
+  "height": 98
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/kit-meditating.svg",
+  "vw": 56,
+  "vh": 56,
+  "width": 56,
+  "height": 56
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/kit.svg",
+  "vw": 1920,
+  "vh": 1080,
+  "width": 1920,
+  "height": 1080
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/model-choice-1.svg",
+  "vw": 1000,
+  "vh": 1000,
+  "width": 1000,
+  "height": 1000
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/model-choice-2.svg",
+  "vw": 1000,
+  "vh": 1000,
+  "width": 1000,
+  "height": 1000
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/model-choice-3.svg",
+  "vw": 1000,
+  "vh": 1000,
+  "width": 1000,
+  "height": 1000
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/smart-window-promo-default.svg",
+  "vw": 1473.38,
+  "vh": 1436.62,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/aiwindow/ui/assets/smart-window.svg",
+  "vw": 48,
+  "vh": 48,
+  "width": 48,
+  "height": 48
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/desktop-to-mobile-banner.svg",
+  "vw": 329,
+  "vh": 114,
+  "width": 329,
+  "height": 114
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/hero-relay-email-masks.svg",
+  "vw": 401,
+  "vh": 205,
+  "width": 401,
+  "height": 205
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/kit-checkmark-flipped.svg",
+  "vw": 98,
+  "vh": 111,
+  "width": 98,
+  "height": 111
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/kit-checkmark.svg",
+  "vw": 98,
+  "vh": 111,
+  "width": 98,
+  "height": 111
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/kit-peek-bottom.svg",
+  "vw": 296,
+  "vh": 121,
+  "width": 296,
+  "height": 121
+ },
+ {
+  "path": "browser/components/asrouter/content/assets/kit-peek.svg",
+  "vw": 99,
+  "vh": 108,
+  "width": 99,
+  "height": 108
+ },
+ {
+  "path": "browser/components/controlcenter/content/assets/breach-alert-shield-check.svg",
+  "vw": 56,
+  "vh": 56,
+  "width": 56,
+  "height": 56
+ },
+ {
+  "path": "browser/components/controlcenter/content/assets/breach-alert-shield-cross.svg",
+  "vw": 56,
+  "vh": 56,
+  "width": 56,
+  "height": 56
+ },
+ {
+  "path": "browser/components/controlcenter/content/assets/breach-alert-shield-warning.svg",
+  "vw": 56,
+  "vh": 56,
+  "width": 56,
+  "height": 56
+ },
+ {
+  "path": "browser/components/firefoxview/content/history-empty.svg",
+  "vw": 1174.8,
+  "vh": 1189.87,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/firefoxview/content/synced-tabs-empty.svg",
+  "vw": 1579,
+  "vh": 891,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/firefoxview/content/synced-tabs-error.svg",
+  "vw": 1595,
+  "vh": 887,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/ipprotection/assets/cfr-vpn-bandwith-reset-dark.svg",
+  "vw": 320,
+  "vh": 175,
+  "width": 320,
+  "height": 175
+ },
+ {
+  "path": "browser/components/ipprotection/assets/cfr-vpn-bandwith-reset-light.svg",
+  "vw": 320,
+  "vh": 175,
+  "width": 320,
+  "height": 175
+ },
+ {
+  "path": "browser/components/ipprotection/assets/ipprotection-unauthenticated.svg",
+  "vw": 128,
+  "vh": 128,
+  "width": 128,
+  "height": 128
+ },
+ {
+  "path": "browser/components/ipprotection/assets/vpn-settings-get-started.svg",
+  "vw": 104,
+  "vh": 111,
+  "width": 104,
+  "height": 111
+ },
+ {
+  "path": "browser/components/preferences/etp-advanced-banner.svg",
+  "vw": 602,
+  "vh": 130,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/components/privatebrowsing/content/assets/focus-logo.svg",
+  "vw": 40,
+  "vh": 42,
+  "width": 40,
+  "height": 42
+ },
+ {
+  "path": "browser/components/privatebrowsing/content/assets/private-promo-asset.svg",
+  "vw": 223,
+  "vh": 190,
+  "width": 223,
+  "height": 190
+ },
+ {
+  "path": "browser/components/privatebrowsing/content/assets/relay-promo.svg",
+  "vw": 166,
+  "vh": 144,
+  "width": 166,
+  "height": 144
+ },
+ {
+  "path": "browser/components/profiles/content/assets/kit-profiles-dark.svg",
+  "vw": 224,
+  "vh": 137,
+  "width": 224,
+  "height": 137
+ },
+ {
+  "path": "browser/components/profiles/content/assets/kit-profiles-light.svg",
+  "vw": 224,
+  "vh": 137,
+  "width": 224,
+  "height": 137
+ },
+ {
+  "path": "browser/themes/shared/addons/extensions-panel-empty-onboarding.svg",
+  "vw": 329,
+  "vh": 162,
+  "width": 329,
+  "height": 162
+ },
+ {
+  "path": "browser/themes/shared/addons/extensions-panel-empty.svg",
+  "vw": 177,
+  "vh": 132,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/fxa/send-to-device.svg",
+  "vw": 164,
+  "vh": 119,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/fxa/send.svg",
+  "vw": 16,
+  "vh": 16,
+  "width": 16,
+  "height": 16
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-devices.svg",
+  "vw": 315.96,
+  "vh": 144,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-illustration-issue.svg",
+  "vw": 216,
+  "vh": 144,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-illustration.svg",
+  "vw": 216,
+  "vh": 144,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-promo-bookmarks.svg",
+  "vw": 40,
+  "vh": 33,
+  "width": 40,
+  "height": 33
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-promo-signin.svg",
+  "vw": 39,
+  "vh": 32,
+  "width": 39,
+  "height": 32
+ },
+ {
+  "path": "browser/themes/shared/fxa/sync-promo-turnonsync.svg",
+  "vw": 41,
+  "vh": 32,
+  "width": 41,
+  "height": 32
+ },
+ {
+  "path": "browser/themes/shared/icons/smart-window-simplified.svg",
+  "vw": 16,
+  "vh": 16,
+  "width": 16,
+  "height": 16
+ },
+ {
+  "path": "browser/themes/shared/identity-block/trustpanel-graphic-enabled.svg",
+  "vw": 100,
+  "vh": 100,
+  "width": 100,
+  "height": 100
+ },
+ {
+  "path": "browser/themes/shared/identity-block/trustpanel-graphic-warning.svg",
+  "vw": 100,
+  "vh": 100,
+  "width": 100,
+  "height": 100
+ },
+ {
+  "path": "browser/themes/shared/illustrations/tab-groups.svg",
+  "vw": 213,
+  "vh": 145,
+  "width": 213,
+  "height": 145
+ },
+ {
+  "path": "browser/themes/shared/preferences/solo-ai-logo.svg",
+  "vw": 22,
+  "vh": 22,
+  "width": 22,
+  "height": 22
+ },
+ {
+  "path": "browser/themes/shared/privatebrowsing/kit-pbw.svg",
+  "vw": 61,
+  "vh": 103,
+  "width": 61,
+  "height": 103
+ },
+ {
+  "path": "browser/themes/shared/sidebar/kit-page-history.svg",
+  "vw": 262,
+  "vh": 218,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/sidebar/kit-qr-tabs-devices-empty.svg",
+  "vw": 272,
+  "vh": 115,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/sidebar/kit-tabs-devices-error.svg",
+  "vw": 262,
+  "vh": 109,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "browser/themes/shared/sidebar/kit-tabs-devices.svg",
+  "vw": 262,
+  "vh": 109,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "toolkit/components/satchel/megalist/content/icons/cpm-fox-illustration.svg",
+  "vw": 204,
+  "vh": 182,
+  "width": 204,
+  "height": 182
+ },
+ {
+  "path": "toolkit/themes/shared/extensions/kit-addons.svg",
+  "vw": 225,
+  "vh": 154,
+  "width": 225,
+  "height": 154
+ },
+ {
+  "path": "toolkit/themes/shared/extensions/kit-themes.svg",
+  "vw": 201,
+  "vh": 152,
+  "width": null,
+  "height": null
+ },
+ {
+  "path": "toolkit/themes/shared/illustrations/no-connection.svg",
+  "vw": 220,
+  "vh": 156,
+  "width": 220,
+  "height": 156
+ },
+ {
+  "path": "toolkit/themes/shared/illustrations/security-error.svg",
+  "vw": 162,
+  "vh": 159,
+  "width": 162,
+  "height": 159
+ },
+ {
+  "path": "toolkit/themes/shared/illustrations/shield-alert.svg",
+  "vw": 100,
+  "vh": 106,
+  "width": 100,
+  "height": 106
+ },
+ {
+  "path": "toolkit/themes/shared/illustrations/shield-check.svg",
+  "vw": 100,
+  "vh": 106,
+  "width": 100,
+  "height": 106
+ }
+]

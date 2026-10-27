@@ -28,7 +28,7 @@ see https://github.com/zen-browser/desktop/releases.
   `net_audit.py` (host names resolved on a first start), `screenshots.py` (visual review),
   `post_import.py` (removes branding-file prefs that override Nivora's endpoints).
 - Interface artwork: Firefox's logo and mascot, and Zen's window-layout screenshots, replaced by
-  generated palette-only drawings (`generate_ui_artwork.py`, 28 files).
+  generated palette-only drawings (`generate_ui_artwork.py`, 107 files; `scan_mozilla_artwork.py` finds the rest after an upgrade).
 - Nivora browser tests (4 files, 123 checks), `check_signatures.py` (F-11), `perf_baseline.py`, screenshots and a CI step that checks the generated artwork.
 
 ### Changed

@@ -16,7 +16,7 @@ replace an independent one. Date: 2026-10-26, on commit `f91e906` and earlier.
 | `nivora-ui.inc.css`, `nivora-dark.inc.css` | Chrome CSS | A preference (media query) | Hides two controls; remaps color variables (both verified by `browser_nivora_ui.js`) |
 | Token CSS | Chrome CSS | none | Variables |
 | `src/widget/nsXPLookAndFeel-cpp.patch` | Native (parent and content processes) | none | Six color constants of the dark system palette; no logic changed |
-| Replacement SVG and PNG artwork (`generate_ui_artwork.py`, 25 SVG and 3 PNG files) | Chrome resources | none | Static drawings; a test refuses `<script>`, `<style>`, `<use>`, `<image>`, `href` and external `url()` in them |
+| Replacement SVG and PNG artwork (`generate_ui_artwork.py`, 104 SVG and 3 PNG files) | Chrome resources | none | Static drawings; a test refuses `<script>`, `<style>`, `<use>`, `<image>`, `href` and external `url()` in them |
 | `tools/`, packaging | Developer machine / package build | repository files | none at run time. `smoke.py`, `net_audit.py` and `screenshots.py` start the built browser with a throw-away `HOME` and only open local pages |
 
 No Nivora code runs in a content process, accepts a URL, a web message or a network response, or opens

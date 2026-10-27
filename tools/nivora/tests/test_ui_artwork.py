@@ -40,6 +40,24 @@ class ArtworkTest(unittest.TestCase):
                 self.assertEqual((root.get("width"), root.get("height")), (str(width), str(height)), path)
             self.assertEqual(root.get("viewBox"), f"0 0 {width} {height}", path)
 
+    def test_scanned_targets_keep_the_size_attributes_of_the_original(self):
+        targets = art.scanned_targets()
+        self.assertGreater(len(targets), 50)
+        paths = [t["path"] for t in targets]
+        self.assertEqual(len(paths), len(set(paths)), "no path twice")
+        self.assertFalse(set(paths) & set(art.ARTWORK), "a file is either curated or scanned")
+        for t in targets:
+            root = ET.fromstring(self.files[t["path"]])
+            self.assertEqual(root.get("viewBox"), f"0 0 {t['vw']} {t['vh']}", t["path"])
+            for attribute in ("width", "height"):
+                expected = None if t[attribute] is None else str(t[attribute])
+                self.assertEqual(root.get(attribute), expected, f"{t['path']} {attribute}")
+
+    def test_third_party_brand_artwork_is_never_replaced(self):
+        for path in self.files:
+            for protected in ("engine-wordmarks", "tippytop", "genai/assets/brands", "weather/"):
+                self.assertNotIn(protected, path)
+
     def test_every_file_carries_the_license_header(self):
         for path, content in self.files.items():
             self.assertTrue(content.startswith("<!-- This Source Code Form is subject to the terms of the Mozilla Public"), path)
@@ -67,6 +85,52 @@ class ArtworkTest(unittest.TestCase):
             r = min(width, height) * 0.46
             hr, dx, dy = r * 0.74, r * 0.15, -r * 0.15
             self.assertLess(math.hypot(dx, dy) + hr, r, (width, height))
+
+
+def arc_points(p, q, r, large, sweep, steps=400):
+    """Points along the SVG arc of a circle of radius r from p to q (the endpoint-to-center conversion of the SVG spec)."""
+    (x1, y1), (x2, y2) = p, q
+    dx, dy = (x1 - x2) / 2, (y1 - y2) / 2
+    root = math.sqrt(max(0.0, (r * r - dx * dx - dy * dy) / (dx * dx + dy * dy)))
+    sign = -1 if large == sweep else 1
+    cx = sign * root * dy + (x1 + x2) / 2
+    cy = -sign * root * dx + (y1 + y2) / 2
+    a1, a2 = math.atan2(y1 - cy, x1 - cx), math.atan2(y2 - cy, x2 - cx)
+    delta = a2 - a1
+    if sweep and delta < 0:
+        delta += 2 * math.pi
+    if not sweep and delta > 0:
+        delta -= 2 * math.pi
+    return [(cx + r * math.cos(a1 + delta * i / steps), cy + r * math.sin(a1 + delta * i / steps)) for i in range(steps + 1)]
+
+
+class CrescentTest(unittest.TestCase):
+    def test_the_crescent_is_the_disc_minus_the_occluder(self):
+        match = re.fullmatch(r"M([\d.]+) ([\d.]+)A([\d.]+) [\d.]+ 0 (\d) (\d) ([\d.]+) ([\d.]+)A([\d.]+) [\d.]+ 0 (\d) (\d) ([\d.]+) ([\d.]+)Z",
+                             art.crescent_path())
+        self.assertIsNotNone(match, art.crescent_path())
+        x1, y1, r1, l1, s1, x2, y2, r2, l2, s2, x3, y3 = match.groups()
+        p1, p2 = (float(x1), float(y1)), (float(x2), float(y2))
+        self.assertEqual((float(x3), float(y3)), p1, "the path closes where it started")
+        outer = arc_points(p1, p2, float(r1), int(l1), int(s1))
+        inner = arc_points(p2, p1, float(r2), int(l2), int(s2))
+        polygon = outer + inner
+        area = abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(polygon, polygon[1:] + polygon[:1]))) / 2
+
+        d, o = gb.DISC, gb.OCCLUDER
+        dist = math.hypot(o["cx"] - d["cx"], o["cy"] - d["cy"])
+        r, s = d["r"], o["r"]
+        lens = (r * r * math.acos((dist * dist + r * r - s * s) / (2 * dist * r))
+                + s * s * math.acos((dist * dist + s * s - r * r) / (2 * dist * s))
+                - 0.5 * math.sqrt((-dist + r + s) * (dist + r - s) * (dist - r + s) * (dist + r + s)))
+        expected = math.pi * r * r - lens
+        self.assertAlmostEqual(area / expected, 1.0, places=2)
+        for x, y in polygon[::40]:
+            self.assertLessEqual(math.hypot(x - d["cx"], y - d["cy"]), r + 0.5, "the crescent stays inside the disc")
+
+    def test_no_replacement_uses_a_mask(self):
+        for path, content in art.build().items():
+            self.assertNotIn("<mask", content, path)
 
 
 class PreviewTest(unittest.TestCase):
