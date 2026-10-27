@@ -81,7 +81,7 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 | Palette, roles, contrast validation | Implemented and checked (static) |
 | Variable mapping into Zen's dark scheme | Implemented and **seen rendered** in a real build: window, sidebar, urlbar, command palette (screenshots via `tools/nivora/screenshots.py`) |
 | In-content pages (settings) and blank pages | Mapped to the neutral surfaces; see the list above. Not all of the settings pane has been inspected |
-| Firefox logo and mascot in the interface | Replaced (12 files) and seen in settings; other mascot artwork listed in [UPSTREAM.md](UPSTREAM.md) is not yet replaced |
+| Firefox logo and mascot in the interface | Replaced (22 files); seen in settings and the default-browser banner. The private-window background, onboarding-message art and a few rarely shown files are replaced but not yet looked at |
 | Typography | Not decided. Candidates: the system UI font stack Zen already uses; evaluate once a build runs |
 | Iconography | Not started. Zen ships its own monochrome set (`zen-icons/`) that can be reused |
 | Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |

@@ -48,33 +48,51 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Close duplicate tabs, reset settings with confirmation | **pass** | `browser_nivora_commands.js` |
 | Settings export/import/repair | **pass** (prefs backend) | `browser_nivora_settings.js`. The **file pickers** were not driven: the dialogs need a person |
 | Visual review (screenshots, `tools/nivora/screenshots.py`) | **done for** window, sidebar, address bar, command palette, settings (two panes), blank page | Palette is grayscale; no Firefox or Zen logo or mascot in these screens. Not reviewed: tab states, menus, downloads panel, private window, high-DPI, narrow windows |
-| Zen mochitest subset (7 of 26 groups) | **760 checks pass, 0 fail**, 9 marked `todo` by Zen | see 2.3 |
+| Zen's own tests (all 26 groups) | **26,288 browser checks pass, 31 fail**; xpcshell: Sync and remote-settings fail for inherited reasons | see 2.3 for each failure |
 | `npm run lint` | **not run** | needs node modules inside `engine/` |
 | Performance baseline of Nivora itself | **measured, one environment** | `tools/nivora/perf_baseline.py`, 3 runs each, raw data in `docs/perf-baseline-2026-10-27.json`. Fresh profile: start-up 2.3 s (2.2-2.3), memory 533 MiB PSS (529-536), idle CPU 1.9 % of one core. Existing profile: 1.4 s (1.3-1.4), 512 MiB (508-514), idle 0.6 %. One local page open, software rendering, development build without LTO/PGO, 4 cores, 30 s idle window. Useful only to compare a later Nivora build on the same machine |
 | Comparison with Zen | **not done** | no unmodified Zen build exists here, and an official Zen binary was deliberately not run in this environment; so "no regression against Zen" is not established for speed or memory |
 | `./mach package`, Arch package inputs from the real build | **done**, not installed on Arch | `mach package` (3 min 49 s) and `make_arch_package.sh` on the real tree; the `PKGBUILD`'s `package()` was run against it; the unpacked copy with the policy starts and `about:policies` shows `DisableAppUpdate: true`. `makepkg`, `pacman`, `desktop-file-validate`, `appstreamcli` not available here |
 
-### 2.3 Zen's own mochitests (subset)
+### 2.3 Zen's own mochitests and xpcshell tests
 
-Run with `python3 scripts/run_tests.py <group>` under `xvfb-run` on the build of 2026-10-27, which carries all of
-Nivora's changes. `ub-actions` matters most for Nivora: `browser_ub_actions_search.js` iterates every
-global action, Nivora's eight included.
+Run with `python3 scripts/run_tests.py <group>` under `xvfb-run` on the build of 2026-10-27, which carries
+all of Nivora's changes. All 26 groups were run (`migration` contains no tests). `ub-actions` matters
+most for Nivora: `browser_ub_actions_search.js` iterates every global action, Nivora's eight included.
 
-| Group | Passed | Failed | Todo |
-|---|---|---|---|
-| `ub-actions` (command palette) | 90 | 0 | 0 |
-| `urlbar` | 97 | 0 | 0 |
-| `tabs` | 32 | 0 | 0 |
-| `spaces` | 112 | 0 | 3 |
-| `pinned` | 70 | 0 | 0 |
-| `folders` | 135 | 0 | 2 |
-| `library` | 224 | 0 | 4 |
-| **Total** | **760** | **0** | **9** |
+**Browser tests: 26,288 checks pass, 31 fail, 83 marked `todo` by Zen.** Groups with no failure: `ub-actions` 90,
+`urlbar` 97, `tabs` 32, `spaces` 112, `pinned` 70, `folders` 135, `library` 224, `live-folders` 77,
+`compact_mode` 13, `container_essentials` 29, `ui` 59, `device_sync` 82, `site_control` 21,
+`split_view` 124, `glance` 27, `window_sync` 29, `space_routing` 23,276, and the Firefox groups Zen includes:
+`alerts`, `backforward`, `caps`, `gesture`, `linkHandling`, `metaTags`, `mousepostracker`, `pageStyle`,
+`pageinfo`, `readermode`, `scroll-to-text-fragment`, `tabdialogs`, `tooltiptext`, `zoom`.
 
-Not run: the other 19 groups (compact mode, glance, split view, live folders, boosts, share, welcome,
-window sync, ...) and the Firefox tests Zen includes by reference. No run of unmodified Zen
-`1.23.4b` was made, so "no more failures than Zen" is shown only in the weak sense that there are no
-failures in the groups that ran. Nothing was disabled to obtain these results.
+The 31 failures, and what is known about each. **No run of unmodified Zen `1.23.4b` was possible**, so
+"inherited" below means: explained by the test or the environment, or reproduced with Nivora's
+preference changes switched off, not compared with a Zen build.
+
+| Group (failures) | Cause | Evidence |
+|---|---|---|
+| `welcome` (1) | No window manager: the window is maximized | **Passes** under `openbox` |
+| `sessionstore` (2 of 540) | One needs a window manager (minimize); one tests an unreadable backup file and the tests run as root | The first **passes** under `openbox`; the second is root-related (not re-run unprivileged) |
+| `popover` (1) | A macOS-only fix (`NSPopover`); Zen's manifest says `run-if os == 'mac'` but the runner executed it | Manifest |
+| `window_drag` (4) | Needs a native window-drag that Xvfb with or without a window manager does not produce | Fails under `openbox` too |
+| `media` (6), `tabMediaIndicator` (1) | The tabs never report `soundplaying`: no audio device in the container | Log |
+| `shell` (1) | `setDesktopBackground` needs the GNOME shell service | Log |
+| `outOfProcess` (1), `plugins` (1 file, 2 checks) | "Found an unexpected tab at the end of test run: about:blank": Zen keeps an empty tab | Log |
+| `boosts` (4) | The test calls `BrowserTestUtils.waitForCondition`, which does not exist | Test bug in Zen's file |
+| `performance` (4) | `ZenBoostsChild.sys.mjs` is not in the startup-module allow-list; panel vsync and tab-close timing in a container without a GPU | Log |
+| `share` (4, all in `test_import_space`) | Not explained. **Not caused by Nivora's preferences or its share gating**: the same four fail with every preference Nivora changed set back to Zen's value (`zen.share.base-url`, accent, scheme, mods auto-update, update notification) | Rerun with `--setpref`. CSS, locale strings and artwork were not reverted |
+
+**xpcshell:** `services-crypto` 5 of 5 pass. `sync`: 83 of 272 checks fail, 162 crash lines: every crash is
+`MOZ_CRASH: Missing chrome or resource URLs: resource:///modules/zen/ZenSpacesSync.sys.mjs` (read with `gdb`): a Zen
+patch makes Sync import a browser module that xpcshell's application directory does not map. Inherited.
+`remote-settings`: 10 of 140 fail because Zen's `update_service_dumps.py` ships dumps with 2 records where the
+tests expect more than 20. Inherited. **Sync itself was not exercised in the browser.**
+
+What this does and does not show: no failure was traced to a Nivora change, and the ones that could
+be (preferences, share gating) were checked. It is not a proof of "no regression against Zen": that needs the
+baseline run. Nothing was disabled to obtain these results.
 
 ## 3. Manual procedure (reproducible)
 

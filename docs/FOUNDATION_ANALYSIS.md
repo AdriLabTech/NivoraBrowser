@@ -121,12 +121,12 @@ State at the end of the Foundation work. Order follows dependency, then impact.
 | 10 | New tab page, preferences panes | partly: settings recolored; new tab is Zen's, unreviewed |
 | 11 | Original logo, icons, remove Zen's and Mozilla's | done, accepted by the owner; 12 Mozilla artwork files and Zen's layout screenshots replaced; a few rarely shown mascot files remain (UPSTREAM.md) |
 | 12 | Typography and icon decisions | icons done (Phosphor); typography **open** |
-| 13 | Zen baseline run of the mochitest suite, then Nivora's; compare | Nivora's run (120 checks pass); 7 of 26 Zen groups run (760 pass); **no unmodified-Zen baseline** |
+| 13 | Zen baseline run of the mochitest suite, then Nivora's; compare | Nivora's run (120 checks pass); all 26 Zen groups run (26,288 browser checks pass, 31 fail, none traced to Nivora); **no unmodified-Zen baseline** |
 | 14 | Foundation acceptance check and phase report | this document and [ROADMAP.md](ROADMAP.md) |
 
 ## 10. Tests needed
 
-[TESTING.md](TESTING.md) has the results. Still needed: the 19 Zen groups not run, an unmodified-Zen
+[TESTING.md](TESTING.md) has the results. Still needed: an unmodified-Zen
 baseline, a manual pass through F-03..F-08 and the identity table, a packet capture over time, an
 independent security review and performance measurements against a release-like build.
 

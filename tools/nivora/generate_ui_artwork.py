@@ -39,7 +39,9 @@ LICENSE = (
     "   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->\n"
 )
 
-# Path in the Firefox tree -> (kind, width, height, fill). `fill` None means "the context's fill color".
+# Path in the Firefox tree -> (kind, width, height, fill[, display_height]). `fill` None means "the
+# context's fill color". Width and height are those of the viewBox; `display_height` is for files whose
+# original carried only a `height` attribute (the width then follows from the viewBox).
 ARTWORK = {
     # Firefox logo
     "browser/themes/shared/sidebar/firefox.svg": ("glyph", 26, 26, None),
@@ -55,6 +57,16 @@ ARTWORK = {
     "toolkit/themes/shared/illustrations/kit-sympathetic.svg": ("emblem", 250, 250, None),
     "browser/themes/shared/preferences/fox-ai.svg": ("emblem", 62, 63, None),
     "browser/themes/shared/sidebar/foxy.svg": ("emblem", 52, 64, None),
+    "browser/themes/shared/fxa/avatar-fox-circle.svg": ("glyph", 16, 16, None),
+    "browser/themes/shared/privatebrowsing/fox-tail.svg": ("corona", 1398, 840, None),
+    "browser/components/asrouter/content/assets/smiling-fox-icon.svg": ("emblem", 22, 22, None),
+    "browser/components/asrouter/content/assets/fox-with-devices.svg": ("emblem", 216, 164, None, 96),
+    "browser/components/asrouter/content/assets/fox-with-locked-box.svg": ("emblem", 206, 216, None, 96),
+    "browser/components/asrouter/content/assets/fox-with-checkmark.svg": ("emblem", 106, 97, None),
+    "browser/components/asrouter/content/assets/fox-with-box-on-cloud.svg": ("emblem", 216, 185, None, 96),
+    "browser/components/asrouter/content/assets/fox-with-mobile.svg": ("emblem", 158, 98, None, 96),
+    "browser/components/asrouter/content/assets/fox-with-profiles.svg": ("emblem", 352, 215, None),
+    "browser/components/controlcenter/content/assets/fox-concern.svg": ("emblem", 72, 76, None),
 }
 
 
@@ -81,13 +93,14 @@ def glyph(width, height, fill):
     )
 
 
-def emblem(width, height):
+def emblem(width, height, display_height=None):
     """The eclipse mark without its plate, centered, using the grid of generate_branding."""
     scale = 0.8 * min(width, height) / 700
     ox, oy = width / 2 - 512 * scale, height / 2 - 512 * scale
     disc, occ, ring = gb.DISC, gb.OCCLUDER, gb.RING
+    size = f'height="{display_height}"' if display_height else f'width="{width}" height="{height}"'
     return (
-        f'{LICENSE}<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+        f'{LICENSE}<svg xmlns="http://www.w3.org/2000/svg" {size} '
         f'viewBox="0 0 {width} {height}" fill="none">\n'
         f'  <g transform="translate({_num(ox)} {_num(oy)}) scale({_num(scale)})">\n'
         '    <mask id="eclipse"><rect width="1024" height="1024" fill="#fff"/>'
@@ -97,6 +110,20 @@ def emblem(width, height):
         f'    <circle cx="{disc["cx"]}" cy="{disc["cy"]}" r="{disc["r"]}" fill="{gb.color("text-primary")}" '
         'mask="url(#eclipse)"/>\n'
         "  </g>\n"
+        "</svg>\n"
+    )
+
+
+def corona(width, height):
+    """A quiet decoration for the corner of a page: the corona ring and the dark disc, mostly off the page."""
+    cx, cy = width, height
+    outer, inner = 0.5 * width, 0.34 * width
+    return (
+        f'{LICENSE}<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}" fill="none">\n'
+        f'  <circle cx="{cx}" cy="{cy}" r="{_num(outer)}" stroke="{gb.color("separator")}" stroke-width="6"/>\n'
+        f'  <circle cx="{cx}" cy="{cy}" r="{_num(inner)}" fill="{gb.color("surface-raised")}" '
+        f'stroke="{gb.color("separator-strong")}" stroke-width="4"/>\n'
         "</svg>\n"
     )
 
@@ -156,8 +183,13 @@ def preview_bytes(layout):
 def build():
     """-> {path in the Firefox tree: file content}"""
     files = {}
-    for path, (kind, width, height, fill) in ARTWORK.items():
-        files[path] = glyph(width, height, fill) if kind == "glyph" else emblem(width, height)
+    for path, (kind, width, height, fill, *rest) in ARTWORK.items():
+        if kind == "glyph":
+            files[path] = glyph(width, height, fill)
+        elif kind == "corona":
+            files[path] = corona(width, height)
+        else:
+            files[path] = emblem(width, height, *rest)
     return files
 
 

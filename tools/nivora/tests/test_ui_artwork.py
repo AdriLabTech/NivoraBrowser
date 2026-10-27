@@ -31,10 +31,13 @@ class ArtworkTest(unittest.TestCase):
             self.assertEqual(target.read_text(encoding="utf-8"), content, f"{path} is stale")
 
     def test_files_are_well_formed_svg_with_the_expected_size(self):
-        for path, (kind, width, height, fill) in art.ARTWORK.items():
+        for path, (kind, width, height, fill, *rest) in art.ARTWORK.items():
             root = ET.fromstring(self.files[path])
             self.assertEqual(root.tag, SVG + "svg", path)
-            self.assertEqual((root.get("width"), root.get("height")), (str(width), str(height)), path)
+            if rest:
+                self.assertEqual((root.get("width"), root.get("height")), (None, str(rest[0])), path)
+            else:
+                self.assertEqual((root.get("width"), root.get("height")), (str(width), str(height)), path)
             self.assertEqual(root.get("viewBox"), f"0 0 {width} {height}", path)
 
     def test_every_file_carries_the_license_header(self):
@@ -42,7 +45,8 @@ class ArtworkTest(unittest.TestCase):
             self.assertTrue(content.startswith("<!-- This Source Code Form is subject to the terms of the Mozilla Public"), path)
 
     def test_only_palette_colors_are_used(self):
-        allowed = {gb.color(name) for name in ("text-primary", "text-secondary", "text-muted")} | {"#fff", "#000"}
+        names = ("text-primary", "text-secondary", "text-muted", "separator", "separator-strong", "surface-raised")
+        allowed = {gb.color(name) for name in names} | {"#fff", "#000"}
         for path, content in self.files.items():
             for found in re.findall(r"#[0-9a-fA-F]{3,6}\b", content):
                 self.assertIn(found.lower(), allowed, f"{path}: {found} is not a palette color")
@@ -53,7 +57,8 @@ class ArtworkTest(unittest.TestCase):
 
     def test_the_replaced_artwork_names_the_firefox_logo_and_the_mascot(self):
         names = " ".join(art.ARTWORK)
-        for needle in ("sidebar/firefox.svg", "window-firefox.svg", "share-firefox.svg", "kit-happy.svg", "kit-concerned.svg"):
+        for needle in ("sidebar/firefox.svg", "window-firefox.svg", "share-firefox.svg", "kit-happy.svg", "kit-concerned.svg",
+                       "fox-tail.svg", "fox-with-devices.svg", "fox-concern.svg"):
             self.assertIn(needle, names)
 
     def test_glyph_hole_stays_inside_the_disc(self):
