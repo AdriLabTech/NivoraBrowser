@@ -9,6 +9,8 @@
  *   row to row; this module only tells the stylesheet where the selected row is, in two custom
  *   properties. The rows keep their own layout and selection: if this script does not run, or
  *   motion is off, the selected row keeps its normal background and nothing else changes.
+ * - The palette's exit. Zen takes the palette away in one step (the same element goes back to being the
+ *   address field), so a copy of what was on screen is left behind for a moment and fades away.
  * - The off switch for the animations that scripts start. Zen and Firefox ask `gReduceMotion` before
  *   they animate, and it honours the `gReduceMotionOverride` hook, so turning `nivora.ui.animations`
  *   off puts the window in the same state as the system's "reduce motion" setting.
@@ -20,7 +22,12 @@
  */
 
 const ANIMATIONS_PREF = "nivora.ui.animations";
+const XHTML_NS = "http://www.w3.org/1999/xhtml";
 const STARTUP_TOPIC = "browser-delayed-startup-finished";
+// The window assembles itself over about half a second; after this the start-up animation is spent.
+const BOOT_SETTLED_MS = 1200;
+// The ghost removes itself when its animation ends; this is only for a window that never paints it.
+const GHOST_LIMIT_MS = 600;
 
 const log = {
   error: (...args) => console.error("[Nivora]", ...args),
@@ -135,6 +142,104 @@ class PaletteHighlight {
   }
 }
 
+/**
+ * Leaves a fading copy of the palette behind when it closes.
+ *
+ * The close is a single synchronous step: the view loses `open`, the urlbar loses its floating
+ * attributes and its popover. A MutationObserver callback runs after that step but before the next
+ * frame is painted, and the rows are still in the DOM (they are cleared by the next query), so a clone
+ * with the three attributes put back is styled exactly as the palette was. It is shown as a popover of
+ * its own, in the top layer like the original, so it needs no positioning of its own.
+ */
+class PaletteExit {
+  #window;
+  #urlbar;
+  #observer;
+  #ghost = null;
+  #timer = 0;
+
+  constructor(window) {
+    this.#window = window;
+    this.#urlbar = window.document.getElementById("urlbar");
+    if (!this.#urlbar) {
+      return;
+    }
+    this.#observer = new window.MutationObserver(records => {
+      try {
+        this.#onMutations(records);
+      } catch (e) {
+        log.error("palette exit", e);
+      }
+    });
+    this.#observer.observe(this.#urlbar, {
+      attributes: true,
+      attributeFilter: ["open", "zen-floating-urlbar"],
+      attributeOldValue: true,
+    });
+    window.addEventListener(
+      "unload",
+      () => {
+        this.#observer.disconnect();
+        this.#remove();
+      },
+      { once: true }
+    );
+  }
+
+  #onMutations(records) {
+    const urlbar = this.#urlbar;
+    if (urlbar.hasAttribute("open")) {
+      this.#remove();
+      return;
+    }
+    const wasOpen = records.some(r => r.attributeName === "open" && r.oldValue !== null);
+    const wasFloating =
+      records.some(r => r.attributeName === "zen-floating-urlbar" && r.oldValue === "true") ||
+      urlbar.getAttribute("zen-floating-urlbar") === "true";
+    if (wasOpen && wasFloating && motionOn(this.#window)) {
+      this.#leave();
+    }
+  }
+
+  #leave() {
+    this.#remove();
+    const urlbar = this.#urlbar;
+    // A plain element, not a clone of the urlbar: the urlbar is a custom element, and a clone of it
+    // would be a second, uninitialised address field. The styles are written for `#urlbar` and its
+    // attributes, which the copy keeps, and its children are ordinary markup.
+    const ghost = urlbar.ownerDocument.createElementNS(XHTML_NS, "div");
+    for (const { name, value } of urlbar.attributes) {
+      ghost.setAttribute(name, value);
+    }
+    ghost.classList.add("nivora-palette-ghost");
+    ghost.setAttribute("open", "");
+    ghost.setAttribute("zen-floating-urlbar", "true");
+    ghost.setAttribute("breakout-extend", "true");
+    ghost.setAttribute("popover", "manual");
+    ghost.setAttribute("inert", "");
+    ghost.setAttribute("aria-hidden", "true");
+    for (const child of urlbar.children) {
+      ghost.append(child.cloneNode(true));
+    }
+    const source = urlbar.inputField;
+    const input = ghost.querySelector(".urlbar-input");
+    if (source && input) {
+      input.value = source.value;
+    }
+    urlbar.after(ghost);
+    ghost.showPopover();
+    this.#ghost = ghost;
+    ghost.addEventListener("animationend", () => this.#remove(), { once: true });
+    this.#timer = this.#window.setTimeout(() => this.#remove(), GHOST_LIMIT_MS);
+  }
+
+  #remove() {
+    this.#window.clearTimeout(this.#timer);
+    this.#ghost?.remove();
+    this.#ghost = null;
+  }
+}
+
 /** Motion is on in `window`: the setting is on and the system does not ask for reduced motion. */
 function motionOn(window) {
   return (
@@ -144,7 +249,7 @@ function motionOn(window) {
 }
 
 /**
- * The easing of a spring token (`smooth`, `snappy`, `bouncy`, `elastic`) as `linear(...)`, ready
+ * The easing of a spring token (`smooth`, `snappy`, `settle`, `bouncy`, `elastic`) as `linear(...)`, ready
  * for Element.animate. Falls back to a plain ease-out when the stylesheet does not provide it.
  *
  * @param {Window} window
@@ -199,13 +304,16 @@ function attach(window) {
     return;
   }
   attached.add(window);
-  for (const Feature of [PaletteHighlight, MotionSwitch]) {
+  for (const Feature of [PaletteHighlight, PaletteExit, MotionSwitch]) {
     try {
       new Feature(window);
     } catch (e) {
       log.error(`could not attach ${Feature.name}`, e);
     }
   }
+  // The start-up animation is only for the first assembly of a window: leaving full screen must not
+  // play it again.
+  window.setTimeout(() => window.document.documentElement?.setAttribute("nivora-booted", ""), BOOT_SETTLED_MS);
 }
 
 let started = false;

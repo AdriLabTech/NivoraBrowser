@@ -24,7 +24,7 @@
   value: true
 
 - name: zen.workspaces.switch-animation-duration
-  value: 420 # Nivora: 250 in Zen; a longer, softer spring
+  value: 340 # Nivora: 250 in Zen; a softer spring that settles inside the time
 
 - name: zen.workspaces.wrap-around-navigation
   value: true

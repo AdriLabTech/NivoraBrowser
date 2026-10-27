@@ -87,7 +87,7 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 | Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |
 | Tab states, menus | Reviewed in screenshots (active, inactive, pinned, hover; main and context menus): consistent with the palette; loading/audio/warning states and dialogs not yet |
 | New tab page, dialogs | New tab is Zen's search overlay on the neutral canvas; dialogs not reviewed |
-| Motion | Implemented and tested: duration, stagger and curve tokens, four generated spring curves, one switch (`nivora.ui.animations`, the system's reduced motion) that zeroes every duration and distance. See [ANIMATIONS.md](ANIMATIONS.md) for the inventory, the measurements and what was not done |
+| Motion | Implemented and tested: duration, stagger and curve tokens, five generated spring curves, one switch (`nivora.ui.animations`, the system's reduced motion) that zeroes every duration and distance. Durations are budgeted per kind of surface and checked by a test that scrubs the real animations (no blur on anything large, overshoot at most 6 %, an exit at most 0.7 times its entrance). See [ANIMATIONS.md](ANIMATIONS.md) for the inventory, the budgets, the measurements and what was not done |
 
 ## Rules for contributors
 
@@ -98,4 +98,6 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 - Depth is a step in the surface ladder (`base` < `1` < `2` < `raised`), not a shadow.
 - Animations explain a state change and have character (a spring, a cascade), not a fade. Take every
   duration, distance and curve from the motion tokens; never write `0.2s` or a `cubic-bezier` in a rule.
-  Animate `transform`, `opacity` and `filter` only. Never leave motion on when `--nivora-motion-scale` is 0.
+  Animate `transform` and `opacity` (a script that must move neighbours may animate a margin). Fade and move
+  as two animations so a surface is opaque before it has stopped; leave faster than you arrived; do not blur
+  anything larger than a button. Never leave motion on when `--nivora-motion-scale` is 0.

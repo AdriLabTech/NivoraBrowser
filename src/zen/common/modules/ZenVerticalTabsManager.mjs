@@ -154,29 +154,33 @@ window.gZenVerticalTabsManager = {
       const { NivoraMotion } = ChromeUtils.importESModule(
         "resource:///modules/nivora/NivoraMotion.sys.mjs"
       );
-      // The item springs in from the side while the space it takes opens smoothly under it, so
-      // the items below glide down instead of following the spring's overshoot.
+      // The space it takes opens first and the item fades in a moment later, so it never lands on
+      // the item below it. It is fully visible well before it has stopped, and then settles into
+      // place on a spring; the items below glide down on the space's own curve instead of following
+      // the spring's overshoot.
+      const fade = aItem.animate(
+        { opacity: [0, 1] },
+        { duration: 150, delay: 30, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }
+      );
       const arrival = aItem.animate(
+        { transform: ["translateX(-12px) scale(0.94)", "translateX(0) scale(1)"] },
         {
-          opacity: [0, 1],
-          transform: ["translateX(-18px) scale(0.88)", "translateX(0) scale(1)"],
-        },
-        {
-          duration: 560,
-          easing: NivoraMotion.springEasing(window, "bouncy"),
+          duration: 340,
+          easing: NivoraMotion.springEasing(window, "settle"),
           fill: "both",
         }
       );
       const room = aItem.animate(
         { marginBottom },
-        { duration: 380, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }
+        { duration: 240, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }
       );
-      Promise.all([arrival.finished, room.finished])
+      Promise.all([fade.finished, arrival.finished, room.finished])
         .catch(() => {})
         .finally(() => {
           aItem.style.removeProperty("margin-bottom");
           aItem.style.removeProperty("transform");
           aItem.style.removeProperty("opacity");
+          fade.cancel();
           arrival.cancel();
           room.cancel();
         });
@@ -209,9 +213,9 @@ window.gZenVerticalTabsManager = {
     const departure = aItem.animate(
       {
         opacity: [1, 0],
-        transform: ["translateX(0) scale(1)", "translateX(-12px) scale(0.9)"],
+        transform: ["translateX(0) scale(1)", "translateX(-10px) scale(0.94)"],
       },
-      { duration: 200, easing: "cubic-bezier(0.7, 0, 0.84, 0)", fill: "forwards" }
+      { duration: 140, easing: "cubic-bezier(0.5, 0, 0.8, 0.4)", fill: "forwards" }
     );
     const closing = [departure.finished];
     if (!isLastItem) {
@@ -219,8 +223,8 @@ window.gZenVerticalTabsManager = {
         aItem.animate(
           { marginBottom: ["0px", `-${height}px`] },
           {
-            duration: 240,
-            delay: 20,
+            duration: 170,
+            delay: 40,
             easing: "cubic-bezier(0.83, 0, 0.17, 1)",
             fill: "forwards",
           }

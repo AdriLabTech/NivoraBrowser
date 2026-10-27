@@ -11,10 +11,10 @@ function declared(name) {
 
 add_task(async function test_motion_tokens_are_defined() {
   Assert.equal(declared("--nivora-motion-scale"), "1", "motion is on by default");
-  for (const token of ["--nivora-d-micro", "--nivora-d-fast", "--nivora-d-base", "--nivora-d-slow", "--nivora-d-cinematic"]) {
+  for (const token of ["--nivora-d-micro", "--nivora-d-fast", "--nivora-d-base", "--nivora-d-slow", "--nivora-d-cinematic", "--nivora-d-exit"]) {
     Assert.ok(declared(token), `${token} is defined`);
   }
-  for (const spring of ["smooth", "snappy", "bouncy", "elastic"]) {
+  for (const spring of ["smooth", "snappy", "settle", "bouncy", "elastic"]) {
     Assert.ok(declared(`--nivora-spring-${spring}`).startsWith("linear("), `a ${spring} spring is defined`);
   }
 });
@@ -78,8 +78,10 @@ add_task(async function test_the_palette_enters_with_a_choreography_and_a_glidin
   const tabs = await openRows(3);
   await openPalette();
   const entrance = getComputedStyle(gURLBar);
-  Assert.equal(entrance.animationName, "nivora-palette-in", "the palette has its entrance");
-  Assert.ok(parseFloat(entrance.animationDuration) >= 0.5, "which is not a flash");
+  Assert.equal(entrance.animationName, "nivora-fade-in, nivora-palette-in", "the palette fades in while it settles");
+  const [fade, settle] = entrance.animationDuration.split(",").map(parseFloat);
+  Assert.ok(settle >= 0.3, "its movement is not a flash");
+  Assert.less(fade, settle, "and it is fully visible before it has finished moving");
 
   await TestUtils.waitForCondition(() => gURLBar.hasAttribute("nivora-glide"), "the highlight starts to glide");
   const results = gURLBar.querySelector(".urlbarView-results");
@@ -144,10 +146,12 @@ add_task(async function test_tabs_spring_in_and_step_aside_when_they_close() {
   // Zen skips the animation under test automation, so the animation is started directly.
   gZenVerticalTabsManager._startItemOpenAnimation(tab, ["-40px", "0px"]);
   const opening = tab.getAnimations();
-  Assert.equal(opening.length, 2, "an item that opens has an arrival and a room animation");
-  const arrival = opening.find(a => a.effect.getKeyframes().some(k => "opacity" in k));
-  Assert.equal(arrival.effect.getTiming().duration, 560, "the arrival lasts as long as the bouncy spring");
+  Assert.equal(opening.length, 3, "an item that opens has a fade, an arrival and a room animation");
+  const arrival = opening.find(a => a.effect.getKeyframes().some(k => "transform" in k));
+  Assert.equal(arrival.effect.getTiming().duration, 340, "the arrival lasts as long as the settle spring");
   Assert.ok(String(arrival.effect.getTiming().easing).startsWith("linear("), "and uses the spring curve");
+  const fadeIn = opening.find(a => a.effect.getKeyframes().some(k => "opacity" in k));
+  Assert.less(fadeIn.effect.getTiming().duration, arrival.effect.getTiming().duration, "the item is visible before it has settled");
   await Promise.all(opening.map(a => a.finished));
   await TestUtils.waitForCondition(() => !tab.getAnimations().length, "the animations are cleaned up");
   Assert.equal(tab.style.marginBottom, "", "no margin is left behind");
@@ -157,8 +161,8 @@ add_task(async function test_tabs_spring_in_and_step_aside_when_they_close() {
   const departure = tab.getAnimations();
   Assert.greaterOrEqual(departure.length, 1, "an item that closes departs with an animation");
   Assert.ok(
-    departure.some(a => a.effect.getKeyframes().some(k => "opacity" in k) && a.effect.getTiming().duration === 200),
-    "which fades it out in 200 ms"
+    departure.some(a => a.effect.getKeyframes().some(k => "opacity" in k) && a.effect.getTiming().duration === 140),
+    "which fades it out in 140 ms"
   );
   await closing;
   Assert.equal(getComputedStyle(tab).opacity, "0", "and keeps it gone until it is removed");
@@ -189,8 +193,8 @@ add_task(async function test_a_settings_pane_assembles_itself_when_it_is_shown()
       await ContentTaskUtils.waitForCondition(() => doc.querySelector("setting-pane:not([hidden]) > section > setting-group"), "the pane is shown");
       const groups = [...doc.querySelectorAll("setting-pane:not([hidden]) > section > setting-group")];
       const style = content.getComputedStyle(groups[0]);
-      Assert.equal(style.animationName, "nivora-card-in", "its groups have the entrance");
-      Assert.ok(parseFloat(style.animationDuration) >= 0.5, "which is not a flash");
+      Assert.equal(style.animationName, "nivora-fade-in, nivora-card-in", "its groups have the entrance");
+      Assert.ok(parseFloat(style.animationDuration.split(",")[1]) >= 0.3, "which is not a flash");
       const delays = groups.slice(0, 5).map(g => parseFloat(content.getComputedStyle(g).animationDelay));
       Assert.deepEqual([...delays].sort((a, b) => a - b), delays, "and each waits for the one before it");
       Assert.greater(delays[delays.length - 1], delays[0], "so they arrive one after another");

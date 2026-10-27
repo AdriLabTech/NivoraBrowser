@@ -34,15 +34,19 @@ class SpringCurveTest(unittest.TestCase):
         self.assertEqual(values, sorted(values))
 
     def test_less_damping_overshoots_more(self):
-        order = ["smooth", "snappy", "bouncy", "elastic"]
+        order = ["smooth", "snappy", "settle", "bouncy", "elastic"]
         peaks = [overshoot(name) for name in order]
         self.assertEqual(peaks, sorted(peaks))
         self.assertAlmostEqual(peaks[0], 0, places=3)
         self.assertGreater(peaks[1], 0.005)
-        self.assertGreater(peaks[2], 0.08)
-        self.assertGreater(peaks[3], 0.2)
+        self.assertLess(peaks[1], 0.03)
+        # The curve most surfaces use must stay below 6 %: a professional settle, not a bounce.
+        self.assertGreater(peaks[2], 0.03)
+        self.assertLess(peaks[2], 0.06)
+        self.assertGreater(peaks[3], 0.08)
+        self.assertGreater(peaks[4], 0.2)
         # Expressive, but never a rubber band: the wildest curve stays under a third of the travel.
-        self.assertLess(peaks[3], 0.34)
+        self.assertLess(peaks[4], 0.34)
 
     def test_the_underdamped_curve_matches_the_closed_form_at_its_first_peak(self):
         zeta = gm.PRESETS["bouncy"][0]

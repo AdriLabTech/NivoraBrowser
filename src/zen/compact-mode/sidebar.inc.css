@@ -272,7 +272,7 @@
         1.003674 99%,
         1.003423 100%
       );
-      --zen-compact-mode-time: var(--nivora-d-base, 0.25s);
+      --zen-compact-mode-time: var(--nivora-d-slow, 0.25s);
       transition: translate var(--zen-compact-mode-time) var(--zen-compact-mode-func);
 
       @media -moz-pref('zen.theme.acrylic-sidebar') and (not (prefers-reduced-transparency: reduce))  {

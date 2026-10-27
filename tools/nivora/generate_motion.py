@@ -34,7 +34,8 @@ SAMPLES = 48
 PRESETS = {
     "smooth": (1.0, "arrivals with no overshoot: panels, sidebars, large surfaces"),
     "snappy": (0.8, "a slight overshoot: buttons, rows, selection"),
-    "bouncy": (0.55, "a visible settle: menus, popovers, the palette"),
+    "settle": (0.7, "a short settle: the palette, dialogs and tabs arriving"),
+    "bouncy": (0.55, "a visible settle: rare emphasis"),
     "elastic": (0.38, "a playful wobble: confirmations and badges, used rarely"),
 }
 

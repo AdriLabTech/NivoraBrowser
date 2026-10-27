@@ -58,11 +58,11 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 | `package.json`, `package-lock.json` | Package name, repository URLs | Identity |
 | `README.md`, `SECURITY.md` | Replaced | Identity |
 | `.github/ISSUE_TEMPLATE/*` | Replaced | Zen-branded, hotlinked Zen images |
-| `src/zen/common/modules/ZenVerticalTabsManager.mjs` | `_startItemOpenAnimation` and `animateItemClose` (a tab or folder entering or leaving the sidebar): Motion's 0.12 s and 0.1 s ease-out replaced by Element.animate with the bouncy spring from `nivora-springs.inc.css` (560 ms in, 200 ms out, the space it occupies opening and closing on its own curve) | Tabs open and close constantly; 0.1 s read as a jump. Skipped when `gReduceMotion` is true, which `nivora.ui.animations` = false sets ([ANIMATIONS.md](ANIMATIONS.md)) |
+| `src/zen/common/modules/ZenVerticalTabsManager.mjs` | `_startItemOpenAnimation` and `animateItemClose` (a tab or folder entering or leaving the sidebar): Motion's 0.12 s and 0.1 s ease-out replaced by Element.animate: the item fades in over 150 ms (after 30 ms) and settles on the `settle` spring from `nivora-springs.inc.css` over 340 ms, and leaves in 140 ms; the space it occupies opens (240 ms) and closes (170 ms, after 40 ms) on its own curve, so an item never overlaps its neighbour | Tabs open and close constantly; 0.1 s read as a jump. Skipped when `gReduceMotion` is true, which `nivora.ui.animations` = false sets ([ANIMATIONS.md](ANIMATIONS.md)) |
 | `src/zen/compact-mode/ZenCompactMode.mjs` | Two durations, 0.1 s -> 0.34 s (the sidebar leaving and entering compact mode) | Same reason |
 | `src/zen/folders/ZenFolders.mjs` | Folder expand/collapse 0.18 s -> 0.34 s, reveal 0.2 s -> 0.36 s | Same reason |
 | `src/zen/compact-mode/sidebar.inc.css`, `src/zen/common/styles/zen-theme.css`, `src/zen/common/styles/zen-library-widget.css` | Five durations (sidebar reveal and hide, toolbar reveal, Library open) read from `var(--nivora-d-*, <Zen's value>)`; the curve of the toolbar reveal from `--nivora-ease-in-out` | They follow the motion scale (0 when animations are off); Zen's own value is the fallback, so the file still works without Nivora's tokens |
-| `prefs/zen/workspaces.yaml`, `prefs/zen/glance.yaml` | `zen.workspaces.switch-animation-duration` 250 -> 420, `zen.glance.animation-duration` 350 -> 520 | Longer springs for the two largest transitions |
+| `prefs/zen/workspaces.yaml`, `prefs/zen/glance.yaml` | `zen.workspaces.switch-animation-duration` 250 -> 340, `zen.glance.animation-duration` 350 -> 420 | Softer springs, sized to settle inside the time, for the two largest transitions |
 
 ### Inherited files removed
 

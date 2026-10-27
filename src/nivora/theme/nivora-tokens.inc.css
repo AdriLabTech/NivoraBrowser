@@ -46,25 +46,31 @@
 --nivora-focus-ring: var(--nivora-pure-white);
 
 /* Motion. Every animation in Nivora picks its duration, travel and curve from here, so the whole
- * interface moves with one character: things arrive with a spring, settle, and leave quickly.
+ * interface moves with one character: things arrive on a spring that settles within the duration, and
+ * leave faster than they came.
+ *
+ * Durations by what moves. micro: a hover or a press. fast: a colour, a selection, a menu item. base:
+ * a row, a tab, a popup. slow: the palette and dialogs. cinematic: the window assembling at start.
+ * The exit is the shortest of all: leaving should never make the user wait.
  *
  * Durations are already multiplied by the motion scale, and travel distances by the lift, so a rule
  * never has to know whether motion is on. Both are 0 when the user turns the setting off
  * (nivora.ui.animations) or the system asks for reduced motion. See docs/ANIMATIONS.md. */
 --nivora-motion-scale: 1;
 --nivora-lift: 1;
---nivora-d-micro: calc(140ms * var(--nivora-motion-scale));
---nivora-d-fast: calc(220ms * var(--nivora-motion-scale));
---nivora-d-base: calc(420ms * var(--nivora-motion-scale));
---nivora-d-slow: calc(640ms * var(--nivora-motion-scale));
---nivora-d-cinematic: calc(1100ms * var(--nivora-motion-scale));
---nivora-stagger: calc(34ms * var(--nivora-motion-scale));
---nivora-stagger-tight: calc(15ms * var(--nivora-motion-scale));
+--nivora-d-micro: calc(110ms * var(--nivora-motion-scale));
+--nivora-d-fast: calc(170ms * var(--nivora-motion-scale));
+--nivora-d-base: calc(260ms * var(--nivora-motion-scale));
+--nivora-d-slow: calc(340ms * var(--nivora-motion-scale));
+--nivora-d-cinematic: calc(520ms * var(--nivora-motion-scale));
+--nivora-d-exit: calc(130ms * var(--nivora-motion-scale));
+--nivora-stagger: calc(22ms * var(--nivora-motion-scale));
+--nivora-stagger-tight: calc(7ms * var(--nivora-motion-scale));
 
 /* Curves that are not springs: arrivals (expo out), departures (in), a symmetric move (in-out) and a
  * back-out that overshoots once. The springs follow. */
 --nivora-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
---nivora-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+--nivora-ease-in: cubic-bezier(0.5, 0, 0.8, 0.4);
 --nivora-ease-in-out: cubic-bezier(0.83, 0, 0.17, 1);
 --nivora-ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
 %include nivora-springs.inc.css

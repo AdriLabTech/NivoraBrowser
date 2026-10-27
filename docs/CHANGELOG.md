@@ -34,6 +34,16 @@ see https://github.com/zen-browser/desktop/releases.
   settings-pane choreographies; tabs open and close on springs; the master switch `nivora.ui.animations` (also a
   settings entry and the palette command *Toggle Animations*) and the system's reduced motion zero everything,
   including Zen's scripted animations; `motion_probe.py` measures the animations by recording the screen.
+- Motion v2 ([ANIMATIONS.md](ANIMATIONS.md)): the language retuned after an audit that read the real animations
+  frame by frame. Shorter (palette 640 -> 340 ms, tab 560 -> 340 ms, window start 1100 -> 520 ms), no blur,
+  overshoot cut from 12.6 % to 4.6 % (a new `settle` spring), movement and fade as two animations so a surface
+  is opaque before it stops, and exits faster than entrances. New: **the palette fades and lifts away when it
+  closes** (a copy of what was on screen; a test compares its first frame with the palette's pixels),
+  popups leave in 130 ms instead of the time they take to arrive, a press that springs back on toolbar buttons,
+  tabs and the close button, and the start-up motion no longer replays when full screen is left. Fixed: the
+  toolbar-button and tab-close-button transitions of v1 never applied (Zen's selector outranked them).
+  `browser_nivora_motion_budget.js` scrubs the real animations and fails when a duration, an overshoot, a blur
+  or an exit/entrance ratio leaves its budget.
 - Arch Linux packaging that was built and checked: `PKGBUILD` dependencies derived from the libraries the build links
   (`check_arch_deps.py`), `tools/nivora/build_linux.sh` (the documented build as one command),
   `.github/workflows/nivora-build-linux.yml` (build job and package job, started by hand, artifact kept 14 days),
