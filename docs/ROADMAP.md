@@ -50,7 +50,7 @@ rest to be completed without further questions.
 |---|---|
 | Builds with the documented procedure | `[x]` clean import, then full build, exit 0 |
 | Starts, opens a page, tabs, back/forward, address bar, renders normal pages | `[ ]` |
-| Essential security controls still present | `[ ]` |
+| Essential security controls still present | `[~]` unsigned extensions refused by default (F-11); sandbox, site isolation, TLS and Safe Browsing unchanged from Firefox and not separately tested |
 | Settings persist across restart | `[ ]` |
 | Identity applied coherently | `[~]` palette, icons, logo and main artwork seen rendered; tab states, menus, downloads panel, typography, new tab page unreviewed |
 | No essential Zen function removed without justification | `[x]` nothing removed except Zen-service UI, hidden by preference |
