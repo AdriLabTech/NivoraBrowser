@@ -96,6 +96,7 @@ be presented as safe for daily use.
 | `formal-git`, `husky`, `typescript`, prettier plugin | npm | `package-lock.json` | Dev tooling. `npm audit --omit=dev`: 0 findings. Full tree: 5 (1 low, 1 moderate, 3 high), including `sharp`/libvips CVEs; `sharp` only resizes the repository's own logo files in `surfer import`. Not triaged further |
 | `serde`, `serde_yaml` | crates.io | `tools/ffprefs/Cargo.lock` | `serde_yaml` is archived upstream; only used at build time |
 | cbindgen 0.29.4 | crates.io | `--locked` | Build tool |
+| Pillow 12.3.0 | PyPI | `tools/nivora/requirements.txt` (version only, no hash) | Draws icons, branding and artwork; build-time only. Hash pinning is open |
 
 ## 8. Pending and out of scope
 

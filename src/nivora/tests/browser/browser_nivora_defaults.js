@@ -80,3 +80,17 @@ add_task(async function test_zen_service_controls_are_hidden() {
     "the hide-zen-services media query matches"
   );
 });
+
+add_task(async function test_blank_dark_pages_use_the_neutral_canvas() {
+  await BrowserTestUtils.withNewTab("about:blank", async browser => {
+    const colors = await SpecialPowers.spawn(browser, [], () => {
+      const probe = content.document.createElement("div");
+      probe.style.cssText = "color-scheme: dark; background-color: Canvas; color: CanvasText;";
+      content.document.body.append(probe);
+      const style = content.getComputedStyle(probe);
+      return { canvas: style.backgroundColor, text: style.color };
+    });
+    Assert.equal(colors.canvas, "rgb(16, 16, 16)", "Canvas in the dark scheme is the Obsidian Eclipse surface");
+    Assert.equal(colors.text, "rgb(251, 251, 254)", "CanvasText in the dark scheme is unchanged");
+  });
+});

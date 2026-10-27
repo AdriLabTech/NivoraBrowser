@@ -1,0 +1,10 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="0 0 50 40" fill="none">
+  <g transform="translate(1.594 -3.406) scale(0.046)">
+    <mask id="eclipse"><rect width="1024" height="1024" fill="#fff"/><circle cx="592" cy="440" r="232" fill="#000"/></mask>
+    <circle cx="512" cy="512" r="330" stroke="#858585" stroke-width="12"/>
+    <circle cx="512" cy="512" r="250" fill="#f0f0f0" mask="url(#eclipse)"/>
+  </g>
+</svg>

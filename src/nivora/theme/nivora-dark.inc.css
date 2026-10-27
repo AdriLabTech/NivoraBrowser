@@ -20,3 +20,13 @@
 --arrowpanel-background: var(--nivora-surface-raised) !important;
 --zen-urlbar-background-base: var(--nivora-surface-2);
 --zen-input-border-color: var(--nivora-separator-strong);
+
+/* Firefox's design system builds the dark theme of every in-content page
+ * (about:preferences, about:newtab, dialogs) from a gray ramp with a violet
+ * tint. Re-pointing the three surface steps of that ramp at neutral tokens
+ * recolors those pages without touching a selector. The lighter steps (text,
+ * icons) are left alone: their tint is not visible and each one has a
+ * contrast role that the design system already satisfies. */
+--color-gray-100: var(--nivora-surface-1);
+--color-gray-90: var(--nivora-surface-2);
+--color-gray-80: var(--nivora-surface-raised);

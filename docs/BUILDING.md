@@ -68,8 +68,12 @@ python3 scripts/update_service_dumps.py                   # merges configs/dumps
 npx surfer import                                         # patches, new files, branding
 ```
 
-`npm run import` runs exactly these three steps. They were run individually.
-Result: `surfer import` reported 273 steps, 0 failures.
+`npm run import` runs these steps, then `python3 scripts/update_en_US_packs.py` (copies the
+`.ftl` files into the engine's en-US locale) and `python3 tools/nivora/post_import.py` (removes the
+branding-file prefs that would override Nivora's endpoints; section 5). Re-importing into an engine
+that is already patched needs `git -C engine checkout -f -- . && git -C engine clean -fd` first
+(no `-x`: the object directory is ignored and must survive).
+Result of the first import: `surfer import` reported 273 steps, 0 failures.
 
 ### 2.4 Local `mozconfig` (git-ignored, reference environment only)
 
@@ -108,8 +112,10 @@ npm start                        # cd engine && ./mach run --noprofile  (uses th
 xvfb-run -a ./engine/mach run --temp-profile
 ```
 
-After the first full build, interface-only changes (CSS, JS, prefs, `.ftl`) do not need a rebuild
-of C++: `npx surfer build --ui` (`mach build faster`) repackages them in seconds to minutes.
+After the first full build, interface-only changes (CSS, JS, prefs, `.ftl`, SVG) do not need a rebuild
+of C++: `npx surfer build --ui` (`mach build faster`) repackages them in about half a minute.
+For a C++ change use `cd engine && ./mach build`: `surfer build` rewrites
+`browser/config/version.txt`, which makes `mach` reconfigure and recompile most of the tree.
 
 ## 3. Problems met and fixes
 
@@ -132,19 +138,35 @@ of C++: `npx surfer build --ui` (`mach build faster`) repackages them in seconds
 
 ## 5. Build results
 
-_Recorded when the baseline build finishes._
+Reference environment: 4 cores, Ubuntu 24.04 container, clang 19.1.1, rustc 1.95.0, debug symbols
+and crash reporter disabled, no LTO/PGO (section 2.4).
 
 | Measure | Value |
 |---|---|
-| Result | pending |
-| Wall time (4 cores, `-j4`) | pending |
-| Object directory size | pending |
-| Peak RAM | pending |
+| Result | **`mach build` completed, exit 0**; the browser starts (`tools/nivora/smoke.py`) |
+| Wall time, full build (4 cores, `-j4`) | about 79 minutes |
+| Object directory size | 4.7 GB (`engine/obj-x86_64-pc-linux-gnu`); whole `engine/` 11 GB |
+| Interface-only rebuild (`surfer build --ui`) | 33 s |
+| Peak RAM | not measured |
+
+This is a development build. Numbers from it say nothing about a release build with LTO/PGO.
+
+### Steps added after the first run
+
+The first mochitest run exposed two import-time problems that the build itself does not show. Both
+are now part of `npm run import` and have tests:
+
+1. `scripts/update_en_US_packs.py` (inherited from Zen) must run after `surfer import`, or
+   Zen's and Nivora's `.ftl` files are not packaged and the interface logs missing messages.
+2. `tools/nivora/post_import.py`: `surfer` writes `browser/branding/<brand>/pref/firefox-branding.js`
+   with Zen's update, release-notes and homepage URLs, and that file is loaded after `zen.js`, so
+   it silently overrode `prefs/nivora/endpoints.yaml`. The script removes exactly those prefs and
+   fails the import if a Zen URL is still present.
 
 ## 6. Cleaning
 
 `engine/obj-x86_64-pc-linux-gnu/` holds all build output and is safe to delete between experiments
 (`./mach clobber`). Never delete `engine/` while a build is running. Test with `mach run --temp-profile`, which creates and discards a profile. `npm start` passes
-`--noprofile`, which means the browser's normal profile directory is used; this is expected to be
-separate from Zen's (`~/.zen`) because the binary and application name differ, but that has not
-been verified yet ([ADR 0005](decisions/0005-application-identity.md)).
+`--noprofile`, which means the browser's normal profile directory is used. In the reference
+environment (X11, no `MOZ_LEGACY_HOME`) that directory is `~/.config/nivora`, not Zen's `~/.zen` or
+`~/.config/zen`: `tools/nivora/smoke.py` checks it (test F-10; [ADR 0005](decisions/0005-application-identity.md)).

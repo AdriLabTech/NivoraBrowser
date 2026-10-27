@@ -58,14 +58,30 @@ Zen builds its palette from `--zen-primary-color` (the accent, pref `zen.theme.a
 3. The window defaults to the dark scheme (`zen.view.window.scheme = 0`). The light scheme remains
    available and unthemed.
 
+4. Pages inside the browser (settings, errors, dialogs) take their colors from Firefox's design
+   system, which builds the dark theme from a gray ramp with a violet tint. `nivora-dark.inc.css`
+   re-points the three surface steps (`--color-gray-100`, `-90`, `-80`) at neutral surface tokens.
+5. A page with no background of its own is painted with the dark system color `Canvas`, which Gecko
+   compiles in (`widget/nsXPLookAndFeel.cpp`). A six-line patch makes it, and the other dark
+   surfaces it defines, neutral (see [UPSTREAM.md](UPSTREAM.md)).
+
 Nothing selects Zen elements by structure. Adding a variable mapping is one line.
+
+### Artwork
+
+Firefox's logo and its mascot, Kit, appear in the interface (the "About" entry in settings, the
+default-browser banner, several dialogs). They are Mozilla's marks, so `generate_ui_artwork.py`
+replaces them, at the same size, with a flat eclipse glyph (logo) or the eclipse mark (mascot).
+Zen's three window-layout screenshots in the Look and Feel pane are replaced by schematic drawings.
 
 ## Status of the identity
 
 | Element | State |
 |---|---|
 | Palette, roles, contrast validation | Implemented and checked (static) |
-| Variable mapping into Zen's dark scheme | Implemented; preprocessed with Gecko's real preprocessor; **not yet seen rendered** |
+| Variable mapping into Zen's dark scheme | Implemented and **seen rendered** in a real build: window, sidebar, urlbar, command palette (screenshots via `tools/nivora/screenshots.py`) |
+| In-content pages (settings) and blank pages | Mapped to the neutral surfaces; see the list above. Not all of the settings pane has been inspected |
+| Firefox logo and mascot in the interface | Replaced (12 files) and seen in settings; other mascot artwork listed in [UPSTREAM.md](UPSTREAM.md) is not yet replaced |
 | Typography | Not decided. Candidates: the system UI font stack Zen already uses; evaluate once a build runs |
 | Iconography | Not started. Zen ships its own monochrome set (`zen-icons/`) that can be reused |
 | Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |

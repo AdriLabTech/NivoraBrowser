@@ -16,12 +16,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Python dependencies (Pillow, pinned)
+        run: python3 -m pip install --user -r tools/nivora/requirements.txt
       - name: Palette contrast and Nivora unit tests
         run: |
           python3 -I tools/nivora/check_contrast.py --list
           python3 -I -m unittest discover -s tools/nivora/tests -v
       - name: Icons contain only licensed (Phosphor) glyphs
         run: python3 -I tools/nivora/generate_icons.py --check
+      - name: Interface artwork is the generated, Mozilla-free set
+        run: python3 -I tools/nivora/generate_ui_artwork.py --check
       - name: Command registry and settings (Node)
         run: node --test tools/nivora/js-tests/*.test.mjs
       - name: ffprefs unit tests

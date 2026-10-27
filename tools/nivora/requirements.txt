@@ -1,0 +1,3 @@
+# The only third-party Python dependency of Nivora's tools (icons, branding, artwork).
+# Build-time only; nothing here is shipped. See docs/SECURITY.md, section 7.
+Pillow==12.3.0

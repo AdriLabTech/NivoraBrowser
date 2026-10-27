@@ -48,6 +48,10 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 | `prefs/zen/view.yaml` | `zen.view.window.scheme` = 0 (dark) | Dark identity |
 | `src/zen/common/styles/zen-theme.css` | +3 lines: `%include` of the Nivora tokens | Token entry point |
 | `src/zen/common/styles/schemes/dark.inc.css` | +2 lines: `%include` of the dark mapping | Dark scheme entry point |
+| `src/widget/nsXPLookAndFeel-cpp.patch` (new) | Six color constants in `GenericDarkColor` (window, header bar, dialog, menu, field and button face) from Firefox's violet-tinted grays to the neutral surface tokens | Without it a page with no background of its own (`about:blank`, Zen's new tab) is painted `#1C1B22`. A C++ change: a rebuild of `widget/` and a relink. Checked by `browser_nivora_defaults.js` |
+| `src/browser/themes/shared/sidebar/firefox.svg`, `icons/window-firefox.svg`, `fxa/avatar-fox.svg`, `src/browser/base/content/logos/share-firefox.svg` (new, same path as Firefox's) | The Firefox logo replaced by a flat eclipse glyph | Mozilla trademark; `surfer import` replaces a Firefox file by a `src/` file of the same path |
+| `src/toolkit/themes/shared/illustrations/kit-*.svg` (6), `src/browser/themes/shared/preferences/fox-ai.svg`, `sidebar/foxy.svg` (new, same path) | Firefox's mascot (Kit) replaced by the eclipse mark | Mozilla trademark and artwork |
+| `src/zen/images/layouts/*.png` | Zen's three window-layout screenshots (Zen's name in them, a stock wallpaper of unknown license) replaced by schematic drawings in the palette | Branding and license; all of the above are produced by `tools/nivora/generate_ui_artwork.py` and checked by `tests/test_ui_artwork.py` |
 | `tools/ffprefs/src/main.rs` | Quote values starting with `#`; unit tests | Digit-only hex colors corrupted `zen.js`. Candidate for an upstream pull request |
 | `locales/en-US/browser/**` (5 files) | "Zen" replaced by "Nivora" or removed where it names the app | Visible product name. "Donate to Zen" and the share-server sentence are deliberately left (accurate, or inactive) |
 | `package.json`, `package-lock.json` | Package name, repository URLs | Identity |
@@ -69,7 +73,9 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 | Update-signing key | `build/signing/public_key.der` | Zen's MAR signing certificate (public half). Inert while there is no update service; Nivora needs its own key pair before one exists (`scripts/mar_sign.sh`) |
 | Linux packaging | `build/AppDir/`, `build/flatpak/` | Name, ids, URLs still Zen's; adapted in the Stable phase |
 | Windows and macOS | `build/windows/`, `build/signing/`, `configs/{windows,macos}/` | Out of scope; surfer itself hardcodes Zen URLs for the Windows installer |
-| Zen links in the UI | About dialog (`aboutDialog-xhtml.patch`), Library donate button, preferences "Mods" marketplace link | User-clicked links to Zen's sites; to be reviewed in the Productivity UI pass |
+| Zen links in the UI | About dialog (`aboutDialog-xhtml.patch`), Library donate button, preferences "Mods" marketplace link | User-clicked links to Zen's sites. Donate and Mods are hidden by `nivora.ui.hide-zen-services`; the About dialog keeps them as attribution |
+| Other Mozilla mascot and logo artwork | `browser/components/asrouter/content/assets/fox-*.svg` (onboarding messages), `browser/themes/shared/fxa/avatar-fox-circle.svg`, `privatebrowsing/fox-tail.svg`, `shell/content/confused_fox.pdf`, `controlcenter/content/assets/fox-concern.svg`, `sidebar` promos | Shown only by features Zen does not turn on or in rare dialogs; not yet replaced. Add them to `ARTWORK` in `generate_ui_artwork.py` when found in use |
+| Mozilla-account artwork | `preferences/mozilla-logo.svg`, `mozilla-16.svg` | Kept on purpose: it names the Mozilla account service the user signs in to |
 | Other locales | `locales/*` | Still say "Zen"; only `en-US` is in scope |
 | `crowdin.yml` | root | Zen's translation project configuration |
 
