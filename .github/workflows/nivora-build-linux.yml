@@ -1,0 +1,99 @@
+name: Build Linux package
+
+# Builds the browser from this checkout and leaves the files for Arch Linux (and Ryoku Arch) as a
+# workflow artifact: a ready `.pkg.tar.zst`, plus the inputs for `makepkg`. It repeats, step for step,
+# the procedure of docs/BUILDING.md that was run by hand (tools/nivora/build_linux.sh).
+#
+# Started by hand only: a build takes about two hours of a four-core runner. Nothing is released or
+# published; the artifact is kept for 14 days and is visible to whoever can read the repository.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-linux
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 345
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force || true
+          df -h /
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # rust-toolchain.toml pins 1.95.0; rustup installs it the first time cargo runs in the checkout.
+      - name: cbindgen
+        run: cargo install cbindgen --version 0.29.4 --locked
+
+      - name: Build and package
+        run: tools/nivora/build_linux.sh --apt --out "$GITHUB_WORKSPACE/out"
+
+      - name: The build log, when the build failed
+        if: failure()
+        run: |
+          for f in engine/obj-*/.mozbuild/logs/build/build_log_*.log; do
+            echo "== $f"; tail -n 150 "$f"
+          done
+
+      # A real `makepkg` (Ubuntu ships it) turns the inputs into a package; the dependencies cannot be
+      # resolved without Arch's databases, so they are skipped here and resolved by pacman on install.
+      - name: Make the package
+        run: |
+          sudo apt-get install -y --no-install-recommends makepkg fakeroot libarchive-tools zstd
+          cd out
+          PKGEXT=.pkg.tar.zst makepkg -d --noconfirm --nocheck
+          rm -rf src pkg
+          sha256sum *.pkg.tar.zst *.tar.xz PKGBUILD nivora.desktop io.github.adrilabtech.nivora.metainfo.xml policies.json > SHA256SUMS
+          ls -la
+
+      - name: Start the packaged browser and load a page
+        run: |
+          sudo apt-get install -y --no-install-recommends xvfb xdotool imagemagick fonts-dejavu-core
+          mkdir -p smoke
+          python3 tools/nivora/smoke.py --dist "$(ls -d engine/obj-*/dist/nivora | head -1)" --out smoke
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Nivora Linux package"
+            echo
+            echo '```'
+            cat out/SHA256SUMS 2>/dev/null || true
+            echo '```'
+            echo
+            echo "Install on Arch Linux: download the artifact, then \`sudo pacman -U nivora-browser-bin-*.pkg.tar.zst\`."
+            echo "See the README, section \"Install on Arch Linux and Ryoku Arch\"."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nivora-arch-package
+          path: |
+            out/*.pkg.tar.zst
+            out/PKGBUILD
+            out/*.tar.xz
+            out/nivora.desktop
+            out/io.github.adrilabtech.nivora.metainfo.xml
+            out/policies.json
+            out/SHA256SUMS
+            smoke/report.json
+            smoke/*.png
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: warn

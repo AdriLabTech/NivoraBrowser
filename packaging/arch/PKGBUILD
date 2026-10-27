@@ -13,11 +13,21 @@ pkgdesc="A focused, private, monochrome web browser built on Zen Browser and Fir
 arch=('x86_64')
 url="https://github.com/AdriLabTech/nivoraBrowser"
 license=('MPL-2.0')
-depends=('gtk3' 'libxt' 'dbus-glib' 'nss' 'mime-types' 'ttf-font')
+depends=('gtk3' 'alsa-lib' 'dbus' 'libpulse' 'libxcb' 'libx11' 'libxcomposite' 'libxdamage'
+         'libxext' 'libxfixes' 'libxrandr' 'libxrender' 'libxcursor' 'libxi' 'fontconfig'
+         'freetype2' 'harfbuzz' 'pango' 'cairo' 'gdk-pixbuf2' 'glib2' 'zlib' 'gcc-libs'
+         'mime-types' 'ttf-font')
+# The first group is what `readelf -d` says the browser links against (tools/nivora/check_arch_deps.py
+# checks it); libpulse is loaded at run time and is here because a browser without sound is not usable.
+# NSS, NSPR and SQLite are bundled in /opt/nivora, so neither `nss` nor `dbus-glib` is needed.
 optdepends=('libnotify: desktop notifications'
             'xdg-desktop-portal: file dialogs and URL handlers through portals'
-            'pulseaudio: audio output'
-            'ffmpeg: additional media codecs')
+            'libva: hardware video decoding'
+            'ffmpeg: H.264, AAC and other codecs that are not bundled'
+            'pipewire: screen sharing and camera access through portals'
+            'libxss: idle detection'
+            'speech-dispatcher: text to speech'
+            'libcanberra: event sounds')
 provides=("nivora-browser=${pkgver}")
 conflicts=('nivora-browser')
 options=('!strip' '!debug')

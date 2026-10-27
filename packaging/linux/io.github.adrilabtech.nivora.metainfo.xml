@@ -3,6 +3,9 @@
   <id>io.github.adrilabtech.nivora</id>
   <name>Nivora Browser</name>
   <summary>A focused, private, monochrome web browser</summary>
+  <developer id="io.github.adrilabtech">
+    <name>AdriLabTech</name>
+  </developer>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MPL-2.0</project_license>
   <description>
