@@ -87,3 +87,23 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 - [~] Performance baseline measured for startup, memory and idle CPU (one tab, dev build); many-tab and UI-latency measurements and a Zen comparison not done.
 - [ ] An update channel (none exists by decision; packages are the channel).
 - [ ] Final report separating verified from unverified.
+
+## Needs the owner or another environment
+
+These cannot be done by the agent that wrote this repository, or need a decision.
+
+- Turn on **private vulnerability reporting** for the GitHub repository (a repository setting;
+  [SECURITY.md](../SECURITY.md) points to it) and name a code owner.
+- Decide the **items marked "review" in [LICENSES.md](LICENSES.md)** (Motion notice, Junicode, emoji
+  data, website logos, welcome video and Library artwork) and whether the unmodified first commit
+  may keep Zen's Nucleo icon files.
+- Approve or replace the **generated logo** and the placeholder wordmarks.
+- An **independent security review** of Nivora's changes ([SECURITY_REVIEW.md](SECURITY_REVIEW.md) is a self-review).
+- Test on **Arch Linux and Ryoku Arch** (Wayland and X11): `makepkg -si`, `desktop-file-validate`,
+  `appstreamcli validate`, the compatibility matrix in [LINUX.md](LINUX.md).
+- **Release configuration decisions:** LTO/PGO build; restoring build-level extension-signature
+  enforcement; `MOZ_APP_VENDOR` (still `Mozilla`); Nivora's own update-signing key before any update
+  channel; Windows and macOS (out of scope so far).
+- Run **Zen's other 19 mochitest groups** and an **unmodified-Zen baseline** on a machine that may run the
+  official binary, and compare speed and memory.
+- Offer `tools/ffprefs` (hex quoting) to Zen upstream.

@@ -63,14 +63,20 @@ Official route: `npm ci`, `npm run init` (download Firefox, import, bootstrap), 
 
 ## 5. Result of the initial build
 
-- **Verified:** `surfer import` succeeds (273 steps, 0 failures) — also for the unmodified upstream.
+- **Verified:** `surfer import` succeeds (273 steps, 0 failures) on unmodified upstream; with Nivora's
+  changes, 264 git patches (Zen's 263 and Nivora's one) apply, from a clean engine, twice.
 - **Verified:** `mach configure` passes with clang 19 and the options in BUILDING.md.
-- **In progress at time of writing:** the compile (`mach build -j4`). The outcome, duration and
-  disk/RAM figures are recorded in BUILDING.md section 5 when it completes. Until then this report
-  makes no claim that Nivora compiles, starts or browses.
+- **Verified:** the compile completes (`mach build`, exit 0; about 76-79 minutes on four cores, a 4.7 GB
+  object directory), and `mach package` makes a 97 MB tarball ([BUILDING.md](BUILDING.md) section 5).
+- **Verified:** the browser starts, opens a window, loads a local page, uses `~/.config/nivora`, and
+  resolves no Zen-operated host on a first start ([TESTING.md](TESTING.md) section 2.2).
 - Pre-existing problems found before any Nivora change (not attributable to Nivora): the
   `stdc++compat` shim does not compile on GCC 13; `dev` and `stable` are tied to different Firefox
   versions; `surfer` hardcodes Zen URLs; `ffprefs` mishandled digit-only hex values.
+- Problems found by running the build, which a build alone does not show: the branding file
+  overrode Nivora's endpoint defaults; `.ftl` files were not packaged without an extra step; Firefox's
+  logo, its mascot and Zen's screenshots were still shown in settings; pages without a background
+  were violet-tinted. All fixed and covered by tests ([SECURITY_REVIEW.md](SECURITY_REVIEW.md), findings 7 and 8).
 
 ## 6. Customization points
 
@@ -99,30 +105,30 @@ re-implementing them.
 
 ## 9. Foundation plan
 
-Status as of this report. Order follows dependency, then impact.
+State at the end of the Foundation work. Order follows dependency, then impact.
 
 | # | Task | State |
 |---|---|---|
 | 1 | Import base, record provenance | done, verified |
-| 2 | Identity and service detachment (config level) | done; runtime check pending |
-| 3 | Tokens, contrast policy, wiring | done; render check pending |
-| 4 | Documentation set and decisions | done (this set) |
-| 5 | **Baseline build and first launch** | in progress |
-| 6 | Verify config-level changes at runtime (F-07, F-09 in TESTING.md) | blocked on 5 |
-| 7 | Screenshot review of the dark mapping; fix the mapping | blocked on 5 |
-| 8 | Tabs: states not conveyed by color alone | blocked on 7 |
-| 9 | Address bar, menus, dialogs, downloads panel restyle | blocked on 7 |
-| 10 | New tab page, preferences panes | blocked on 7 |
-| 11 | Original logo, icons, remove Zen's | done as a proposal (all Zen icons replaced); needs the owner's approval |
-| 12 | Typography and icon decisions | blocked on 7 |
-| 13 | Zen baseline run of the mochitest suite, then Nivora's; compare | blocked on 5 |
-| 14 | Foundation acceptance check and phase report | after 5–13 |
+| 2 | Identity and service detachment | done; checked at run time (defaults, host-name audit, profile directory) |
+| 3 | Tokens, contrast policy, wiring | done; seen rendered |
+| 4 | Documentation set and decisions | done |
+| 5 | Baseline build and first launch | done |
+| 6 | Verify config-level changes at runtime (F-07, F-09, F-10, F-11 default) | done, with the limits recorded in TESTING.md |
+| 7 | Screenshot review of the dark mapping; fix the mapping | done for window, sidebar, address bar, palette, settings, blank page; fixes made (in-content pages, canvas) |
+| 8 | Tabs: states not conveyed by color alone | **open** (needs the tab states to be inspected) |
+| 9 | Address bar, menus, dialogs, downloads panel restyle | **open** beyond the token mapping |
+| 10 | New tab page, preferences panes | partly: settings recolored; new tab is Zen's, unreviewed |
+| 11 | Original logo, icons, remove Zen's and Mozilla's | done, accepted by the owner; 12 Mozilla artwork files and Zen's layout screenshots replaced; a few rarely shown mascot files remain (UPSTREAM.md) |
+| 12 | Typography and icon decisions | icons done (Phosphor); typography **open** |
+| 13 | Zen baseline run of the mochitest suite, then Nivora's; compare | Nivora's run (120 checks pass); 7 of 26 Zen groups run (760 pass); **no unmodified-Zen baseline** |
+| 14 | Foundation acceptance check and phase report | this document and [ROADMAP.md](ROADMAP.md) |
 
 ## 10. Tests needed
 
-[TESTING.md](TESTING.md): static checks (running), manual Foundation and identity procedures
-(written, not yet run), Zen's mochitests (not run), a network audit (F-09, not run), performance
-baselines (not started).
+[TESTING.md](TESTING.md) has the results. Still needed: the 19 Zen groups not run, an unmodified-Zen
+baseline, a manual pass through F-03..F-08 and the identity table, a packet capture over time, an
+independent security review and performance measurements against a release-like build.
 
 ## 11. Decisions
 
@@ -142,7 +148,7 @@ asked for the remaining work to be done without further questions. How each was 
 
 ## 12. Blockers needing intervention
 
-None that stop progress. Two would improve it: allowing `archive.mozilla.org` and Mozilla's CI
+None that stop progress (see the list of human-only items in [ROADMAP.md](ROADMAP.md)). Two would improve it: allowing `archive.mozilla.org` and Mozilla's CI
 artifact host through the network policy would make the stock `npm run init` / `bootstrap` route
 work and give release-equivalent toolchains for performance work; and a persistent machine would
 avoid rebuilding after the container is reclaimed.
