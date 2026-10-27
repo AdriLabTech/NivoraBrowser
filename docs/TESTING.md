@@ -37,7 +37,7 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Check | Result | Notes |
 |---|---|---|
 | Build | **completed**, exit 0 | 76 min wall time on 4 cores; [BUILDING.md](BUILDING.md) |
-| Nivora browser tests: commands, defaults, settings | **117 checks pass, 0 fail** | `cd engine && xvfb-run -a ./mach test nivora/tests/browser`. The first run (before fixes) had 41 pass and 28 fail; the failures were two real defects (finding 7 in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), missing `.ftl` packaging) and test mistakes |
+| Nivora browser tests: commands, defaults, settings, hidden Zen-service controls | **120 checks pass, 0 fail** | `cd engine && xvfb-run -a ./mach test nivora/tests/browser`. The first run (before fixes, three files) had 41 pass and 28 fail; the failures were two real defects (finding 7 in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), missing `.ftl` packaging) and test mistakes |
 | F-01, F-02: starts, shows a window, loads and titles a local page | **pass** | `tools/nivora/smoke.py` |
 | F-10: profile directory | **pass** | With an empty `HOME`, only `~/.config/nivora` is created; no `.zen`, `.config/zen` or `.mozilla`. Not checked: behaviour when a `~/.zen` already exists |
 | F-09: host names resolved on a first start, 60 s idle | **pass** (limited) | `tools/nivora/net_audit.py`: `firefox.settings.services.mozilla.com`, `firefox-portal-detection.com`, `cloudflare-dns.com` and loopback/probe names. No Zen host. Limits: a lookup log, not a packet capture; no network beyond the proxy, so nothing after a failed lookup is seen; 60 s, not 5 minutes |
@@ -48,14 +48,33 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Close duplicate tabs, reset settings with confirmation | **pass** | `browser_nivora_commands.js` |
 | Settings export/import/repair | **pass** (prefs backend) | `browser_nivora_settings.js`. The **file pickers** were not driven: the dialogs need a person |
 | Visual review (screenshots, `tools/nivora/screenshots.py`) | **done for** window, sidebar, address bar, command palette, settings (two panes), blank page | Palette is grayscale; no Firefox or Zen logo or mascot in these screens. Not reviewed: tab states, menus, downloads panel, private window, high-DPI, narrow windows |
-| Zen mochitest subset | ZEN_SUBSET_PLACEHOLDER | see 2.3 |
+| Zen mochitest subset (7 of 26 groups) | **760 checks pass, 0 fail**, 9 marked `todo` by Zen | see 2.3 |
 | `npm run lint` | **not run** | needs node modules inside `engine/` |
-| Performance baselines | **not done** | needs a release-like build and an equivalent Zen build; an official Zen binary was deliberately not run in this environment |
-| `./mach package`, Arch package from a real build | **not done** | the packaging script is tested against a simulated build only |
+| Performance baseline of Nivora itself | **measured, one environment** | `tools/nivora/perf_baseline.py`, 3 runs each, raw data in `docs/perf-baseline-2026-10-27.json`. Fresh profile: start-up 2.3 s (2.2-2.3), memory 533 MiB PSS (529-536), idle CPU 1.9 % of one core. Existing profile: 1.4 s (1.3-1.4), 512 MiB (508-514), idle 0.6 %. One local page open, software rendering, development build without LTO/PGO, 4 cores, 30 s idle window. Useful only to compare a later Nivora build on the same machine |
+| Comparison with Zen | **not done** | no unmodified Zen build exists here, and an official Zen binary was deliberately not run in this environment; so "no regression against Zen" is not established for speed or memory |
+| `./mach package`, Arch package inputs from the real build | **done**, not installed on Arch | `mach package` (3 min 49 s) and `make_arch_package.sh` on the real tree; the `PKGBUILD`'s `package()` was run against it; the unpacked copy with the policy starts and `about:policies` shows `DisableAppUpdate: true`. `makepkg`, `pacman`, `desktop-file-validate`, `appstreamcli` not available here |
 
 ### 2.3 Zen's own mochitests (subset)
 
-ZEN_TABLE_PLACEHOLDER
+Run with `python3 scripts/run_tests.py <group>` under `xvfb-run` on the build of 2026-10-27, which carries all of
+Nivora's changes. `ub-actions` matters most for Nivora: `browser_ub_actions_search.js` iterates every
+global action, Nivora's eight included.
+
+| Group | Passed | Failed | Todo |
+|---|---|---|---|
+| `ub-actions` (command palette) | 90 | 0 | 0 |
+| `urlbar` | 97 | 0 | 0 |
+| `tabs` | 32 | 0 | 0 |
+| `spaces` | 112 | 0 | 3 |
+| `pinned` | 70 | 0 | 0 |
+| `folders` | 135 | 0 | 2 |
+| `library` | 224 | 0 | 4 |
+| **Total** | **760** | **0** | **9** |
+
+Not run: the other 19 groups (compact mode, glance, split view, live folders, boosts, share, welcome,
+window sync, ...) and the Firefox tests Zen includes by reference. No run of unmodified Zen
+`1.23.4b` was made, so "no more failures than Zen" is shown only in the weak sense that there are no
+failures in the groups that ran. Nothing was disabled to obtain these results.
 
 ## 3. Manual procedure (reproducible)
 

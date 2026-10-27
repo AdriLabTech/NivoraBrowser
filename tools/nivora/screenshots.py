@@ -30,6 +30,8 @@ SCENARIOS = {
     "preferences-zen": ("about:blank", "about:preferences#zenLooks", True, 10),
     "about-dialog-page": ("about:blank", "about:about", True, 8),
     "downloads": ("about:blank", "about:downloads", True, 8),
+    "policies": ("about:blank", "about:policies", True, 8),
+    "support": ("about:blank", "about:support", True, 10),
     "palette-nivora": ("about:blank", "nivora", False, 6),
     "palette-tabs": ("about:blank", "tab", False, 6),
     "palette-settings": ("about:blank", "settings", False, 6),

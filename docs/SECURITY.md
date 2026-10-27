@@ -49,14 +49,24 @@ registry) and must be reviewed against section 6.
 
 | Service | Used for | Nivora treatment | State |
 |---|---|---|---|
-| `updates.zen-browser.app` | Application updates (MAR) | Host removed from `surfer.json`; surfer writes a non-resolving placeholder (`localhost:7648`). `app.update.auto=false` | Config verified; runtime unverified |
+| `updates.zen-browser.app` | Application updates (MAR) | Host removed from `surfer.json`; surfer writes a non-resolving placeholder (`localhost:7648`). `app.update.auto=false`; the distribution policy `DisableAppUpdate` is verified active in the packaged build (`about:policies`) | Verified: not in the build, not resolved on first start |
 | `share.zen-browser.app` | Sharing spaces/folders/boosts | `zen.share.base-url` set to empty | Feature has no backend; UI entry points still visible |
-| `zen-browser.app/*` injection | Mods marketplace site talks to the browser | `zen.injections.match-urls` = `about:preferences` only | Config verified |
+| `zen-browser.app/*` injection | Mods marketplace site talks to the browser | `zen.injections.match-urls` = `about:preferences` only | Default checked in the built browser (`browser_nivora_defaults.js`; development builds of Zen use `http://localhost/*`, so the test accepts that outside official builds) |
 | `zen-browser.github.io/theme-store` | Fetching installed mods and updates | `zen.mods.auto-update=false`; requests only happen for mods the user installs | Residual: user-initiated installs still contact it |
 | `zen-browser.app/whatsnew`, `/welcome`, `/privacy-policy`, `/about`, `/download` | Opened tabs and links | Welcome and what's-new prefs emptied. About-dialog links and the donate link in Library remain as visible, user-clicked links to Zen | Open item |
 | `zen-browser.app/donate` | Sidebar "updated" notification | Notification disabled (`zen.updates.show-update-notification=false`) | Config verified |
-| Mozilla: Sync, Remote Settings, AMO, Safe Browsing, search, captive portal, telemetry endpoints | Standard Firefox services | Unchanged. Zen's mozconfig already disables telemetry/data reporting at build time | **Not yet audited** by traffic capture (test F-09) |
+| Mozilla: Sync, Remote Settings, AMO, Safe Browsing, search, captive portal, telemetry endpoints | Standard Firefox services | Unchanged. Zen's mozconfig already disables telemetry/data reporting at build time | First-start host-name audit done (Remote Settings, captive portal, DNS-over-HTTPS bootstrap, loopback); **no packet capture** and no long-running audit |
 | Windows installer URLs (`links.zen-browser.app`, etc.) | Windows only | Not addressed | Out of scope for now |
+
+**Audit of the shipped build (2026-10-27).** The packaged build's `omni.ja` archives were unpacked and
+searched for Zen URLs. Not present: `updates.zen-browser.app`, `share.zen-browser.app`, any
+`links.zen-browser.app`. Present: `www.zen-browser.app/donate` (2; the About/Library donation entry
+and the update notification, both hidden or disabled by preference), `zen-browser.app/mods/` and
+`zen-browser.github.io/theme-store/themes/` (the mods marketplace: contacted only when the user
+installs or updates a mod), `zen-browser.app/about`, `www.zen-browser.app/privacy-policy/`,
+`docs.zen-browser.app/user-manual/window-sync` (links the user may click), and about 20 GitHub issue
+URLs inside code comments of Zen's files. A runtime host-name audit of a first start
+([TESTING.md](TESTING.md)) agrees: no Zen host.
 
 The accountability for this table is the manual test F-09 in [TESTING.md](TESTING.md): it must be
 run on the first working build and again before every release.
@@ -102,7 +112,7 @@ be presented as safe for daily use.
 
 - No audit of Zen's native patches, of Firefox itself, or of the build output.
 - No fuzzing, no dependency scanning beyond the above, no reproducible-build check.
-- Traffic audit (F-09) not yet run.
+- A traffic audit beyond the 60-second host-name log of a first start (a capture over days, with real network access, with the features the user turns on).
 - Secret scanning of the repository: not yet run (a one-off scan is planned before the first push
   to a public branch).
 - Legal compliance is not reviewed. See [UPSTREAM.md](UPSTREAM.md) for the license items that need

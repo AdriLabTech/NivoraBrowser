@@ -58,7 +58,7 @@ The `.desktop` entry, icons, MIME associations, the update policy file and the A
 
 | Environment | State |
 |---|---|
-| X11 under Xvfb, Ubuntu 24.04 container | used for the build and tests |
+| X11 under Xvfb, Ubuntu 24.04 container (GTK, Adwaita/Yaru) | **works**: builds, starts, browses a local page, passes Nivora's and a subset of Zen's browser tests ([TESTING.md](TESTING.md)); profile in `~/.config/nivora` |
 | Arch Linux, Wayland | not tested |
 | Arch Linux, X11 | not tested |
 | Hyprland | not tested |

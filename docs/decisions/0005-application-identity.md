@@ -1,6 +1,6 @@
 # 0005. Application identity
 
-Status: accepted, corrected the same day, partly unverified · Date: 2026-10-26
+Status: accepted, corrected the same day; profile directory verified at run time · Date: 2026-10-26
 
 ## Context
 
@@ -45,14 +45,18 @@ tarball (downloaded, extracted, **not run**) reads `Vendor=Mozilla`, `Name=Zen`,
 declined running a downloaded executable, so the profile directory of the official Zen was inferred
 from this file and from the source, not observed.
 
-Still not verified at run time: that the browser really creates `~/.nivora` and does not touch
-`~/.zen` (test F-10). `MOZ_APP_VENDOR` stays `Mozilla`: Firefox's `browser/moz.configure` implies
-it, so changing it needs a patch of its own; on Linux the vendor is not part of the profile path.
+Verified at run time (2026-10-27, `tools/nivora/smoke.py`, test F-10): with an empty `HOME`, the
+built browser creates `~/.config/nivora` (Firefox 158 follows the XDG layout unless
+`MOZ_LEGACY_HOME=1`, which selects `~/.nivora`) and nothing named `.zen`, `.config/zen` or
+`.mozilla`; `about:support` shows the profile under `.config/nivora`. `MOZ_APP_VENDOR` stays `Mozilla`
+(`application.ini` of the packaged build says `Vendor=Mozilla`): Firefox's `browser/moz.configure`
+implies it, so changing it needs a patch of its own and a full rebuild; on Linux the vendor is not
+part of the profile path. Left for the release build.
 
 ## Not verified
 
-- That the browser creates `~/.nivora` and leaves `~/.zen` and `~/.mozilla` alone (test F-10, run with a
-  fresh `HOME`).
+- What happens when a `~/.zen` already exists: the empty-`HOME` run shows Nivora does not create or
+  use one, but a checksum comparison against a populated Zen profile was not made.
 - That nothing in the inherited Zen code assumes the binary is called `zen`.
 - The distribution id is a naming choice, not a registered domain. Replace it if the project
   acquires a domain.

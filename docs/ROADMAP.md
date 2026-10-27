@@ -65,11 +65,11 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 [PRODUCTIVITY.md](PRODUCTIVITY.md) for what Zen already covers, per area.
 
 - [x] Command registry with stable ids, checked specs, argument validation, error containment, confirmation for sensitive commands; 31 Node tests + mutation checks. Browser integration test passes.
-- [x] Eight commands added to Zen's palette (new tab, history, downloads, search open tabs, close duplicate tabs, export / import / reset settings). [~] not seen in the palette yet.
-- [x] Central settings: 25 whitelisted preferences, versioned export, validated all-or-nothing import, reset, startup repair. Node tests incl. hostile input. [~] browser test written, not run.
-- [x] Duplicate tabs: detection never crosses spaces, containers, pinned or essential tabs; closing needs confirmation. Node tests. [~] browser test written, not run.
+- [x] Eight commands added to Zen's palette (new tab, history, downloads, search open tabs, close duplicate tabs, export / import / reset settings). Seen in the palette (screenshot); Zen's `browser_ub_actions_search.js`, which iterates every action, passes.
+- [x] Central settings: 25 whitelisted preferences, versioned export, validated all-or-nothing import, reset, startup repair. Node tests incl. hostile input. Browser test passes.
+- [x] Duplicate tabs: detection never crosses spaces, containers, pinned or essential tabs; closing needs confirmation. Node tests. Browser test passes.
 - [x] Spaces: audited against the requirements ([PRODUCTIVITY.md](PRODUCTIVITY.md) section 3). Met by Zen except recovery of a deleted space [!] left out: it needs a change to `ZenSpaceManager.mjs` (privileged, ~3,700 lines).
-- [x] Zen-service UI: share hides itself without a service; donate button and mods link hidden by preference. [~] runtime check pending.
+- [x] Zen-service UI: share hides itself without a service; donate button and mods link hidden by preference. Verified in the built browser: the Library donate button and the Mods website link are hidden by default and shown when the preference is off (`browser_nivora_ui.js`).
 - [x] Profiles, privacy, Linux integration: audited and documented ([PRIVACY.md](PRIVACY.md), [LINUX.md](LINUX.md)); no new code was needed. Ryoku-specific code: none, by design.
 - [!] Optional AI module: not implemented, by design ([PRODUCTIVITY.md](PRODUCTIVITY.md) section 8).
 - [ ] A settings page in `about:preferences` and a user-assignable shortcut for Nivora commands (not done; judged not worth the upgrade cost yet).
@@ -80,10 +80,10 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 - [x] Update procedure and `tools/nivora/upstream_check.py` with a weekly read-only workflow; run live.
 - [x] CI: static checks on every push (palette, icons, Python and Node tests, `ffprefs`); upstream check weekly. A full browser build per push is deliberately not run.
 - [x] License inventory with the real texts; Nucleo icons removed from the tree ([LICENSES.md](LICENSES.md)). [ ] Items marked "review" in LICENSES.md need a human decision (Motion notice, Junicode, emoji data, site logos, welcome/Library artwork).
-- [x] Security review of Nivora's changes; two defects found and fixed ([SECURITY_REVIEW.md](SECURITY_REVIEW.md)). Independent review: [ ] not done.
-- [x] Distribution: tarball + Arch `PKGBUILD`, `.desktop`, AppStream, update-disabling policy; 11 tests simulating `makepkg`. [ ] Not run on Arch.
+- [x] Security review of Nivora's changes; five findings fixed (profile directory, container-crossing close, size check, branding prefs override, stale branding in the build) ([SECURITY_REVIEW.md](SECURITY_REVIEW.md)). Independent review: [ ] not done.
+- [x] Distribution: tarball + Arch `PKGBUILD`, `.desktop`, AppStream, update-disabling policy; 11 tests simulating `makepkg`; produced from the real build and its policy verified in the running browser. [ ] Not installed on Arch.
 - [x] Maintenance and recovery documented ([MAINTENANCE.md](MAINTENANCE.md)).
-- [ ] Regression suite run: Zen's mochitests and Nivora's (needs the build).
-- [ ] Performance baseline (startup, memory, idle CPU, many tabs).
+- [~] Regression suite: Nivora's 120 checks and 760 checks of 7 of Zen's 26 groups pass, 0 fail; the other 19 groups and an unmodified-Zen baseline were not run.
+- [~] Performance baseline measured for startup, memory and idle CPU (one tab, dev build); many-tab and UI-latency measurements and a Zen comparison not done.
 - [ ] An update channel (none exists by decision; packages are the channel).
 - [ ] Final report separating verified from unverified.

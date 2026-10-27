@@ -40,7 +40,7 @@ package: **unverified on Arch**.
 | Kind | Location | Notes |
 |---|---|---|
 | Application | `/opt/nivora` | owned by the package; replaced on upgrade |
-| Profile (settings, bookmarks, history, cookies, passwords, extensions) | the browser's profile directory under the user's home | **to be confirmed by test F-10** (expected to be separate from Zen's `~/.zen` and Firefox's `~/.mozilla`) |
+| Profile (settings, bookmarks, history, cookies, passwords, extensions) | `~/.config/nivora/` (or `~/.nivora/` with `MOZ_LEGACY_HOME=1`) | Verified by test F-10: separate from Zen's and Firefox's |
 | Caches | the profile's cache directory under `~/.cache` | disposable |
 | Logs | none persistent by default | `MOZ_LOG` for debugging |
 
@@ -75,5 +75,5 @@ A release package needs the release configuration, and the decisions listed ther
 | Assembly script, checksums, `package()` layout, desktop file, policy, icons, licenses | **Verified** by 11 tests that simulate `makepkg` (and fail when the symlink or the policy is wrong) |
 | `makepkg`, `pacman`, namcap, `desktop-file-validate`, `appstreamcli validate` | **Not run** (not available here) |
 | Install, start and uninstall on Arch Linux or Ryoku Arch | **Not run** |
-| A package built from the real build | see the results section of [BUILDING.md](BUILDING.md) |
+| A package built from the real build | **Done** (2026-10-27): `./mach package` made `nivora-0.1.0a1.en-US.linux-x86_64.tar.xz` (3 min 49 s); `make_arch_package.sh` turned it into a 97 MB tarball (319 MB unpacked) with real checksums; the `package()` function of the `PKGBUILD` was run against that tree and produced the expected `/opt`, `/usr/bin`, desktop, icons (the real tree has 16, 32, 48, 64 and 128 px), metainfo and license files; the unpacked, policy-equipped copy starts and `about:policies` lists `DisableAppUpdate: true` |
 | Reproducibility of the tarball | **Not verified** |

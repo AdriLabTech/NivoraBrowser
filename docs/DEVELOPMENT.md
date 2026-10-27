@@ -73,3 +73,10 @@ working directory cannot be imported.
 ## Getting unstuck
 
 [BUILDING.md](BUILDING.md) section 3 lists every build failure met so far with its cause.
+
+## Adding a file under `src/`
+
+`surfer import` links each file of `src/` into `engine/` one by one. A file added after the last
+import is not there until you import again (or link it by hand: `ln -s "$PWD/src/<path>"
+engine/<path>`). A mochitest manifest that lists a file the engine cannot see fails with "lists test
+that does not exist". A file that replaces a Firefox file of the same path is handled the same way.
