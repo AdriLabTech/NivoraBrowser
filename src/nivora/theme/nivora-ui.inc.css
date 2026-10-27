@@ -20,3 +20,5 @@
     display: none !important;
   }
 }
+
+%include nivora-motion.inc.css

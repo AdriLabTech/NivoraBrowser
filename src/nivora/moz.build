@@ -8,6 +8,7 @@ EXTRA_JS_MODULES.nivora += [
     "modules/NivoraCommands.sys.mjs",
     "modules/NivoraCommandsCore.mjs",
     "modules/NivoraL10n.sys.mjs",
+    "modules/NivoraMotion.sys.mjs",
     "modules/NivoraSettings.sys.mjs",
     "modules/NivoraSettingsCore.mjs",
     "modules/NivoraTabsCore.mjs",

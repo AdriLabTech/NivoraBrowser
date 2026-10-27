@@ -28,6 +28,10 @@ DECLARATION = re.compile(r"--nivora-([a-z0-9-]+)\s*:\s*([^;]+);")
 HEX_COLOR = re.compile(r"^#([0-9a-fA-F]{6})$")
 VAR_REFERENCE = re.compile(r"^var\(--nivora-([a-z0-9-]+)\)$")
 COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+# A flat `@media (...) { --nivora-x: y; }` block. Its declarations override a base declaration for a
+# condition (motion is zeroed when the user asks for reduced motion), so they are not a second
+# definition of the token. Colors are never overridden this way.
+MEDIA_BLOCK = re.compile(r"@media[^{;]*\{[^{}]*\}")
 
 
 class TokenError(Exception):
@@ -35,9 +39,9 @@ class TokenError(Exception):
 
 
 def parse_tokens(css):
-    """Return {name: raw value} for every `--nivora-*` declaration."""
+    """Return {name: raw value} for every base `--nivora-*` declaration (not those inside @media)."""
     tokens = {}
-    for name, value in DECLARATION.findall(COMMENT.sub("", css)):
+    for name, value in DECLARATION.findall(MEDIA_BLOCK.sub("", COMMENT.sub("", css))):
         value = value.strip()
         if name in tokens and tokens[name] != value:
             raise TokenError(f"--nivora-{name} is declared twice with different values")

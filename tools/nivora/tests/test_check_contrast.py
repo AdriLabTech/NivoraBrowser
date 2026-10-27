@@ -52,6 +52,18 @@ class TokenParsingTest(unittest.TestCase):
         with self.assertRaises(cc.TokenError):
             cc.parse_tokens("--nivora-a: #000000; --nivora-a: #111111;")
 
+    def test_media_overrides_are_not_a_second_declaration(self):
+        tokens = cc.parse_tokens(
+            "--nivora-scale: 1; --nivora-a: #000000;"
+            "@media (prefers-reduced-motion: reduce) { --nivora-scale: 0; }"
+            '@media not -moz-pref("nivora.ui.animations") { --nivora-scale: 0; }'
+        )
+        self.assertEqual(tokens, {"scale": "1", "a": "#000000"})
+
+    def test_a_color_declared_only_inside_media_is_not_a_base_token(self):
+        tokens = cc.parse_tokens("@media (prefers-color-scheme: dark) { --nivora-a: #ffffff; }")
+        self.assertEqual(tokens, {})
+
 
 class ShippedPaletteTest(unittest.TestCase):
     """The palette that ships in the repository must satisfy its own policy."""

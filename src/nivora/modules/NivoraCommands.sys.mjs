@@ -19,6 +19,7 @@ import { createCommandRegistry } from "resource:///modules/nivora/NivoraCommands
 import { findDuplicateTabs } from "resource:///modules/nivora/NivoraTabsCore.mjs";
 import { NivoraSettings } from "resource:///modules/nivora/NivoraSettings.sys.mjs";
 import { t } from "resource:///modules/nivora/NivoraL10n.sys.mjs";
+import { NivoraMotion } from "resource:///modules/nivora/NivoraMotion.sys.mjs";
 
 const ICONS = "chrome://browser/skin/zen-icons/";
 
@@ -186,6 +187,12 @@ try {
   }
 } catch (e) {
   log.error("settings repair failed", e);
+}
+
+try {
+  NivoraMotion.init();
+} catch (e) {
+  log.error("motion could not start", e);
 }
 
 /**

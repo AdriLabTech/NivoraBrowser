@@ -11,3 +11,8 @@
 # Share is not covered: it hides itself while `zen.share.base-url` is empty.
 - name: nivora.ui.hide-zen-services
   value: true
+
+# Nivora's motion: springs, staggered entrances and depth across the interface (docs/ANIMATIONS.md).
+# Turning it off removes Nivora's own animations; the system's "reduce motion" setting does the same.
+- name: nivora.ui.animations
+  value: true

@@ -15,7 +15,7 @@
   value: "alt" # ctrl, alt, shift
 
 - name: zen.glance.animation-duration
-  value: 350 # in milliseconds
+  value: 520 # in milliseconds; Nivora: 350 in Zen
 
 - name: zen.glance.deactivate-docshell-during-animation
   value: false

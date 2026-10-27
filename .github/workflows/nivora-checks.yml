@@ -29,6 +29,8 @@ jobs:
         run: .venv/bin/python -I tools/nivora/generate_icons.py --check
       - name: Interface artwork is the generated, Mozilla-free set
         run: .venv/bin/python -I tools/nivora/generate_ui_artwork.py --check
+      - name: Spring easing curves are the generated ones
+        run: .venv/bin/python -I tools/nivora/generate_motion.py --check
       - name: Command registry and settings (Node)
         run: node --test tools/nivora/js-tests/*.test.mjs
       - name: ffprefs unit tests
