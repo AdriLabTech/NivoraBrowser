@@ -4,11 +4,27 @@ name: Build Linux package
 # workflow artifact: a ready `.pkg.tar.zst`, plus the inputs for `makepkg`. It repeats, step for step,
 # the procedure of docs/BUILDING.md that was run by hand (tools/nivora/build_linux.sh).
 #
-# Started by hand only: a build takes about two hours of a four-core runner. Nothing is released or
-# published; the artifact is kept for 14 days and is visible to whoever can read the repository.
+# Two jobs, so a problem in the light second one never costs the heavy first one again:
+#   build    about 80 minutes on a four-core runner; leaves the tarballs as the artifact nivora-build-output;
+#   package  a few minutes; makes the .pkg.tar.zst with a real makepkg, starts the packaged browser,
+#            checks the dependencies, and leaves the artifact nivora-arch-package.
+# "Re-run failed jobs" repeats only `package`. To package an earlier build without building again, start
+# the workflow with the id of that run in `source_run`.
+#
+# Started by hand only. Nothing is released or published; the artifacts are kept for 14 days and are
+# visible to whoever can read the repository.
 
 on:
   workflow_dispatch:
+    inputs:
+      source_run:
+        description: "Id of an earlier run whose build to package instead of building again (leave empty to build)"
+        required: false
+        default: ""
+      source_artifact:
+        description: "Name of the artifact to take from that run"
+        required: false
+        default: "nivora-build-output"
 
 permissions:
   contents: read
@@ -19,6 +35,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ inputs.source_run == '' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 345
     steps:
@@ -49,22 +66,88 @@ jobs:
             echo "== $f"; tail -n 150 "$f"
           done
 
-      # A real `makepkg` (Ubuntu ships it) turns the inputs into a package; the dependencies cannot be
-      # resolved without Arch's databases, so they are skipped here and resolved by pacman on install.
-      - name: Make the package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nivora-build-output
+          path: |
+            out/*.tar.xz
+            out/PKGBUILD
+            out/nivora.desktop
+            out/io.github.adrilabtech.nivora.metainfo.xml
+            out/policies.json
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: error
+
+  package:
+    needs: build
+    # Runs after a successful build, or alone when an earlier build is named in `source_run`.
+    if: ${{ !cancelled() && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.source_run != '' && inputs.source_artifact || 'nivora-build-output' }}
+          path: in
+          run-id: ${{ inputs.source_run != '' && inputs.source_run || github.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Lay the inputs out
         run: |
-          sudo apt-get install -y --no-install-recommends makepkg fakeroot libarchive-tools zstd
-          cd out
-          PKGEXT=.pkg.tar.zst makepkg -d --noconfirm --nocheck
+          mkdir -p out
+          find in -type f \( -name '*.tar.xz' -o -name PKGBUILD -o -name nivora.desktop \
+            -o -name '*.metainfo.xml' -o -name policies.json \) -exec cp -v {} out/ \;
+          ls -la out
+
+      # makepkg alone is not enough on Ubuntu: it also needs pacman's configuration and tools.
+      - name: Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pacman-package-manager makepkg fakeroot libarchive-tools zstd file \
+            xvfb xdotool imagemagick fonts-dejavu-core \
+            libgtk-3-0t64 libasound2t64 libdbus-1-3 libpulse0 libxcomposite1 libxdamage1 libxrandr2 \
+            libxcursor1 libxi6 libx11-xcb1
+
+      # A real `makepkg` turns the inputs into a package. The dependencies cannot be resolved without
+      # Arch's databases, so they are skipped here and resolved by pacman on install. If it fails, it is
+      # run again with a trace so that the log says why.
+      - name: Make the package
+        working-directory: out
+        run: |
+          export PKGEXT=.pkg.tar.zst
+          if ! makepkg -d --noconfirm --nocheck; then
+            echo "::group::makepkg trace"
+            bash -x "$(command -v makepkg)" -d --noconfirm --nocheck 2>&1 | tail -n 120 || true
+            echo "::endgroup::"
+            exit 1
+          fi
           rm -rf src pkg
           sha256sum *.pkg.tar.zst *.tar.xz PKGBUILD nivora.desktop io.github.adrilabtech.nivora.metainfo.xml policies.json > SHA256SUMS
           ls -la
 
+      - name: What the package contains
+        working-directory: out
+        run: |
+          bsdtar -xOf nivora-browser-bin-*.pkg.tar.zst .PKGINFO
+          bsdtar -tf nivora-browser-bin-*.pkg.tar.zst | grep -v '^opt/nivora/' | head -60
+
+      - name: The dependencies cover the linked libraries
+        run: |
+          mkdir app
+          tar -C app -xJf out/nivora-*.linux-x86_64.tar.xz
+          python3 tools/nivora/check_arch_deps.py --dist app/nivora --pkgbuild out/PKGBUILD
+
       - name: Start the packaged browser and load a page
         run: |
-          sudo apt-get install -y --no-install-recommends xvfb xdotool imagemagick fonts-dejavu-core
           mkdir -p smoke
-          python3 tools/nivora/smoke.py --dist "$(ls -d engine/obj-*/dist/nivora | head -1)" --out smoke
+          python3 tools/nivora/smoke.py --dist app/nivora --out smoke
 
       - name: Summary
         if: always()
