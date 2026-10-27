@@ -122,7 +122,12 @@ never disabled to obtain a green result.
 
 ## 5. Known gaps
 
-- No visual regression tooling.
-- No performance harness yet (section 23.3 of the specification: startup, RAM, idle CPU, UI
-  latency, many tabs, compared with Zen under equal conditions).
-- No CI. The Zen workflows were removed because they run Zen's release pipeline.
+- No visual regression tooling: screenshots are taken by `tools/nivora/screenshots.py` and judged by a person.
+- Performance: one environment, one tab, a development build, no comparison with Zen (section 2.2).
+- CI runs only the static checks ([nivora-checks.yml](../.github/workflows/nivora-checks.yml): contrast,
+  icons, artwork, Python and Node tests, `ffprefs`), green on GitHub's runners since 2026-10-27. The
+  first runs skipped the icon, branding and artwork tests silently because Pillow was missing
+  (and `python -I` ignores `pip install --user`); that is fixed with a virtual environment. No browser
+  build or browser test runs in CI: a build needs about 80 minutes, 5 GB of object files and the
+  patched Firefox source.
+- Zen's own CI workflows were removed because they run Zen's release pipeline.
