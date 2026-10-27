@@ -30,3 +30,8 @@
 --color-gray-100: var(--nivora-surface-1);
 --color-gray-90: var(--nivora-surface-2);
 --color-gray-80: var(--nivora-surface-raised);
+
+/* Informational surfaces (the "sync your data" banner in the main menu, message bars) are violet in
+ * Firefox's dark theme. Status is carried by the icon and the text here, not by a saturated fill. */
+--background-color-information: var(--nivora-surface-raised);
+--promo-background-color-vibrant: var(--nivora-surface-raised);

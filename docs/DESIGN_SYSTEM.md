@@ -80,12 +80,13 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 |---|---|
 | Palette, roles, contrast validation | Implemented and checked (static) |
 | Variable mapping into Zen's dark scheme | Implemented and **seen rendered** in a real build: window, sidebar, urlbar, command palette (screenshots via `tools/nivora/screenshots.py`) |
-| In-content pages (settings) and blank pages | Mapped to the neutral surfaces; see the list above. Not all of the settings pane has been inspected |
+| In-content pages (settings), blank pages, informational banners | Mapped to the neutral surfaces; see the list above. Seen: new tab, settings (two panes), main menu, tab context menu, private window. `about:support` keeps light-blue table headers |
 | Firefox logo and mascot in the interface | Replaced (22 files); seen in settings and the default-browser banner. The private-window background, onboarding-message art and a few rarely shown files are replaced but not yet looked at |
 | Typography | Not decided. Candidates: the system UI font stack Zen already uses; evaluate once a build runs |
 | Iconography | Not started. Zen ships its own monochrome set (`zen-icons/`) that can be reused |
 | Logo and application icon | **Proposal** generated from the palette (`tools/nivora/generate_branding.py`): an eclipse crescent in a corona ring on an obsidian plate; ring dropped below 48 px. Needs the owner's approval; it resembles generic crescent-moon icons, so a more distinctive mark may be preferable. Wordmark SVGs are plain text placeholders |
-| New tab page, preferences, dialogs, tabs states | Not started |
+| Tab states, menus | Reviewed in screenshots (active, inactive, pinned, hover; main and context menus): consistent with the palette; loading/audio/warning states and dialogs not yet |
+| New tab page, dialogs | New tab is Zen's search overlay on the neutral canvas; dialogs not reviewed |
 | Reduced motion | Not started; Zen has a `gReduceMotion` flag to build on |
 
 ## Rules for contributors

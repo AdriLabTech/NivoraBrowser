@@ -38,11 +38,11 @@ rest to be completed without further questions.
 - [x] Dark mapping rendered and reviewed in screenshots: window, sidebar, address bar, command palette, settings, blank page.
 - [x] Original icon set licensing fixed: Zen's 154 Nucleo icons (not redistributable) replaced by Phosphor (MIT); 7 tests; reviewed as rendered contact sheets. Seen in the command palette and settings.
 - [x] Application logo and icons: generated mark, accepted by the maintainer; 7 tests. Wordmarks are text placeholders.
-- [ ] Tabs: state indicators not conveyed by color alone (needs the UI to be inspected).
-- [ ] Address bar hierarchy, menus, dialogs, downloads panel, new tab page, preferences panes.
+- [~] Tabs: active, inactive, pinned and hover are distinguishable by fill and position, not hue (screenshots); loading, audio and warning states not exercised.
+- [~] Address bar, menus, settings and new tab reviewed in screenshots; one violet banner fixed. Dialogs and the downloads panel with a download not reviewed.
 - [ ] Typography decision.
 - [ ] Reduced-motion handling of Nivora's own animations (it has none yet).
-- [ ] Narrow-window and high-DPI checks.
+- [x] Narrow-window (420 px) and high-DPI (2x) checks: nothing clipped, icons crisp.
 
 ### Foundation acceptance (specification section 10)
 

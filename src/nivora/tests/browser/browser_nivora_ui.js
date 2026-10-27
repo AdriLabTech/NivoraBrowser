@@ -57,3 +57,23 @@ add_task(async function test_mods_website_link_follows_the_preference() {
     await SpecialPowers.popPrefEnv();
   });
 });
+
+add_task(async function test_dark_mapping_reaches_the_browser_window() {
+  const expected = {
+    "--background-color-information": "rgb(24, 24, 24)",
+    "--promo-background-color-vibrant": "rgb(24, 24, 24)",
+    "--color-gray-90": "rgb(16, 16, 16)",
+    "--color-gray-80": "rgb(24, 24, 24)",
+    "--color-gray-100": "rgb(10, 10, 10)",
+  };
+  const probe = document.createElement("div");
+  document.documentElement.appendChild(probe);
+  try {
+    for (const [name, rgb] of Object.entries(expected)) {
+      probe.style.backgroundColor = `var(${name})`;
+      is(getComputedStyle(probe).backgroundColor, rgb, `${name} is the neutral surface`);
+    }
+  } finally {
+    probe.remove();
+  }
+});

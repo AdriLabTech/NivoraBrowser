@@ -47,7 +47,8 @@ proxy allow-list, development build (no LTO/PGO). Dates are when the command las
 | Nivora commands in the command palette | **pass** | seen in a screenshot (Export, Import, Reset Nivora Settings; new tab, close tab and others from Zen) and by `browser_nivora_commands.js` |
 | Close duplicate tabs, reset settings with confirmation | **pass** | `browser_nivora_commands.js` |
 | Settings export/import/repair | **pass** (prefs backend) | `browser_nivora_settings.js`. The **file pickers** were not driven: the dialogs need a person |
-| Visual review (screenshots, `tools/nivora/screenshots.py`) | **done for** window, sidebar, address bar, command palette, settings (two panes), blank page | Palette is grayscale; no Firefox or Zen logo or mascot in these screens. Not reviewed: tab states, menus, downloads panel, private window, high-DPI, narrow windows |
+| Visual review (screenshots, `tools/nivora/screenshots.py`) | **done** for the screens in section 3.2 | One defect found and fixed (a violet banner in the main menu); the rest is grayscale, with no Firefox or Zen logo or mascot. Not reviewed: loading, audio and warning tab states; compact mode; dialogs; the downloads panel with a download; the Library; `about:privatebrowsing` |
+| Dark mapping reaches the window | **pass** | `browser_nivora_ui.js` (computed values of five mapped variables) |
 | Zen's own tests (all 26 groups) | **26,288 browser checks pass, 31 fail**; xpcshell: Sync and remote-settings fail for inherited reasons | see 2.3 for each failure |
 | `npm run lint` | **not run** | needs node modules inside `engine/` |
 | Performance baseline of Nivora itself | **measured, one environment** | `tools/nivora/perf_baseline.py`, 3 runs each, raw data in `docs/perf-baseline-2026-10-27.json`. Fresh profile: start-up 2.3 s (2.2-2.3), memory 533 MiB PSS (529-536), idle CPU 1.9 % of one core. Existing profile: 1.4 s (1.3-1.4), 512 MiB (508-514), idle 0.6 %. One local page open, software rendering, development build without LTO/PGO, 4 cores, 30 s idle window. Useful only to compare a later Nivora build on the same machine |
@@ -126,6 +127,23 @@ machine). Record the build id from `about:support`.
 | I-05 | System setting "reduce motion" on | Nivora animations off |
 | I-06 | 2x display scale | Icons and text crisp, targets large enough |
 | I-07 | Menus, context menus, dialogs, downloads panel | Consistent surfaces and readable text |
+
+### 3.3 Results of the screen review (2026-10-27)
+
+`python3 -I tools/nivora/screenshots.py --dist engine/obj-x86_64-pc-linux-gnu/dist/bin --out DIR` produces them; four are in
+[screenshots/](screenshots/).
+
+| ID | Result |
+|---|---|
+| I-01 | **Pass** for the new tab, a page, settings (two panes), the command palette, the main menu, a tab context menu, a private window and `about:policies`/`about:support`'s frame: grayscale surfaces stepping from `#050505` to `#181818`. Exceptions kept on purpose: the yellow warning triangle in settings (a status color), web favicons, and the Mozilla account logo. `about:support` has its own light-blue table headers (not mapped) |
+| I-02 | **Partly.** Active tab: lighter fill; inactive: transparent; pinned: a separate section above the divider; hover: a lighter fill. Loading, audio and warning states were **not** exercised, so "not by color alone" is not shown for them |
+| I-03 | **Not done** beyond seeing the white focus ring on the settings search field |
+| I-04 | **Pass for width**: at 420 px the sidebar keeps its width and the page narrows; nothing clipped. Compact mode not tried |
+| I-05 | **Not verifiable yet**: Nivora adds no animation; Zen's were not tested with reduced motion |
+| I-06 | **Pass**: at 2x (`GDK_SCALE=2`) icons and text are crisp and targets large |
+| I-07 | **Partly**: the main menu and a tab context menu are consistent and readable; dialogs and the downloads panel with a download were not seen |
+
+The light scheme (`zen.view.window.scheme=1`) renders Zen's own light theme, unthemed by Nivora, as documented.
 
 Automated screenshot comparison is a goal for Stable; until then these steps are executed by hand
 and the result with screenshots is attached to the phase report.

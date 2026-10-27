@@ -13,7 +13,7 @@ replace an independent one. Date: 2026-10-26, on commit `f91e906` and earlier.
 | `NivoraSettings.sys.mjs` | Chrome | A JSON file the user picks | A fixed list of 25 preferences |
 | `ZenUBGlobalActions` hook | Chrome | none | Appends the Nivora commands to Zen's list |
 | `ZenShareManager.enabled` change | Chrome | A preference | Hides share UI when no service is set |
-| `nivora-ui.inc.css` | Chrome CSS | A preference (media query) | Hides two controls (verified by `browser_nivora_ui.js`) |
+| `nivora-ui.inc.css`, `nivora-dark.inc.css` | Chrome CSS | A preference (media query) | Hides two controls; remaps color variables (both verified by `browser_nivora_ui.js`) |
 | Token CSS | Chrome CSS | none | Variables |
 | `src/widget/nsXPLookAndFeel-cpp.patch` | Native (parent and content processes) | none | Six color constants of the dark system palette; no logic changed |
 | Replacement SVG and PNG artwork (`generate_ui_artwork.py`, 25 SVG and 3 PNG files) | Chrome resources | none | Static drawings; a test refuses `<script>`, `<style>`, `<use>`, `<image>`, `href` and external `url()` in them |

@@ -36,6 +36,15 @@ project (update server, share service, donation prompts, welcome pages). See
 [docs/UPSTREAM.md](docs/UPSTREAM.md) and
 [ADR 0004](docs/decisions/0004-upstream-service-isolation.md).
 
+## What it looks like
+
+| | |
+|---|---|
+| ![Command palette](docs/screenshots/palette-nivora.png) | ![Settings](docs/screenshots/preferences.png) |
+| ![Main menu](docs/screenshots/app-menu.png) | ![Tabs](docs/screenshots/tabs.png) |
+
+Development build, X11 under Xvfb, taken by `tools/nivora/screenshots.py`.
+
 ## What is in this repository
 
 - The full Zen source tree, imported unmodified as the repository's **first commit**. Every later
