@@ -113,7 +113,10 @@ be presented as safe for daily use.
 - No audit of Zen's native patches, of Firefox itself, or of the build output.
 - No fuzzing, no dependency scanning beyond the above, no reproducible-build check.
 - A traffic audit beyond the 60-second host-name log of a first start (a capture over days, with real network access, with the features the user turns on).
-- Secret scanning of the repository: not yet run (a one-off scan is planned before the first push
-  to a public branch).
+- Secret scanning: a one-off pattern scan (cloud and GitHub tokens, private keys, JWTs, `password=`-style
+  assignments) over everything Nivora added since the first commit found nothing (2026-10-27). It is a
+  regex scan, not a dedicated scanner, and it did not cover Zen's inherited files; the inherited
+  `.pem`/`.der` files are public certificates and test fixtures. GitHub's own secret scanning for
+  the repository is a setting for the owner to enable.
 - Legal compliance is not reviewed. See [UPSTREAM.md](UPSTREAM.md) for the license items that need
   specialist review.
