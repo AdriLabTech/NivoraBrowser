@@ -106,8 +106,8 @@ run is tracked honestly in [docs/TESTING.md](docs/TESTING.md).
   disabled or point nowhere. The share entry points hide themselves and the donate button and mods
   link are hidden by a preference; the About dialog still links to Zen and Firefox as attribution.
 - Linux is the only platform being worked on. Windows and macOS packaging files are inherited and
-  untouched. Only an X11 session in a container has been used; Wayland, Arch and Ryoku Arch are
-  untested ([docs/LINUX.md](docs/LINUX.md)).
+  untouched. X11 (Xvfb) and Wayland (headless sway) sessions in a container have been used; real
+  desktops, GPUs, Arch and Ryoku Arch are untested ([docs/LINUX.md](docs/LINUX.md)).
 - Several third-party assets inherited from Zen need a license review before a public release
   ([docs/LICENSES.md](docs/LICENSES.md)).
 

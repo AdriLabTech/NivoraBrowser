@@ -39,17 +39,42 @@ Everything in [SECURITY.md](SECURITY.md) section 4: no update host, share servic
 what's-new / welcome pages operated by the Zen project; the Library donate button and the mods
 website link hidden by default. No preference was changed that lowers a Firefox protection.
 
-## 4. What is not verified
+## 4. What a fresh profile contacts (observed)
 
-- A traffic capture of an idle and a browsing session (test F-09) has not been run, so "no
-  connection to Zen hosts" is true of the configuration, not yet of observed behavior.
-- Firefox's own background services (Remote Settings, Safe Browsing, add-on and search endpoints,
-  captive-portal and connectivity checks) work as in Firefox and have not been audited for this
-  build.
+`tools/nivora/net_audit.py` starts the built browser with an empty profile and no proxy, loads one
+local page, and logs every host name the resolver is asked about; the list was the same after 120 s
+and after 5 minutes (2026-10-27). **No Zen-operated host appears.** What does appear is Firefox's own
+behavior, which Nivora has **not** changed:
+
+| Host | What Firefox does there | Turned off by (not changed by Nivora) |
+|---|---|---|
+| `firefox.settings.services.mozilla.com` | Remote Settings: certificate and blocklist data | `services.settings.server` (needed for revocation data; not recommended to disable) |
+| `aus5.mozilla.org` | Update service, used here for the media components below | `media.gmp-manager.updateEnabled` |
+| `ciscobinary.openh264.org` | Download of Cisco's OpenH264 codec (WebRTC video) | `media.gmp-gmpopenh264.enabled` |
+| `edgedl.me.gvt1.com`, `update.googleapis.com` | Download and update of Google's Widevine content decryption module (streaming DRM) | `media.gmp-widevinecdm.enabled`, `media.eme.enabled` |
+| `location.services.mozilla.com` | Region lookup | `browser.region.update.enabled` |
+| `push.services.mozilla.com` | Web Push connection | `dom.push.enabled` |
+| `firefox-portal-detection.com`, `mozilla.cloudflare-dns.com`, `ipv4only.arpa` | Captive-portal and connectivity checks, DNS-over-HTTPS bootstrap, NAT64 probe | `network.captive-portal-service.enabled`, `network.connectivity-service.enabled` |
+| `support.mozilla.org` | Resolved at start-up; trigger not identified | |
+| `www.google.com` | The default search engine: speculative connection from the address bar | `browser.urlbar.speculativeConnect.enabled`, or another default search engine |
+
+Each of these shows the user's IP address to the operator. Whether a privacy-first browser should
+ship with the media-component downloads and the Google default turned off is a product decision for
+the owner ([ROADMAP.md](ROADMAP.md)); Nivora keeps Firefox's behavior because disabling them removes DRM
+video and H.264 calls, and because the specification forbids weakening or replacing Firefox's
+mechanisms without a decision. The audit is a **host-name log of attempts**, not a packet capture: it does not
+show what was sent, and in an environment with no network a feature that only runs after a successful
+first contact is not seen.
+
+## 5. What is not verified
+
+- A packet capture of an idle and a browsing session, with real network access and over days.
+- Safe Browsing (`safebrowsing.googleapis.com` or its replacement) did not appear in five minutes; it is
+  expected after the first page load that needs a list update.
 - The effect of building without Mozilla and Google API keys (location services, Safe Browsing key
   files are read from `~/.nivora-keys`; none ship) has not been tested.
 
-## 5. Rules
+## 6. Rules
 
 A preference that reduces a protection must say so in its description. Any future feature that
 sends data off the machine must say what is sent, to whom, and be off until the user turns it on.

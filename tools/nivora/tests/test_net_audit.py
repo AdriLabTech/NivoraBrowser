@@ -38,6 +38,18 @@ class ClassifyTest(unittest.TestCase):
                      "mozilla.cloudflare-dns.com", "cloudflare-dns.com", "content-signature-2.cdn.mozilla.net"):
             self.assertEqual(net_audit.classify(host), "mozilla", host)
 
+    def test_media_component_hosts(self):
+        for host in ("ciscobinary.openh264.org", "edgedl.me.gvt1.com", "update.googleapis.com"):
+            self.assertEqual(net_audit.classify(host), "component", host)
+
+    def test_default_search_engine(self):
+        for host in ("www.google.com", "google.com", "duckduckgo.com"):
+            self.assertEqual(net_audit.classify(host), "search", host)
+
+    def test_other_google_hosts_are_not_trusted(self):
+        for host in ("tracker.google.com.evil.test", "ads.googleapis.com", "safebrowsing.googleapis.com"):
+            self.assertEqual(net_audit.classify(host), "unknown", host)
+
     def test_local_and_probe_names(self):
         for host in ("localhost", "127.0.0.1", "ipv4only.arpa", "example.org", "printer.local"):
             self.assertEqual(net_audit.classify(host), "local", host)

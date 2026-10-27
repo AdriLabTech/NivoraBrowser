@@ -28,7 +28,7 @@ rest to be completed without further questions.
 - [x] Requirements for a source-restricted container ([BUILDING.md](BUILDING.md)).
 - [x] `surfer import` succeeds (0 failures) with Nivora's changes.
 - [x] Baseline build: completes, exit 0, 76 min on 4 cores ([BUILDING.md](BUILDING.md)); repeated after a clean re-import.
-- [~] Browser starts and loads a page (`smoke.py`), and Nivora's and a subset of Zen's tab, space and urlbar tests pass. Back/forward, a PDF, media and a manual pass through F-03..F-08 are not done.
+- [~] Browser starts and loads a page on X11 (`smoke.py`) and on Wayland (`smoke_wayland.py`), and Nivora's and a subset of Zen's tab, space and urlbar tests pass. Back/forward, a PDF, media and a manual pass through F-03..F-08 are not done.
 - [ ] Release configuration (LTO/PGO, `ZEN_RELEASE`) built and measured.
 
 ### Identity (Obsidian Eclipse)
@@ -106,4 +106,5 @@ These cannot be done by the agent that wrote this repository, or need a decision
   channel; Windows and macOS (out of scope so far).
 - Run an **unmodified-Zen baseline** of the test suite on a machine that may run the official binary, and
   compare speed and memory.
+- Decide whether the media-component downloads (Cisco, Google Widevine), the Google default search engine and the speculative connection should ship **off** ([PRIVACY.md](PRIVACY.md) section 4).
 - Offer `tools/ffprefs` (hex quoting) to Zen upstream.

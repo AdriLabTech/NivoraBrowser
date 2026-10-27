@@ -4,14 +4,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 """Which host names does a fresh Nivora profile try to resolve? (test F-09)
 
-Starts the built browser with an empty home directory, Gecko's host-resolver
-log switched on and no start page, waits, stops it and lists every name it
+Starts the built browser with an empty profile, no proxy, one local page, Gecko's host-resolver
+log switched on, waits, stops it and lists every name it
 asked the resolver about. Every name is classified:
 
-  zen      a Zen-operated service: the audit FAILS
-  mozilla  a standard Firefox service (Remote Settings, captive portal, DNS-over-HTTPS bootstrap)
-  local    loopback, `.local`, or the special names Gecko uses to probe the network
-  unknown  anything else: the audit FAILS until the name is explained and added here
+  zen        a Zen-operated service: the audit FAILS
+  mozilla    a standard Firefox service (Remote Settings, push, region, captive portal, updates)
+  component  where Firefox downloads media components: Cisco (OpenH264) and Google (Widevine)
+  search     the default search engine, contacted to warm up a connection or to suggest
+  local      loopback, `.local`, or the special names Gecko uses to probe the network
+  unknown    anything else: the audit FAILS until the name is explained and added here
 
 Limits, so the result is not over-read: the log shows lookups the browser
 *attempted*. In an environment without general network access nothing past the
@@ -31,9 +33,15 @@ import shutil
 import signal
 import subprocess
 import sys
+import http.server
 import tempfile
+import threading
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import smoke  # noqa: E402
 
 RESOLVING = re.compile(r"Resolving host \[([^\]\s]+)\]")
 
@@ -44,6 +52,8 @@ MOZILLA = re.compile(
     r"cloudflare-dns\.com|services\.mozilla\.com"
     r")$"
 )
+COMPONENT = re.compile(r"(^|\.)(openh264\.org|gvt1\.com|update\.googleapis\.com)$")
+SEARCH = re.compile(r"^(www\.)?(google\.com|duckduckgo\.com|bing\.com)$")
 LOCAL = re.compile(r"^(localhost|127\.0\.0\.1|\[?::1\]?|local|ipv4only\.arpa|example\.(com|org|net)|[^.]+\.local)$")
 
 
@@ -60,6 +70,10 @@ def classify(host):
         return "zen"
     if MOZILLA.search(host):
         return "mozilla"
+    if COMPONENT.search(host):
+        return "component"
+    if SEARCH.match(host):
+        return "search"
     if LOCAL.match(host):
         return "local"
     return "unknown"
@@ -79,13 +93,21 @@ def run_browser(binary, out, seconds, display):
         old.unlink()
     xvfb = subprocess.Popen(["Xvfb", display, "-screen", "0", "1400x900x24"],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    env = {**os.environ, "HOME": str(home), "DISPLAY": display, "GDK_BACKEND": "x11", "MOZ_ENABLE_WAYLAND": "0",
+    # No proxy: with one, a browser hands host names to the proxy and the resolver log would not show them.
+    clean = {k: v for k, v in os.environ.items() if k.lower() not in ("http_proxy", "https_proxy", "all_proxy", "no_proxy")}
+    env = {**clean, "HOME": str(home), "DISPLAY": display, "GDK_BACKEND": "x11", "MOZ_ENABLE_WAYLAND": "0",
            "XDG_CONFIG_HOME": str(home / ".config"), "XDG_CACHE_HOME": str(home / ".cache"),
            "MOZ_LOG": "nsHostResolver:5,timestamp", "MOZ_LOG_FILE": str(log_base)}
+    profile = home / "profile"
+    profile.mkdir()
+    (profile / "user.js").write_text('user_pref("network.proxy.type", 0);\n')
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), smoke.Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{server.server_address[1]}/"
     browser = None
     try:
         time.sleep(2)
-        browser = subprocess.Popen([str(binary), "--no-remote"], env=env, cwd=home,
+        browser = subprocess.Popen([str(binary), "--no-remote", "--profile", str(profile), url], env=env, cwd=home,
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(seconds)
     finally:
@@ -95,6 +117,7 @@ def run_browser(binary, out, seconds, display):
                 browser.wait(timeout=30)
             except subprocess.TimeoutExpired:
                 browser.kill()
+        server.shutdown()
         xvfb.terminate()
         shutil.rmtree(home, ignore_errors=True)
     return "\n".join(p.read_text(errors="replace") for p in sorted(out.glob("hostresolver*")))

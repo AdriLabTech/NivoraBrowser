@@ -59,6 +59,7 @@ The `.desktop` entry, icons, MIME associations, the update policy file and the A
 | Environment | State |
 |---|---|
 | X11 under Xvfb, Ubuntu 24.04 container (GTK, Adwaita/Yaru) | **works**: builds, starts, browses a local page, passes Nivora's and a subset of Zen's browser tests ([TESTING.md](TESTING.md)); profile in `~/.config/nivora` |
+| Wayland (sway, headless, software-rendered, Ubuntu 24.04 container) | **starts and renders** as a native Wayland client with application id `nivora` (`tools/nivora/smoke_wayland.py`); no input device, so interaction, clipboard, IME and GPU paths are untested |
 | Arch Linux, Wayland | not tested |
 | Arch Linux, X11 | not tested |
 | Hyprland | not tested |

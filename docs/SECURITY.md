@@ -55,7 +55,7 @@ registry) and must be reviewed against section 6.
 | `zen-browser.github.io/theme-store` | Fetching installed mods and updates | `zen.mods.auto-update=false`; requests only happen for mods the user installs | Residual: user-initiated installs still contact it |
 | `zen-browser.app/whatsnew`, `/welcome`, `/privacy-policy`, `/about`, `/download` | Opened tabs and links | Welcome and what's-new prefs emptied. About-dialog links and the donate link in Library remain as visible, user-clicked links to Zen | Open item |
 | `zen-browser.app/donate` | Sidebar "updated" notification | Notification disabled (`zen.updates.show-update-notification=false`) | Config verified |
-| Mozilla: Sync, Remote Settings, AMO, Safe Browsing, search, captive portal, telemetry endpoints | Standard Firefox services | Unchanged. Zen's mozconfig already disables telemetry/data reporting at build time | First-start host-name audit done (Remote Settings, captive portal, DNS-over-HTTPS bootstrap, loopback); **no packet capture** and no long-running audit |
+| Mozilla: Sync, Remote Settings, AMO, Safe Browsing, search, captive portal, telemetry endpoints | Standard Firefox services | Unchanged. Zen's mozconfig already disables telemetry/data reporting at build time | Host-name audit of a fresh profile done (5 minutes): Remote Settings, update service, region, push, captive portal, **Cisco OpenH264 and Google Widevine downloads, the default search engine**; listed with their switches in [PRIVACY.md](PRIVACY.md) section 4. **No packet capture** and no long-running audit |
 | Windows installer URLs (`links.zen-browser.app`, etc.) | Windows only | Not addressed | Out of scope for now |
 
 **Audit of the shipped build (2026-10-27).** The packaged build's `omni.ja` archives were unpacked and
@@ -65,7 +65,7 @@ and the update notification, both hidden or disabled by preference), `zen-browse
 `zen-browser.github.io/theme-store/themes/` (the mods marketplace: contacted only when the user
 installs or updates a mod), `zen-browser.app/about`, `www.zen-browser.app/privacy-policy/`,
 `docs.zen-browser.app/user-manual/window-sync` (links the user may click), and about 20 GitHub issue
-URLs inside code comments of Zen's files. A runtime host-name audit of a first start
+URLs inside code comments of Zen's files. A runtime host-name audit of a fresh profile
 ([TESTING.md](TESTING.md)) agrees: no Zen host.
 
 The accountability for this table is the manual test F-09 in [TESTING.md](TESTING.md): it must be
