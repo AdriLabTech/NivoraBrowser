@@ -83,7 +83,7 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 - [x] Security review of Nivora's changes; five findings fixed (profile directory, container-crossing close, size check, branding prefs override, stale branding in the build) ([SECURITY_REVIEW.md](SECURITY_REVIEW.md)). Independent review: [ ] not done.
 - [x] Distribution: tarball + Arch `PKGBUILD`, `.desktop`, AppStream, update-disabling policy; 11 tests simulating `makepkg`; produced from the real build and its policy verified in the running browser. [ ] Not installed on Arch.
 - [x] Maintenance and recovery documented ([MAINTENANCE.md](MAINTENANCE.md)).
-- [~] Regression suite: Nivora's 120 checks pass; Zen's 26 groups run: 26,288 browser checks pass and 31 fail, each explained by the environment or inherited code, none traced to Nivora ([TESTING.md](TESTING.md) section 2.3). An unmodified-Zen baseline was not possible.
+- [~] Regression suite: Nivora's 123 checks pass; Zen's 26 groups run: 26,288 browser checks pass and 31 fail, each explained by the environment or inherited code, none traced to Nivora ([TESTING.md](TESTING.md) section 2.3). An unmodified-Zen baseline was not possible.
 - [~] Performance baseline measured for startup, memory and idle CPU (one tab, dev build); many-tab and UI-latency measurements and a Zen comparison not done.
 - [ ] An update channel (none exists by decision; packages are the channel).
 - [ ] Final report separating verified from unverified.

@@ -30,10 +30,16 @@ add_task(async function test_donate_button_follows_the_preference() {
   );
 
   await SpecialPowers.pushPrefEnv({ set: [[PREF, true]] });
-  is(getComputedStyle(button).display, "none", "hidden by default");
+  await TestUtils.waitForCondition(
+    () => getComputedStyle(button).display === "none",
+    "hidden by default"
+  );
 
   await SpecialPowers.pushPrefEnv({ set: [[PREF, false]] });
-  isnot(getComputedStyle(button).display, "none", "shown when the preference is off");
+  await TestUtils.waitForCondition(
+    () => getComputedStyle(button).display !== "none",
+    "shown when the preference is off"
+  );
 
   await SpecialPowers.popPrefEnv();
   await SpecialPowers.popPrefEnv();

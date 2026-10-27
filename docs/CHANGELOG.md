@@ -29,7 +29,7 @@ see https://github.com/zen-browser/desktop/releases.
   `post_import.py` (removes branding-file prefs that override Nivora's endpoints).
 - Interface artwork: Firefox's logo and mascot, and Zen's window-layout screenshots, replaced by
   generated palette-only drawings (`generate_ui_artwork.py`, 28 files).
-- Nivora browser tests (4 files, 128 checks), `check_signatures.py` (F-11), `perf_baseline.py`, screenshots and a CI step that checks the generated artwork.
+- Nivora browser tests (4 files, 123 checks), `check_signatures.py` (F-11), `perf_baseline.py`, screenshots and a CI step that checks the generated artwork.
 
 ### Changed
 - In-content pages (settings, errors, dialogs) and blank dark pages use the neutral surfaces:
