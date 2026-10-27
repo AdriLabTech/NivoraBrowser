@@ -34,9 +34,18 @@ see https://github.com/zen-browser/desktop/releases.
   settings-pane choreographies; tabs open and close on springs; the master switch `nivora.ui.animations` (also a
   settings entry and the palette command *Toggle Animations*) and the system's reduced motion zero everything,
   including Zen's scripted animations; `motion_probe.py` measures the animations by recording the screen.
+- Arch Linux packaging that was built and checked: `PKGBUILD` dependencies derived from the libraries the build links
+  (`check_arch_deps.py`), `tools/nivora/build_linux.sh` (the documented build as one command),
+  `.github/workflows/nivora-build-linux.yml` (build job and package job, started by hand, artifact kept 14 days),
+  and an install guide for Arch Linux and Ryoku Arch in the README (`test_readme_install_guide.py` keeps it
+  consistent with the repository).
+- `browser_nivora_browsing.js` (F-02 to F-05, F-08) and `tools/nivora/check_profile.py` (F-06, and F-10 with a
+  Zen and Firefox profile already present).
 - Nivora browser tests (4 files, 123 checks), `check_signatures.py` (F-11), `perf_baseline.py`, screenshots and a CI step that checks the generated artwork.
 
 ### Changed
+- `src/browser/moz-configure.patch`: the application vendor is `AdriLabTech` (it was `Mozilla`, so
+  `nivora --version` printed "Mozilla Nivora").
 - In-content pages (settings, errors, dialogs) and blank dark pages use the neutral surfaces:
   gray-ramp mapping in `nivora-dark.inc.css` and a six-constant patch of
   `widget/nsXPLookAndFeel.cpp`.

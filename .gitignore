@@ -35,3 +35,7 @@ build/signing/private_key.pem
 build/signing/private_key.p12
 
 bloat-dump.log
+
+# Local toolchain downloaded by tools/nivora/build_linux.sh --bootstrap, and its output.
+.nivora-tools/
+out/

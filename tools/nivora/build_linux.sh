@@ -22,6 +22,8 @@
 #   --jobs N                parallel compile jobs (default: number of CPUs)
 #   --apt                   install the system packages with apt-get first (Debian and Ubuntu; uses sudo
 #                           unless run as root)
+#   --bootstrap             when Node 22, Rust or cbindgen are missing, download them into .nivora-tools/
+#                           inside the checkout (checksums verified; nothing is installed system-wide)
 #   --clang-suffix S        suffix of the clang binaries: "-19" for Ubuntu 24.04's clang-19, "" for a
 #                           distribution whose `clang` is already 19 or newer (default: -19)
 #   --libclang-path DIR     directory of libclang.so (default: /usr/lib/llvm-19/lib)
@@ -36,6 +38,7 @@ root=$(cd "$(dirname "$0")/../.." && pwd)
 out="$root/out"
 jobs=$(nproc 2>/dev/null || echo 4)
 use_apt=0
+bootstrap=0
 clang_suffix="-19"
 libclang_path="/usr/lib/llvm-19/lib"
 disk_check=1
@@ -46,6 +49,7 @@ while [ $# -gt 0 ]; do
     --out) out=$2; shift 2 ;;
     --jobs) jobs=$2; shift 2 ;;
     --apt) use_apt=1; shift ;;
+    --bootstrap) bootstrap=1; shift ;;
     --clang-suffix) clang_suffix=$2; shift 2 ;;
     --libclang-path) libclang_path=$2; shift 2 ;;
     --no-disk-check) disk_check=0; shift ;;
@@ -86,12 +90,58 @@ unset MOZ_STDCXX_COMPAT
 EOF
 }
 
+step() { printf '\n==> %s\n' "$1"; }
+
+NODE_VERSION=22.22.0
+RUSTUP_TRIPLE=x86_64-unknown-linux-gnu
+
+# Download $1 to $2 and check it against the sha256 in $3 (a file whose first field is the digest, or
+# a `digest  name` list from which the line for $4 is taken).
+fetch_verified() {
+  local url=$1 dest=$2 sums=$3 name=${4:-}
+  curl --proto '=https' --tlsv1.2 -fsSL "$url" -o "$dest"
+  local want
+  if [ -n "$name" ]; then
+    want=$(curl --proto '=https' --tlsv1.2 -fsSL "$sums" | awk -v n="$name" '$2 == n { print $1 }')
+  else
+    want=$(curl --proto '=https' --tlsv1.2 -fsSL "$sums" | awk '{ print $1 }')
+  fi
+  [ -n "$want" ] || { echo "error: no checksum found for $url" >&2; return 1; }
+  [ "$(sha256sum "$dest" | cut -d' ' -f1)" = "$want" ] || { echo "error: checksum mismatch for $url" >&2; return 1; }
+}
+
+bootstrap_tools() {
+  local tools="$root/.nivora-tools"
+  mkdir -p "$tools"
+  if ! command -v node >/dev/null || [ "$(node --version | sed 's/^v\([0-9]*\).*/\1/')" -lt 22 ]; then
+    step "Node.js $NODE_VERSION (into .nivora-tools/node)"
+    local tarball=node-v$NODE_VERSION-linux-x64.tar.xz
+    fetch_verified "https://nodejs.org/dist/v$NODE_VERSION/$tarball" "$tools/$tarball" \
+      "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt" "$tarball"
+    rm -rf "$tools/node" && mkdir "$tools/node"
+    tar -C "$tools/node" --strip-components=1 -xJf "$tools/$tarball" && rm "$tools/$tarball"
+  fi
+  export PATH="$tools/node/bin:$PATH"
+  export CARGO_HOME="$tools/cargo" RUSTUP_HOME="$tools/rustup"
+  export PATH="$CARGO_HOME/bin:$PATH"
+  if ! command -v cargo >/dev/null; then
+    step "Rust (rustup into .nivora-tools; the toolchain is the one rust-toolchain.toml pins)"
+    local url="https://static.rust-lang.org/rustup/dist/$RUSTUP_TRIPLE/rustup-init"
+    fetch_verified "$url" "$tools/rustup-init" "$url.sha256"
+    chmod +x "$tools/rustup-init"
+    "$tools/rustup-init" -y --no-modify-path --profile minimal --default-toolchain none
+    rm "$tools/rustup-init"
+  fi
+  if ! command -v cbindgen >/dev/null; then
+    step "cbindgen 0.29.4"
+    (cd "$root" && cargo install cbindgen --version 0.29.4 --locked)
+  fi
+}
+
 if [ "$mode" = mozconfig ]; then
   mozconfig
   exit 0
 fi
-
-step() { printf '\n==> %s\n' "$1"; }
 
 firefox_tag() {
   python3 - "$root/surfer.json" <<'PY'
@@ -135,6 +185,10 @@ if [ "$use_apt" = 1 ]; then
     libxcomposite-dev libxdamage-dev libxrandr-dev libxcursor-dev libxi-dev libgbm-dev \
     libxkbcommon-dev \
     "clang$clang_suffix" "libclang$clang_suffix-dev" "llvm$clang_suffix-dev" "lld$clang_suffix"
+fi
+
+if [ "$bootstrap" = 1 ]; then
+  bootstrap_tools
 fi
 
 step "Checking tools and disk"

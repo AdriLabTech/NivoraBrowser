@@ -80,6 +80,18 @@ a distribution package. This is a real risk, accepted for pre-alpha and not acce
 stable release. [ROADMAP.md](ROADMAP.md) puts the decision in Phase III. Until then Nivora must not
 be presented as safe for daily use.
 
+### Test packages built in CI
+
+`.github/workflows/nivora-build-linux.yml` (started by hand) builds the browser on a GitHub-hosted runner
+and keeps a package as a 14-day artifact. What that means for trust: the package is **unsigned**; the
+`SHA256SUMS` file next to it detects a damaged download, not a compromised build; the build is not
+reproducible (it was not checked); the runner downloads Firefox's source from Mozilla's GitHub mirror at a
+release tag, the npm packages in `package-lock.json`, the crates Firefox vendors, and the Rust toolchain
+pinned in `rust-toolchain.toml`. The workflow has read-only permissions and publishes nothing. It is a way
+for the owner to obtain a test build, not a release channel. The package is a development build: no LTO or
+PGO, and `--without-wasm-sandboxed-libraries` (the libraries that Firefox sandboxes with RLBox/wasm run
+natively), so it should not be used for anything that needs Firefox's full hardening.
+
 ## 6. Rules for new code
 
 - Treat web content, page titles, URLs, filenames, imported settings and any model output as

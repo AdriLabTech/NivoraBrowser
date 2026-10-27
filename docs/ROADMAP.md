@@ -49,9 +49,9 @@ rest to be completed without further questions.
 | Criterion | State |
 |---|---|
 | Builds with the documented procedure | `[x]` clean import, then full build, exit 0 |
-| Starts, opens a page, tabs, back/forward, address bar, renders normal pages | `[ ]` |
+| Starts, opens a page, tabs, back/forward, address bar, renders normal pages | `[~]` verified in the built browser by `browser_nivora_browsing.js` and `smoke.py`: HTTPS identity, five tabs / close three / reopen one, back and forward, a form, video, a PDF, the browser's own pages, a private window. Not done: typing an address by hand, a media-heavy real site |
 | Essential security controls still present | `[~]` unsigned extensions refused by default (F-11); sandbox, site isolation, TLS and Safe Browsing unchanged from Firefox and not separately tested |
-| Settings persist across restart | `[ ]` |
+| Settings persist across restart | `[x]` `tools/nivora/check_profile.py` (the preferences were set through the preference service, not by clicking) |
 | Identity applied coherently | `[~]` palette, icons, logo and main artwork seen rendered; tab states, menus, downloads panel, typography, new tab page unreviewed |
 | No essential Zen function removed without justification | `[x]` nothing removed except Zen-service UI, hidden by preference |
 | Modifications documented | `[x]` [UPSTREAM.md](UPSTREAM.md) |
@@ -81,7 +81,7 @@ folders, space routing and an address-bar actions provider. Nivora extends them;
 - [x] CI: static checks on every push (palette, icons, Python and Node tests, `ffprefs`); upstream check weekly. A full browser build per push is deliberately not run.
 - [x] License inventory with the real texts; Nucleo icons removed from the tree ([LICENSES.md](LICENSES.md)). [ ] Items marked "review" in LICENSES.md need a human decision (Motion notice, Junicode, emoji data, site logos, welcome/Library artwork).
 - [x] Security review of Nivora's changes; five findings fixed (profile directory, container-crossing close, size check, branding prefs override, stale branding in the build) ([SECURITY_REVIEW.md](SECURITY_REVIEW.md)). Independent review: [ ] not done.
-- [x] Distribution: tarball + Arch `PKGBUILD`, `.desktop`, AppStream, update-disabling policy; 11 tests simulating `makepkg`; produced from the real build and its policy verified in the running browser. [ ] Not installed on Arch.
+- [x] Distribution: tarball + Arch `PKGBUILD`, `.desktop`, AppStream, update-disabling policy; 11 tests simulating `makepkg`; produced from the real build and its policy verified in the running browser. Built and packaged on a GitHub runner by `.github/workflows/nivora-build-linux.yml` (80 min build; a real `makepkg`; dependency check; start-up smoke test), and the README has an install guide for Arch Linux and Ryoku Arch. [ ] Not installed on Arch or Ryoku Arch: the guide is the first test.
 - [x] Maintenance and recovery documented ([MAINTENANCE.md](MAINTENANCE.md)).
 - [~] Regression suite: Nivora's 123 checks pass; Zen's 26 groups run: 26,288 browser checks pass and 31 fail, each explained by the environment or inherited code, none traced to Nivora ([TESTING.md](TESTING.md) section 2.3). An unmodified-Zen baseline was not possible.
 - [~] Performance baseline measured for startup, memory and idle CPU (one tab, dev build); many-tab and UI-latency measurements and a Zen comparison not done.

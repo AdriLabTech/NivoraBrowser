@@ -31,9 +31,13 @@ Releases or the AUR. Publishing is the maintainer's action.
 | `/usr/share/metainfo/io.github.adrilabtech.nivora.metainfo.xml` | AppStream description for software centers |
 | `/usr/share/licenses/nivora-browser-bin/` | `LICENSE`, `LICENSES.md` and `licenses/` |
 
-Nothing is written outside `/opt` and `/usr`. Dependencies (`gtk3`, `libxt`, `dbus-glib`, `nss`,
-`mime-types`, `ttf-font`) are the ones Arch's Firefox package declares, from memory of that
-package: **unverified on Arch**.
+Nothing is written outside `/opt` and `/usr`. Dependencies are the system libraries the build **links against**
+(`readelf -d` of the executables and shared libraries, minus what the tarball ships itself and
+glibc), mapped to Arch package names in [`check_arch_deps.py`](../tools/nivora/check_arch_deps.py), which
+fails on any linked library without a package. NSS, NSPR and SQLite are bundled, so `nss` and
+`dbus-glib` are not dependencies; `libpulse` is loaded at run time and is a dependency anyway. The
+package *names* are written from knowledge of Arch's repositories (its hosts are not reachable from the
+build environment): **unverified until `pacman` resolves them on Arch**.
 
 ## 3. Where user data lives
 
@@ -57,6 +61,15 @@ building and publishing a new package**. Rolling back is `pacman -U` on the prev
 
 ## 5. Making a package (maintainer)
 
+The one-command way, which is also what CI runs (`.github/workflows/nivora-build-linux.yml`, started by
+hand, about two hours on a four-core runner, artifact kept 14 days, nothing published):
+
+```sh
+tools/nivora/build_linux.sh --apt --bootstrap    # Debian/Ubuntu; leaves out/ with the package inputs
+```
+
+By hand:
+
 ```sh
 npx surfer build                      # or the release configuration, see BUILDING.md
 ./engine/mach package                 # leaves engine/obj-*/dist/nivora
@@ -73,7 +86,8 @@ A release package needs the release configuration, and the decisions listed ther
 | | State |
 |---|---|
 | Assembly script, checksums, `package()` layout, desktop file, policy, icons, licenses | **Verified** by 11 tests that simulate `makepkg` (and fail when the symlink or the policy is wrong) |
-| `makepkg`, `pacman`, namcap, `desktop-file-validate`, `appstreamcli validate` | **Not run** (not available here) |
-| Install, start and uninstall on Arch Linux or Ryoku Arch | **Not run** |
+| `makepkg` (Ubuntu's 6.0.2, as a non-root user), `desktop-file-validate`, `appstreamcli validate` | **Pass** (2026-10-27): the sources' checksums verify, `package()` runs, a `.pkg.tar.gz` (129 MB) is produced with the expected `.PKGINFO`; the desktop file validates; the AppStream file validates after a `<developer>` element was added. The package was then extracted into the container's `/`, `/usr/bin/nivora` pointed at `/opt/nivora/nivora`, and `tools/nivora/smoke.py --dist /opt/nivora` passed (starts, loads a page, creates only `~/.config/nivora`, exits). The X11 window class is `nivora`, matching `StartupWMClass` |
+| `pacman`, `namcap`, install, start and uninstall on Arch Linux or Ryoku Arch | **Not run.** `pacman` itself cannot resolve dependencies without Arch's databases; `namcap` is not packaged for Ubuntu. The README's install guide is the procedure for that first test |
+| Build and package in CI | **Pass** (2026-10-27): the build job took 80 minutes on a GitHub runner; the package job (a real `makepkg`, the dependency check, a start-up smoke test of the packaged browser) takes under a minute and produced a 125 MB `.pkg.tar.zst`. One failure on the way and its cause are in [TESTING.md](TESTING.md). The CI-built package itself was not downloaded and run here |
 | A package built from the real build | **Done** (2026-10-27): `./mach package` made `nivora-0.1.0a1.en-US.linux-x86_64.tar.xz` (3 min 49 s); `make_arch_package.sh` turned it into a 97 MB tarball (319 MB unpacked) with real checksums; the `package()` function of the `PKGBUILD` was run against that tree and produced the expected `/opt`, `/usr/bin`, desktop, icons (the real tree has 16, 32, 48, 64 and 128 px), metainfo and license files; the unpacked, policy-equipped copy starts and `about:policies` lists `DisableAppUpdate: true` |
 | Reproducibility of the tarball | **Not verified** |

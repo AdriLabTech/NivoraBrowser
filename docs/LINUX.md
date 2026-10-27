@@ -44,6 +44,8 @@ settings automatically.
 
 ## 5. Ryoku Arch
 
+The install guide for Arch Linux and Ryoku Arch is in the [README](../README.md#install-on-arch-linux-and-ryoku-arch).
+
 There is no Ryoku-specific code, and none is required. The design rule is that anything specific to
 Ryoku Arch must be optional, off unless detected by capability, and must not add a dependency on
 Ryoku tools when a standard Linux mechanism exists. The Obsidian Eclipse palette is monochrome and
@@ -60,7 +62,7 @@ The `.desktop` entry, icons, MIME associations, the update policy file and the A
 |---|---|
 | X11 under Xvfb, Ubuntu 24.04 container (GTK, Adwaita/Yaru) | **works**: builds, starts, browses a local page, passes Nivora's and a subset of Zen's browser tests ([TESTING.md](TESTING.md)); profile in `~/.config/nivora` |
 | Wayland (sway, headless, software-rendered, Ubuntu 24.04 container) | **starts and renders** as a native Wayland client with application id `nivora` (`tools/nivora/smoke_wayland.py`); no input device, so interaction, clipboard, IME and GPU paths are untested |
-| Arch Linux, Wayland | not tested |
+| Arch Linux, Wayland | not tested; the install guide is [in the README](../README.md#install-on-arch-linux-and-ryoku-arch) |
 | Arch Linux, X11 | not tested |
 | Hyprland | not tested |
 | GNOME / KDE Plasma | not tested |

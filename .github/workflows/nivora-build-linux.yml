@@ -129,7 +129,7 @@ jobs:
             exit 1
           fi
           rm -rf src pkg
-          sha256sum *.pkg.tar.zst *.tar.xz PKGBUILD nivora.desktop io.github.adrilabtech.nivora.metainfo.xml policies.json > SHA256SUMS
+          sha256sum *.pkg.tar.zst PKGBUILD > SHA256SUMS
           ls -la
 
       - name: What the package contains
@@ -170,10 +170,6 @@ jobs:
           path: |
             out/*.pkg.tar.zst
             out/PKGBUILD
-            out/*.tar.xz
-            out/nivora.desktop
-            out/io.github.adrilabtech.nivora.metainfo.xml
-            out/policies.json
             out/SHA256SUMS
             smoke/report.json
             smoke/*.png

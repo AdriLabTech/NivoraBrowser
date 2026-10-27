@@ -4,6 +4,8 @@
 
 [DEFAULT]
 
+["browser_nivora_browsing.js"]
+
 ["browser_nivora_commands.js"]
 
 ["browser_nivora_defaults.js"]

@@ -7,6 +7,17 @@ executed is marked **unverified**.
 Reference environment (the only one used so far): Ubuntu 24.04 container, 4 cores, 15 GB RAM,
 about 30 GB free disk, root user, outbound access through an allow-list proxy. Linux x86_64 only.
 
+## 0. The short way
+
+`tools/nivora/build_linux.sh` runs sections 1 to 2.5 below in one command, from a fresh checkout to the
+files `makepkg` needs (`--help` lists the options; `--print-mozconfig` shows the configuration it writes,
+which is the one of section 2.4; `--dry-run` lists the steps). `--apt` installs the system packages with
+`apt-get` (Debian and Ubuntu); `--bootstrap` downloads Node 22, Rust and `cbindgen` into `.nivora-tools/`
+inside the checkout, verifying checksums. The GitHub workflow `nivora-build-linux.yml` runs the same
+script. Only Ubuntu 24.04 has been used. **On Arch Linux, build inside an Ubuntu 24.04 container**
+(the README's guide uses `distrobox`) rather than natively: Arch's current Python, clang and Rust are
+newer than the versions Firefox 158 was tested with, and the native route has not been tried.
+
 ## 1. Requirements
 
 | Item | Needed | Notes |
@@ -132,7 +143,11 @@ For a C++ change use `cd engine && ./mach build`: `surfer build` rewrites
 ## 4. Not verified yet
 
 - `npm run download` and `npm run bootstrap` (blocked hosts).
-- Building on Arch Linux or Ryoku Arch.
+- Building on Arch Linux or Ryoku Arch (natively or in the container route of the README); `--bootstrap`
+  was tested for its downloads and checksum checks, not as a whole.
+- `src/browser/moz-configure.patch` (`MOZ_APP_VENDOR` = `AdriLabTech`) was verified on an incremental
+  build of the reference environment (`Vendor=AdriLabTech`, [TESTING.md](TESTING.md)); a build from a clean
+  checkout that includes it is the next CI run.
 - A release configuration build, `npm run package`, the Windows and macOS targets.
 - Reproducibility across two builds.
 
