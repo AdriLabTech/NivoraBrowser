@@ -29,7 +29,9 @@ const log = {
 export const nivoraRegistry = createCommandRegistry(log);
 
 /**
- * What a command receives: the window it acts on and the way to ask the user.
+ * What a command receives: the window it acts on, the way to ask the user
+ * (`confirm`) and the way to tell the user a result (`notify`). Both are
+ * replaceable, which is how the tests run commands without a modal dialog.
  *
  * @param {Window} window
  */
@@ -38,6 +40,7 @@ export function contextFor(window) {
     window,
     confirm: (spec, args) =>
       Services.prompt.confirm(window, t("nivora-dialog-title"), t(spec.confirmL10nId, args)),
+    notify: text => Services.prompt.alert(window, t("nivora-dialog-title"), text),
   };
 }
 
@@ -134,25 +137,21 @@ const SPECS = [
     sensitive: true,
     confirmL10nId: "nivora-settings-import-confirm",
     // Reading and validating changes nothing; applying waits for the confirmation.
-    prepare: async ({ window }) => {
+    prepare: async ({ window, notify }) => {
       const parsed = await NivoraSettings.readFromFile(window);
       if (!parsed) {
         return null;
       }
       const count = Object.keys(parsed.settings).length;
       if (!count) {
-        Services.prompt.alert(window, t("nivora-dialog-title"), t("nivora-settings-import-nothing"));
+        notify(t("nivora-settings-import-nothing"));
         return null;
       }
       return { settings: parsed.settings, confirmArgs: { count } };
     },
-    run: ({ window }, args, state) => {
+    run: ({ notify }, args, state) => {
       const { applied } = NivoraSettings.apply(state.settings);
-      Services.prompt.alert(
-        window,
-        t("nivora-dialog-title"),
-        t("nivora-settings-import-done", { count: applied.length })
-      );
+      notify(t("nivora-settings-import-done", { count: applied.length }));
     },
   },
   {
@@ -162,13 +161,9 @@ const SPECS = [
     icon: `${ICONS}arrow-rotate-anticlockwise.svg`,
     sensitive: true,
     confirmL10nId: "nivora-confirm-reset-settings",
-    run: ({ window }) => {
+    run: ({ notify }) => {
       const cleared = NivoraSettings.reset();
-      Services.prompt.alert(
-        window,
-        t("nivora-dialog-title"),
-        t("nivora-settings-reset-done", { count: cleared.length })
-      );
+      notify(t("nivora-settings-reset-done", { count: cleared.length }));
     },
   },
 ];

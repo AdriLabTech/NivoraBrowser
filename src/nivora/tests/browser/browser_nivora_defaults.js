@@ -12,7 +12,6 @@ const DEFAULTS = {
   "zen.share.base-url": "",
   "zen.updates.show-update-notification": false,
   "zen.mods.auto-update": false,
-  "zen.injections.match-urls": "about:preferences",
   "startup.homepage_override_url": "",
   "startup.homepage_welcome_url": "",
   "startup.homepage_welcome_url.additional": "",
@@ -26,13 +25,17 @@ const DEFAULTS = {
 
 function defaultValue(name) {
   const branch = Services.prefs.getDefaultBranch("");
-  switch (branch.getPrefType(name)) {
-    case Ci.nsIPrefBranch.PREF_BOOL:
-      return branch.getBoolPref(name);
-    case Ci.nsIPrefBranch.PREF_INT:
-      return branch.getIntPref(name);
-    case Ci.nsIPrefBranch.PREF_STRING:
-      return branch.getStringPref(name);
+  try {
+    switch (branch.getPrefType(name)) {
+      case Ci.nsIPrefBranch.PREF_BOOL:
+        return branch.getBoolPref(name);
+      case Ci.nsIPrefBranch.PREF_INT:
+        return branch.getIntPref(name);
+      case Ci.nsIPrefBranch.PREF_STRING:
+        return branch.getStringPref(name);
+    }
+  } catch (e) {
+    // A preference with no default value (only a user value): nothing to compare.
   }
   return undefined;
 }
@@ -41,6 +44,13 @@ add_task(async function test_nivora_default_preferences() {
   for (const [name, expected] of Object.entries(DEFAULTS)) {
     Assert.strictEqual(defaultValue(name), expected, `default of ${name}`);
   }
+});
+
+add_task(async function test_mods_injection_is_limited_to_preferences_in_official_builds() {
+  const { AppConstants } = ChromeUtils.importESModule("resource://gre/modules/AppConstants.sys.mjs");
+  // Zen's own development builds allow localhost; official builds (what Nivora ships) must not.
+  const expected = AppConstants.MOZILLA_OFFICIAL ? "about:preferences" : "http://localhost/*";
+  Assert.strictEqual(defaultValue("zen.injections.match-urls"), expected);
 });
 
 add_task(async function test_no_default_points_at_a_zen_service() {

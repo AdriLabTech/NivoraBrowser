@@ -75,6 +75,8 @@ def main(argv=None):
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--display", default=":98")
     args = parser.parse_args(argv)
+    args.dist = args.dist.resolve()
+    args.out = args.out.resolve()
     binary = args.dist / "nivora"
     if not binary.is_file():
         print(f"error: {binary} not found", file=sys.stderr)

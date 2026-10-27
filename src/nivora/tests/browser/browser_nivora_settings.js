@@ -7,7 +7,9 @@ const { NivoraSettings, prefsBackend } = ChromeUtils.importESModule(
   "resource:///modules/nivora/NivoraSettings.sys.mjs"
 );
 
-const PREFS = ["zen.view.window.scheme", "zen.theme.border-radius", "zen.tabs.vertical"];
+// Preferences that change nothing visible when toggled (some Zen layout preferences rebuild the
+// address bar and make Firefox log unrelated l10n errors in this build).
+const PREFS = ["zen.view.window.scheme", "zen.theme.border-radius", "zen.glance.animation-duration", "zen.glance.enabled"];
 
 registerCleanupFunction(() => {
   for (const pref of PREFS) {
@@ -60,20 +62,21 @@ add_task(async function test_invalid_import_changes_nothing() {
 });
 
 add_task(async function test_reset_returns_managed_prefs_to_defaults() {
-  Services.prefs.setBoolPref("zen.tabs.vertical", false);
+  Services.prefs.setBoolPref("zen.glance.enabled", false);
   const cleared = NivoraSettings.reset();
-  Assert.ok(cleared.includes("zen.tabs.vertical"));
-  Assert.ok(!Services.prefs.prefHasUserValue("zen.tabs.vertical"));
+  Assert.ok(cleared.includes("zen.glance.enabled"));
+  Assert.ok(!Services.prefs.prefHasUserValue("zen.glance.enabled"));
 });
 
 add_task(async function test_repair_removes_a_corrupt_user_value() {
-  // A hand-edited profile: right name, wrong value.
+  // A hand-edited profile: right name, value out of range. (A wrong *type* cannot be set on a
+  // preference that already has a default; the Node tests cover it with a fake store.)
   Services.prefs.setIntPref("zen.view.window.scheme", 42);
-  Services.prefs.setStringPref("zen.theme.border-radius", "round"); // wrong type
+  Services.prefs.setIntPref("zen.glance.animation-duration", -5);
   Assert.ok(prefsBackend.hasUserValue("zen.view.window.scheme"));
   const repaired = NivoraSettings.repair();
   Assert.ok(repaired.includes("zen.view.window.scheme"));
-  Assert.ok(repaired.includes("zen.theme.border-radius"));
+  Assert.ok(repaired.includes("zen.glance.animation-duration"));
   Assert.ok(!Services.prefs.prefHasUserValue("zen.view.window.scheme"));
-  Assert.ok(!Services.prefs.prefHasUserValue("zen.theme.border-radius"));
+  Assert.ok(!Services.prefs.prefHasUserValue("zen.glance.animation-duration"));
 });

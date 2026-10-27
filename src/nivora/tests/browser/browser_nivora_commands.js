@@ -73,6 +73,11 @@ add_task(async function test_duplicate_tabs_need_confirmation_and_keep_one() {
   });
   Assert.ok(accepted.ok, accepted.message);
   Assert.equal(asked.count, 2, "the user is told how many tabs would close");
+  // Closing a tab is asynchronous (Zen animates it), so wait for the result.
+  await TestUtils.waitForCondition(
+    () => gBrowser.tabs.length === before - 2,
+    "two of three duplicates were closed"
+  );
   Assert.equal(gBrowser.tabs.length, before - 2, "two of three duplicates were closed");
   Assert.ok(!nivoraRegistry.isAvailable("nivora:close-duplicate-tabs", contextFor(window)), "no duplicates left");
 
@@ -96,16 +101,14 @@ add_task(async function test_pinned_tabs_are_never_proposed() {
 
 add_task(async function test_reset_settings_asks_first() {
   Services.prefs.setIntPref("zen.view.window.scheme", 1);
-  const declined = await nivoraRegistry.execute("nivora:reset-settings", { window, confirm: () => false });
+  const notices = [];
+  const notify = text => notices.push(text);
+  const declined = await nivoraRegistry.execute("nivora:reset-settings", { window, confirm: () => false, notify });
   Assert.equal(declined.error, "declined");
   Assert.ok(Services.prefs.prefHasUserValue("zen.view.window.scheme"), "nothing reset without confirmation");
-  const originalAlert = Services.prompt.alert;
-  Services.prompt.alert = () => {};
-  try {
-    const accepted = await nivoraRegistry.execute("nivora:reset-settings", { window, confirm: () => true });
-    Assert.ok(accepted.ok, accepted.message);
-  } finally {
-    Services.prompt.alert = originalAlert;
-  }
+  Assert.deepEqual(notices, [], "no result is announced for a declined command");
+  const accepted = await nivoraRegistry.execute("nivora:reset-settings", { window, confirm: () => true, notify });
+  Assert.ok(accepted.ok, accepted.message);
   Assert.ok(!Services.prefs.prefHasUserValue("zen.view.window.scheme"), "reset after confirmation");
+  Assert.equal(notices.length, 1, "the result is announced once");
 });
