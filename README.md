@@ -19,7 +19,8 @@ features, while keeping the rendering engine and most of the interface of its pa
 > profile directory, resolves no Zen-operated host on a first start, and shows the Obsidian Eclipse
 > palette. Nivora's own browser tests and a subset of Zen's pass. A package for Arch Linux and
 > Ryoku Arch can be built by CI and installed by following [the guide below](#install-on-arch-linux-and-ryoku-arch);
-> **it has not yet been run on a real Arch or Ryoku Arch system**. Not done: a release (LTO/PGO)
+> **the owner reports that it installs and runs on Ryoku Arch** (no details recorded); no other system has
+> been tried. Not done: a release (LTO/PGO)
 > build, measurements on a GPU, an independent security review.
 > [docs/ROADMAP.md](docs/ROADMAP.md) lists every item with its state and
 > [docs/TESTING.md](docs/TESTING.md) exactly what was and was not run.
@@ -60,8 +61,10 @@ or `~/.config/zen`. It has no auto-updater: you update by installing a newer pac
 real `makepkg`, installs, starts under X11 and under a headless Wayland compositor (sway), loads a page,
 and creates only `~/.config/nivora`; the dependency list is checked against the libraries the build links
 ([`check_arch_deps.py`](tools/nivora/check_arch_deps.py)); the desktop entry and AppStream file validate.
-**Not tested: `pacman`, any real Arch or Ryoku Arch system, real GPUs, Hyprland, KDE, GNOME.** Your
-install is the first test on a real system; section 6 says what to send back.
+**On a real system:** the owner installed the package with `pacman -U` on Ryoku Arch (2026-10-27) and reports
+that it works; the session type, GPU and what was exercised were not recorded. **Not tested: any other real
+Arch or Ryoku Arch system, other GPUs, Hyprland, KDE, GNOME.** Section 6 says what to send back, and
+a report that says which of these you used is worth more than "it works".
 
 Ryoku Arch is Arch Linux underneath, and Nivora has no Ryoku-specific code, so everything below is plain
 Arch. Anything that behaves differently on Ryoku is exactly what is worth reporting.
@@ -323,8 +326,8 @@ run is tracked honestly in [docs/TESTING.md](docs/TESTING.md).
   link are hidden by a preference; the About dialog still links to Zen and Firefox as attribution.
 - Linux is the only platform being worked on. Windows and macOS packaging files are inherited and
   untouched. X11 (Xvfb) and Wayland (headless sway) sessions in a container have been used; real
-  desktops, GPUs, Arch and Ryoku Arch are untested ([docs/LINUX.md](docs/LINUX.md)); the install
-  guide above is the first test there.
+  desktops, GPUs and other Arch systems are untested; Ryoku Arch is reported working by the owner without
+  details ([docs/LINUX.md](docs/LINUX.md)).
 - Several third-party assets inherited from Zen need a license review before a public release
   ([docs/LICENSES.md](docs/LICENSES.md)).
 

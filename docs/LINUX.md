@@ -2,8 +2,9 @@
 
 Linux is Nivora's first platform. This page says what works because Firefox and Zen already do
 it, what is limited, and what is deliberately not done. Only an X11 session (Xvfb in a container)
-has been used so far; **Wayland, GNOME, KDE Plasma, Hyprland and Ryoku Arch have not been
-tested**, so nothing below is a compatibility claim for them.
+has been used so far in a container; **GNOME, KDE Plasma and Hyprland have not been tested**, and
+Ryoku Arch is reported working by the owner with no details recorded, so nothing below is a compatibility
+claim beyond what the matrix in section 7 says.
 
 ## 1. What comes from Firefox (unchanged)
 
@@ -66,4 +67,4 @@ The `.desktop` entry, icons, MIME associations, the update policy file and the A
 | Arch Linux, X11 | not tested |
 | Hyprland | not tested |
 | GNOME / KDE Plasma | not tested |
-| Ryoku Arch | not tested |
+| Ryoku Arch | **reported working by the owner** (2026-10-27): the CI-built package installed with `pacman -U` and the browser runs. Not recorded: Wayland or X11, GPU and driver, which features were exercised, uninstall. Treat it as a smoke result, not a compatibility claim |

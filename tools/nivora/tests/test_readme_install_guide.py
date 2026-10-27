@@ -54,10 +54,11 @@ class GuideTest(unittest.TestCase):
         self.assertIn("nivora.desktop", guide())
         self.assertTrue((ROOT / "packaging" / "linux" / "nivora.desktop").is_file())
 
-    def test_the_guide_says_what_was_not_tested(self):
-        text = guide()
-        self.assertIn("Not tested", text)
-        self.assertIn("real Arch or Ryoku Arch system", text)
+    def test_the_guide_says_what_was_and_was_not_tested(self):
+        text = " ".join(guide().split())
+        self.assertIn("Not tested: any other real Arch or Ryoku Arch system", text)
+        self.assertIn("the owner installed the package", text)
+        self.assertIn("were not recorded", text)
 
     def test_the_guide_is_only_about_this_project_branch_and_repository(self):
         self.assertIn("github.com/AdriLabTech/nivoraBrowser", guide())
