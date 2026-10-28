@@ -95,7 +95,9 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
 - No saturated colors as decoration. Semantic status colors (errors, warnings, security) only where
   luminance alone cannot carry the meaning.
 - Never communicate state with color alone: pair it with shape, weight, an icon or position.
-- Depth is a step in the surface ladder (`base` < `1` < `2` < `raised`), not a shadow.
+- Depth is a step in the surface ladder (`base` < `1` < `2` < `raised`), plus a hairline of light on the
+  edge that faces the viewer (`--nivora-hairline`, `-strong`, `--nivora-sheen`). The only shadow is
+  `--nivora-elevation`, for the one surface that floats over the page (the command palette).
 - Animations explain a state change and have character (a spring, a cascade), not a fade. Take every
   duration, distance and curve from the motion tokens; never write `0.2s` or a `cubic-bezier` in a rule.
   Animate `transform` and `opacity` (a script that must move neighbours may animate a margin). Fade and move

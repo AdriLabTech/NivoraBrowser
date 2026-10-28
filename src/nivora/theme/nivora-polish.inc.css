@@ -1,0 +1,220 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - visual polish.
+ *
+ * Preprocessed into the end of zen-theme.css (through nivora-ui.inc.css), after nivora-motion.inc.css.
+ * Motion is in that file; this one is what things look like at rest and under the pointer: a hairline of
+ * light on the edge of what is selected or focused, a quiet fill on hover, icons that answer the pointer,
+ * a tab that breathes while it loads, thin scrollbars. Colors come from the roles of nivora-tokens.inc.css
+ * and durations, distances and curves from its motion tokens, so the motion switch turns the movement off
+ * and leaves the still part.
+ *
+ * Written like the motion rules: :root first so they win over Zen's and Firefox's own, no selector that
+ * depends on the structure of Zen's UI beyond the class and id names Zen itself styles. */
+
+/* ---- Scrollbars ---------------------------------------------------------------------------------- */
+
+/* Thin, quiet, and only as visible as it needs to be. Pages inside the browser (settings, about:) too. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nivora-separator-strong) transparent;
+}
+
+/* ---- Tabs ---------------------------------------------------------------------------------------- */
+
+/* A hairline on the edge of the selected tab, and a fainter one under the pointer. An outline follows the
+ * tab's rounded corners and takes no space, so nothing in the list moves. */
+:root .tabbrowser-tab .tab-background {
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+  transition:
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    outline-color var(--nivora-d-base) var(--nivora-ease-out),
+    box-shadow var(--nivora-d-base) var(--nivora-ease-out),
+    opacity var(--nivora-d-fast) var(--nivora-ease-out),
+    transform var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+:root .tabbrowser-tab:hover:not([selected]) .tab-background {
+  outline-color: var(--nivora-hairline);
+}
+
+:root .tabbrowser-tab .tab-background[selected] {
+  outline-color: var(--nivora-hairline-strong);
+}
+
+/* Essentials (the pinned tiles at the top) rise a touch under the pointer and sink when pressed. */
+:root .tabbrowser-tab[zen-essential="true"] {
+  transition:
+    translate var(--nivora-d-base) var(--nivora-spring-snappy),
+    scale var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+:root .tabbrowser-tab[zen-essential="true"]:hover {
+  translate: 0 calc(-1px * var(--nivora-lift));
+}
+
+:root .tabbrowser-tab[zen-essential="true"]:active {
+  translate: 0 0;
+  transition-duration: var(--nivora-d-micro);
+}
+
+/* The favicon of a tab answers the pointer too, a little. */
+:root .tabbrowser-tab .tab-icon-image {
+  transition: scale var(--nivora-d-base) var(--nivora-spring-settle);
+}
+
+:root .tabbrowser-tab:hover .tab-icon-image {
+  scale: calc(1 + 0.08 * var(--nivora-lift));
+}
+
+/* A tab that is loading breathes: its icon fades down and up on a slow loop, so a page that is still
+ * arriving looks different from one that has stopped. With motion off the loop has no length and the icon
+ * stays as it is. */
+@keyframes nivora-breathe {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+:root .tabbrowser-tab[busy] .tab-icon-stack {
+  animation: nivora-breathe var(--nivora-d-ambient) var(--nivora-ease-in-out) infinite;
+}
+
+/* The close button turns a quarter on its way in, and the new-tab plus does the same on hover. */
+:root #tabbrowser-tabs .tabbrowser-tab .tab-content > .tab-close-button {
+  rotate: calc(-90deg * var(--nivora-lift));
+  transition:
+    rotate var(--nivora-d-base) var(--nivora-spring-settle),
+    scale var(--nivora-d-base) var(--nivora-spring-settle),
+    background-color var(--nivora-d-fast) var(--nivora-ease-out);
+}
+
+:root #tabbrowser-tabs .tabbrowser-tab:hover .tab-content > .tab-close-button,
+:root #tabbrowser-tabs .tabbrowser-tab[selected] .tab-content > .tab-close-button {
+  rotate: 0deg;
+}
+
+:root #tabs-newtab-button .toolbarbutton-icon {
+  transition: rotate var(--nivora-d-base) var(--nivora-spring-settle);
+}
+
+:root #tabs-newtab-button:hover .toolbarbutton-icon {
+  rotate: calc(90deg * var(--nivora-lift));
+}
+
+/* ---- Spaces -------------------------------------------------------------------------------------- */
+
+/* The row of space icons: the one under the pointer rises, the active one carries a small dot. */
+:root #zen-workspaces-button toolbarbutton {
+  transition:
+    filter var(--nivora-d-fast) var(--nivora-ease-out),
+    opacity var(--nivora-d-fast) var(--nivora-ease-out),
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    scale var(--nivora-d-base) var(--nivora-spring-settle);
+}
+
+:root #zen-workspaces-button toolbarbutton:hover {
+  scale: calc(1 + 0.1 * var(--nivora-lift));
+}
+
+:root #zen-workspaces-button toolbarbutton:active {
+  scale: calc(1 - 0.06 * var(--nivora-lift));
+  transition-duration: var(--nivora-d-micro);
+}
+
+:root #zen-workspaces-button toolbarbutton[active="true"]::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--nivora-selected);
+  animation: nivora-fade-in var(--nivora-d-base) var(--nivora-ease-out) backwards;
+}
+
+/* ---- Address bar and palette --------------------------------------------------------------------- */
+
+/* The field wears a hairline on hover and a brighter one when it has the keyboard. Zen turns the border
+ * off with !important, so this does too, and carries :root to win. */
+:root #urlbar:not([breakout-extend]) > .urlbar-background {
+  box-shadow: inset 0 0 0 1px transparent !important;
+  transition:
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    box-shadow var(--nivora-d-base) var(--nivora-ease-out) !important;
+}
+
+:root #urlbar:not([breakout-extend]):hover > .urlbar-background {
+  box-shadow: inset 0 0 0 1px var(--nivora-hairline) !important;
+}
+
+:root #urlbar[focused="true"]:not([breakout-extend]) > .urlbar-background {
+  box-shadow:
+    inset 0 0 0 1px var(--nivora-hairline-strong),
+    0 0 0 3px var(--nivora-hover-fill) !important;
+}
+
+/* The command palette is the one surface that floats over the page: a hairline of light on its top edge
+ * (as if lit from above) and the elevation token's soft shadow. */
+:root #urlbar[zen-floating-urlbar="true"][open] > .urlbar-background {
+  box-shadow:
+    inset 0 1px 0 var(--nivora-sheen),
+    inset 0 0 0 1px var(--nivora-hairline),
+    var(--nivora-elevation) !important;
+}
+
+/* A row under the pointer (not just under the keyboard) gets the same quiet fill. */
+:root #urlbar .urlbarView-row:not([selected]):hover .urlbarView-row-inner {
+  background-color: var(--nivora-hover-fill);
+}
+
+/* ---- Buttons ------------------------------------------------------------------------------------- */
+
+/* The icon of a toolbar button grows a little under the pointer, independently of the button's own press. */
+:root .toolbarbutton-1 > .toolbarbutton-icon,
+:root .toolbarbutton-1 .toolbarbutton-badge-stack > .toolbarbutton-icon {
+  transition: scale var(--nivora-d-base) var(--nivora-spring-settle);
+}
+
+:root .toolbarbutton-1:hover:not([disabled]) > .toolbarbutton-icon,
+:root .toolbarbutton-1:hover:not([disabled]) .toolbarbutton-badge-stack > .toolbarbutton-icon {
+  scale: calc(1 + 0.1 * var(--nivora-lift));
+}
+
+:root .toolbarbutton-1:active > .toolbarbutton-icon,
+:root .toolbarbutton-1:active .toolbarbutton-badge-stack > .toolbarbutton-icon {
+  scale: calc(1 - 0.06 * var(--nivora-lift));
+  transition-duration: var(--nivora-d-micro);
+}
+
+/* ---- Menus --------------------------------------------------------------------------------------- */
+
+/* The icon of a menu entry nudges toward the label when the entry is under the pointer or the keyboard. */
+:root :is(menuitem, menu, .subviewbutton) > .menu-iconic-left,
+:root .subviewbutton > .toolbarbutton-icon {
+  transition: translate var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+:root :is(menuitem, menu):is(:hover, [_moz-menuactive="true"]) > .menu-iconic-left,
+:root .subviewbutton:hover > .toolbarbutton-icon {
+  translate: calc(2px * var(--nivora-lift)) 0;
+}
+
+/* ---- Focus --------------------------------------------------------------------------------------- */
+
+/* The ring of keyboard focus draws itself in instead of snapping on. */
+@keyframes nivora-focus-in {
+  from {
+    outline-offset: calc(-1px - 3px * var(--nivora-lift));
+    outline-color: transparent;
+  }
+}
+
+:root :is(button, toolbarbutton, .tabbrowser-tab, menuitem, .subviewbutton):focus-visible {
+  animation: nivora-focus-in var(--nivora-d-fast) var(--nivora-ease-out);
+}

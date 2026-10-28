@@ -45,6 +45,18 @@
 --nivora-selected: var(--nivora-pure-white);
 --nivora-focus-ring: var(--nivora-pure-white);
 
+/* Semantic roles: light on dark. Depth in Obsidian Eclipse is a step of luminance plus one hairline of
+ * light on the edge that faces the viewer; these are the only translucent whites in the system. */
+--nivora-hairline: color-mix(in srgb, var(--nivora-pure-white) 7%, transparent);
+--nivora-hairline-strong: color-mix(in srgb, var(--nivora-pure-white) 16%, transparent);
+--nivora-sheen: color-mix(in srgb, var(--nivora-pure-white) 9%, transparent);
+--nivora-glow: color-mix(in srgb, var(--nivora-pure-white) 22%, transparent);
+--nivora-hover-fill: color-mix(in srgb, var(--nivora-pure-white) 6%, transparent);
+--nivora-press-fill: color-mix(in srgb, var(--nivora-pure-white) 11%, transparent);
+/* The one shadow: a floating surface (the palette) lifts off the page. Nothing else casts one. */
+--nivora-elevation: 0 18px 44px -12px color-mix(in srgb, var(--nivora-obsidian-950) 85%, transparent),
+  0 2px 6px color-mix(in srgb, var(--nivora-obsidian-950) 55%, transparent);
+
 /* Motion. Every animation in Nivora picks its duration, travel and curve from here, so the whole
  * interface moves with one character: things arrive on a spring that settles within the duration, and
  * leave faster than they came.
@@ -64,6 +76,8 @@
 --nivora-d-slow: calc(340ms * var(--nivora-motion-scale));
 --nivora-d-cinematic: calc(520ms * var(--nivora-motion-scale));
 --nivora-d-exit: calc(130ms * var(--nivora-motion-scale));
+/* A loop that breathes while something is happening (a tab loading). 0 when motion is off, which stops it. */
+--nivora-d-ambient: calc(1800ms * var(--nivora-motion-scale));
 --nivora-stagger: calc(22ms * var(--nivora-motion-scale));
 --nivora-stagger-tight: calc(7ms * var(--nivora-motion-scale));
 

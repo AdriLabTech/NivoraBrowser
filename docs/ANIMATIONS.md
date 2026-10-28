@@ -252,3 +252,35 @@ version of the v2 tab animation overlapped the tab below it for two frames.
 - **A flake in the browsing tests:** one full run of `browser_nivora_browsing.js` lost characters typed into a
   form ("N" instead of "Nivora"); the file passed in two reruns. It does not touch animations, but the run
   was under the new motion, so it is recorded here.
+
+## 8. Visual polish (still part of v2, not yet built or looked at)
+
+[`nivora-polish.inc.css`](../src/nivora/theme/nivora-polish.inc.css) adds what things look like at rest and
+under the pointer. Same rules as the motion file: roles and motion tokens only, `:root` first, nothing
+that depends on the structure of Zen's UI beyond class and id names Zen styles itself. The new tokens
+(`--nivora-hairline`, `-strong`, `--nivora-sheen`, `--nivora-glow`, `--nivora-hover-fill`, `--nivora-press-fill`,
+`--nivora-elevation`, `--nivora-d-ambient`) are in `nivora-tokens.inc.css`.
+
+| Surface | What changed |
+|---|---|
+| Scrollbars | thin, graphite thumb, no track (`scrollbar-width`, `scrollbar-color`) |
+| Tabs | a 1 px outline (no layout) in `hairline` on hover and `hairline-strong` when selected, faded in 260 ms; the favicon grows 8 % under the pointer; a loading tab's icon breathes on an 1800 ms loop (`[busy]`) |
+| Tab close / new tab | the close button turns a quarter into place on a settle spring; the new-tab plus turns 90 degrees on hover |
+| Essentials | rise 1 px on hover, sink on press |
+| Space icons | grow 10 % on hover, shrink 6 % on press (springs); the active one has a dot |
+| Address bar | hairline on hover, a brighter one plus a 3 px halo when focused |
+| Command palette | a light edge on top and `--nivora-elevation`, the system's only shadow |
+| Palette rows | the row under the pointer, not just the keyboard, gets `hover-fill` |
+| Toolbar buttons | the icon grows 10 % on hover and shrinks 6 % on press, apart from the button's own press |
+| Menus | the icon of the entry under the pointer or keyboard nudges 2 px |
+| Keyboard focus | the ring draws itself in over 170 ms (`nivora-focus-in`) |
+
+With the animations setting off, `--nivora-lift` and `--nivora-motion-scale` are 0: nothing moves, the loop
+has no length, and the hairlines and fills stay.
+
+**Status: implemented only.** The tree was edited without a build in reach. The selectors were checked against
+Zen's stylesheets in `src/zen`, not against a running window; the static checks (unit tests, contrast, spring
+generator) pass; no browser test was written or run for these rules. Open questions for the first look:
+whether the palette's shadow is clipped by its container, whether the close button's rotation looks right
+while a tab is also changing width, and whether Firefox's own `:focus-visible` outline on toolbar buttons
+combines well with `nivora-focus-in`.
