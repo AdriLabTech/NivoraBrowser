@@ -4,6 +4,8 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/.
    -->
 
+<p align="center"><img src="assets/hero.svg" alt="NivoraBrowser" width="100%"></p>
+
 # Nivora Browser
 
 _Less noise. More control._
