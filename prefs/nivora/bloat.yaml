@@ -1,0 +1,48 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Services and promotions that Firefox and Zen ship switched on and that Nivora does not want. Telemetry,
+# studies, the AI features and the VPN promotions are already off in prefs/privatefox and prefs/firefox;
+# this file is what was left. Nothing here is locked: about:config can turn any of it back on.
+# A preference that a Firefox version no longer reads is harmless. Not checked against a running build.
+
+# Pocket and sponsored content on the new tab and in the address bar.
+- name: extensions.pocket.enabled
+  value: false
+
+- name: browser.newtabpage.activity-stream.showSponsored
+  value: false
+
+- name: browser.newtabpage.activity-stream.showSponsoredTopSites
+  value: false
+
+- name: browser.urlbar.suggest.trending
+  value: false
+
+# Firefox Relay (email masks), breach alerts and the Mozilla Monitor / VPN / password-manager promotions
+# in the Privacy Report.
+- name: signon.firefoxRelay.feature
+  value: "disabled"
+
+- name: signon.management.page.breach-alerts.enabled
+  value: false
+
+- name: browser.contentblocking.report.monitor.enabled
+  value: false
+
+- name: browser.contentblocking.report.lockwise.enabled
+  value: false
+
+- name: browser.contentblocking.report.proxy.enabled
+  value: false
+
+# Product-experience extras: shopping assistant, "What's new" panel, the webcompat reporter.
+- name: browser.shopping.experience2023.enabled
+  value: false
+
+- name: browser.messaging-system.whatsNewPanel.enabled
+  value: false
+
+- name: extensions.webcompat-reporter.enabled
+  value: false

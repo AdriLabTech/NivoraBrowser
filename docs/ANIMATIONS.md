@@ -278,6 +278,12 @@ that depends on the structure of Zen's UI beyond class and id names Zen styles i
 With the animations setting off, `--nivora-lift` and `--nivora-motion-scale` are 0: nothing moves, the loop
 has no length, and the hairlines and fills stay.
 
+Second round, same file: `--zen-big-shadow` (used by the glance, the split-view panes, the compact sidebar and
+the download arc) takes `--nivora-elevation`; sidebar notifications and the media controls wear a hairline; split-view
+panes move on the smooth spring (340 ms) and the panes without the keyboard get a hairline; the drop preview of a
+split and the Essentials drop zone become dashed hairlines that fade in; the tab list of a folder highlights on
+hover and cascades in.
+
 **Status: implemented only.** The tree was edited without a build in reach. The selectors were checked against
 Zen's stylesheets in `src/zen`, not against a running window; the static checks (unit tests, contrast, spring
 generator) pass; no browser test was written or run for these rules. Open questions for the first look:

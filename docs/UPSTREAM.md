@@ -63,6 +63,8 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 | `src/zen/folders/ZenFolders.mjs` | Folder expand/collapse 0.18 s -> 0.34 s, reveal 0.2 s -> 0.36 s | Same reason |
 | `src/zen/compact-mode/sidebar.inc.css`, `src/zen/common/styles/zen-theme.css`, `src/zen/common/styles/zen-library-widget.css` | Five durations (sidebar reveal and hide, toolbar reveal, Library open) read from `var(--nivora-d-*, <Zen's value>)`; the curve of the toolbar reveal from `--nivora-ease-in-out` | They follow the motion scale (0 when animations are off); Zen's own value is the fallback, so the file still works without Nivora's tokens |
 | `prefs/zen/workspaces.yaml`, `prefs/zen/glance.yaml` | `zen.workspaces.switch-animation-duration` 250 -> 340, `zen.glance.animation-duration` 350 -> 420 | Softer springs, sized to settle inside the time, for the two largest transitions |
+| `prefs/zen/welcome.yaml`, `src/zen/welcome/jar.inc.mn`, `src/zen/welcome/welcome-background.mp4` (removed) | `zen.welcome-screen.seen` true in every build (Zen set it only when `MOZILLA_OFFICIAL` was undefined); the 15 MB video of the wizard is no longer packaged | The wizard is Zen's (name, video) and would run on the first start of a release build. `ZenWelcome.mjs` still names the video: it only loads when the pref is false |
+| `prefs/nivora/bloat.yaml` (new) | Pocket, sponsored new-tab content, trending searches, Firefox Relay, breach alerts, Monitor / Lockwise / proxy promotions in the Privacy Report, shopping assistant, What's new panel, webcompat reporter: off, not locked | What was still on after `privatefox/` and `firefox/ai.yaml`. Names not checked against a running Firefox 158 |
 
 ### Inherited files removed
 
