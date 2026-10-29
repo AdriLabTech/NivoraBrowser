@@ -14,6 +14,7 @@
  * - The off switch for the animations that scripts start. Zen and Firefox ask `gReduceMotion` before
  *   they animate, and it honours the `gReduceMotionOverride` hook, so turning `nivora.ui.animations`
  *   off puts the window in the same state as the system's "reduce motion" setting.
+ * - The palette's glass: where to put the blurred copy of the new tab's picture so it lies over the original.
  * - Helpers for the animations that scripts start (tabs opening and closing): whether motion is on
  *   in a window, and the same spring curves the stylesheets use, so a scripted animation moves
  *   like a styled one.
@@ -47,6 +48,83 @@ export function highlightFor(row) {
     return { y: 0, height: 0, opacity: 0 };
   }
   return { y: row.offsetTop + row.clientTop, height: row.clientHeight, opacity: 1 };
+}
+
+/**
+ * Where the new tab's picture lies, seen from the palette's top-left corner. The page paints the picture as
+ * `cover` over its own box, centred horizontally and at `focusY` vertically; the palette paints a blurred copy
+ * of the same picture as its glass, and needs that offset and size to put the copy exactly over the original.
+ * (The browser cannot blur what is behind the palette: its backdrop filter does not see the page.)
+ *
+ * @param {{ x: number, y: number, width: number, height: number }} page The box of the page.
+ * @param {{ x: number, y: number }} palette The top-left corner of the palette's surface.
+ * @param {number} [aspect] Width over height of the picture.
+ * @param {number} [focusY] Where the picture is anchored vertically, 0 to 1 (the page's background-position).
+ * @returns {{ size: string, position: string }} Values for `background-size` and `background-position`.
+ */
+export function glassGeometry(page, palette, aspect = 16 / 9, focusY = 0.46) {
+  let width = page.width;
+  let height = page.width / aspect;
+  if (height < page.height) {
+    height = page.height;
+    width = page.height * aspect;
+  }
+  const x = page.x + (page.width - width) / 2 - palette.x;
+  const y = page.y + (page.height - height) * focusY - palette.y;
+  return { size: `${width}px ${height}px`, position: `${x}px ${y}px` };
+}
+
+/**
+ * Keeps the palette's glass aligned with the new tab's picture (--nivora-glass-size and --nivora-glass-pos on the
+ * urlbar). It measures when the palette opens, when its entrance animation has ended (while it runs the palette
+ * is scaled and shifted, so its box is not where it will rest) and when the window changes size.
+ */
+class PaletteGlass {
+  #window;
+  #urlbar;
+
+  constructor(window) {
+    this.#window = window;
+    this.#urlbar = window.document.getElementById("urlbar");
+    if (!this.#urlbar) {
+      return;
+    }
+    const measure = () => this.#measure();
+    const observer = new window.MutationObserver(measure);
+    observer.observe(this.#urlbar, { attributes: true, attributeFilter: ["open", "zen-floating-urlbar"] });
+    this.#urlbar.addEventListener("animationend", measure);
+    window.addEventListener("resize", measure);
+    window.addEventListener(
+      "unload",
+      () => {
+        observer.disconnect();
+        window.removeEventListener("resize", measure);
+      },
+      { once: true }
+    );
+  }
+
+  #measure() {
+    try {
+      const urlbar = this.#urlbar;
+      if (urlbar.getAttribute("zen-floating-urlbar") !== "true" || !urlbar.hasAttribute("open")) {
+        return;
+      }
+      const doc = this.#window.document;
+      const page = doc
+        .querySelector("#tabbrowser-tabpanels .browserSidebarContainer.deck-selected browser[type='content']")
+        ?.getBoundingClientRect();
+      const surface = urlbar.querySelector(".urlbar-background")?.getBoundingClientRect();
+      if (!page || !surface) {
+        return;
+      }
+      const { size, position } = glassGeometry(page, surface);
+      urlbar.style.setProperty("--nivora-glass-size", size);
+      urlbar.style.setProperty("--nivora-glass-pos", position);
+    } catch (e) {
+      log.error("palette glass", e);
+    }
+  }
 }
 
 class PaletteHighlight {
@@ -304,7 +382,7 @@ function attach(window) {
     return;
   }
   attached.add(window);
-  for (const Feature of [PaletteHighlight, PaletteExit, MotionSwitch]) {
+  for (const Feature of [PaletteHighlight, PaletteGlass, PaletteExit, MotionSwitch]) {
     try {
       new Feature(window);
     } catch (e) {

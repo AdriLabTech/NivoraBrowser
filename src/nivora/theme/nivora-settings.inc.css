@@ -91,6 +91,47 @@ hbox.selected > img[src*="zen-images/layouts"] {
   filter: brightness(1);
 }
 
+/* ---- Glass ---------------------------------------------------------------------------------------- */
+
+/* The settings page is an ordinary document, where a backdrop filter does see what is behind a card: the page
+ * gets the new tab's picture, blurred, as an ambient background that does not scroll, and the cards are frosted
+ * glass over it. */
+@media -moz-pref("nivora.ui.glass") {
+  html:has(#mainPrefPane) {
+    background: var(--nivora-surface-base) url("chrome://browser/content/nivora/nivora-newtab-glass.webp") 50% 38% / cover no-repeat fixed !important;
+  }
+
+  html:has(#mainPrefPane) moz-card {
+    --card-background-color: var(--nivora-glass-card);
+    border-radius: var(--card-border-radius);
+    backdrop-filter: blur(18px) saturate(1.3);
+  }
+
+  #mainPrefPane > groupbox.highlighting-group[data-category] {
+    background: var(--nivora-glass-card);
+    backdrop-filter: blur(18px) saturate(1.3);
+  }
+}
+
+/* Under the pointer a card (and a Zen group) is glass at full strength: more blur, more light, a brighter edge. */
+@media -moz-pref("nivora.ui.glass") {
+  html:has(#mainPrefPane) moz-card:hover {
+    backdrop-filter: blur(28px) saturate(1.5) brightness(1.08);
+    box-shadow: inset 0 1px 0 var(--nivora-glow);
+  }
+
+  #mainPrefPane > groupbox.highlighting-group[data-category]:hover {
+    backdrop-filter: blur(28px) saturate(1.5) brightness(1.08);
+    box-shadow: inset 0 1px 0 var(--nivora-glow);
+  }
+
+  moz-page-nav-button:hover {
+    border-radius: var(--page-nav-button-border-radius);
+    background-image: var(--nivora-glass-hover);
+    backdrop-filter: blur(12px) saturate(1.3);
+  }
+}
+
 /* ---- Navigation ----------------------------------------------------------------------------------- */
 
 :root {

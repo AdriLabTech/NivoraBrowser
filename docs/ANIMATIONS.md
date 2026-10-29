@@ -289,8 +289,7 @@ the palette, the settings and a page were looked at; the tab outline, the palett
 as intended, and the palette's exit was caught half way in a frame. **Not seen** (a still image cannot show motion): the
 close button's turn, the new-tab plus, the hover growth of icons, the favicon growth, the spaces' hover and the focus ring
 drawing in. The static checks (unit tests, contrast, spring generator) pass; no browser test was written for these rules.
-Two defects the screenshots found: a black shadow cannot be seen on this dark page (fixed in section 9), and the
-"managed by your organization" notice in the settings, caused by the update policy of `policies.json`, is not fixed.
+Two defects the screenshots found: a black shadow cannot be seen on this dark page (fixed in section 9), and the "managed by your organization" notice in the settings, caused by the update policy of `policies.json` (fixed by removing the file: the build has no updater, see SECURITY.md).
 
 ## 9. Third round: settings, new tab, loading
 
@@ -318,3 +317,85 @@ background and the palette over it, and a loading tab being swept (the sweep was
 `--nivora-glow`; the first version, with `--nivora-sheen`, was too faint to see). **Not seen:** the settings navigation's
 entrance, the switches' dot spring and stretch, the buttons' press, because a still image cannot show them. Switches were not
 on screen in any pane that was opened.
+
+## 10. Glass, the first-run tour and the notice
+
+### 10.1 Glass (`nivora.ui.glass`)
+
+**What the browser can and cannot blur.** Measured on a build, on a GPU (WebRender, RTX 4070): a `backdrop-filter` blurs what
+is behind it **in the browser's own interface** (text in the sidebar came out smeared) and **in an ordinary document** (the
+settings page), but **not the page**: over the new tab's picture the edge of the black disc stayed sharp inside a 20 px
+blur, with the filter reported as applied. So a surface that floats over the page (the command palette) cannot be glass by
+filter, and Zen's own "acrylic" rule for the palette (`zen.theme.acrylic-urlbar`, a black underlay and a 40 px blur, behind an
+`!important`) does not do it either.
+
+**What was done instead.**
+- **The palette over the new tab** paints a blurred copy of the new tab's picture (`nivora-newtab-glass.webp`, made by
+  `generate_newtab.py`, darkened to 70 %) as its own background, under a 66 % tint and a light top edge. The picture is ours,
+  so `NivoraMotion.sys.mjs` computes where the page paints the original (`glassGeometry`, unit tested) and sets
+  `--nivora-glass-size` and `--nivora-glass-pos` so the copy lies exactly over it. It measures when the palette opens, when its
+  entrance animation ends (while it runs the box is scaled and shifted) and when the window is resized. Over a real page the
+  palette stays the plain surface: there is nothing the browser could blur.
+- **The settings page** gets the same blurred picture as an ambient background that does not scroll, and its cards
+  (`moz-card` and Zen's group boxes) are real glass over it: `backdrop-filter: blur(18px) saturate(1.3)` on a 52 % tint, and
+  full strength under the pointer (`blur(28px) saturate(1.5) brightness(1.08)` and a brighter top edge).
+- **Under the pointer** a hovered tab, toolbar button, space icon, Essential, palette row and settings category gets a light
+  top edge fading into the hover fill (`--nivora-glass-hover`), and a 10-12 px blur where something of its own is behind it.
+
+**Contrast.** Measured on the palette in a screenshot, on its lightest pixel (next to the blurred corona), with the tint at 58 %
+before it was raised to 66 % and the picture darkened: primary text 9.7:1, secondary 5.6:1, **muted 3.0:1**, which is under
+the 4.5:1 the rest of the system keeps. After darkening and raising the tint the same spot is expected at about 10:1, 6.8:1 and
+3.6:1 (computed from the measured pixel, **not measured again**); muted text is used for the placeholder only. The contrast
+tool (`check_contrast.py`) checks the palette, not what is behind a translucent surface, so this is the one place the number
+is not guarded by a test.
+
+**Cost.** Blur only on surfaces of a palette's or a card's size, never on the window, a tab's content or the scrim of the tour.
+The existing budgets (no blur in an *animation*) are untouched: the glass is static. Not measured: the GPU cost of the cards
+on a long settings page, or on a machine without a GPU.
+
+### 10.2 The first-run tour
+
+The guide is the owner's pixel-art character, taken as it is from the Claude Code plugin for Ryoku
+(`ryoku-plugins/claude-code/assets/sprites.png`: 53 cells of 40 x 46 pixels in 10 columns, drawn by that plugin's
+`bin/gen-sprites.py`; copied to `src/nivora/theme/images/nivora-guide.png`, so a change to the character is a new copy of the
+sheet). It is shown at 3x with no smoothing and plays the animations that plugin defines (idle with its blink, wave, thinking,
+working at the laptop, listening, success) from a table in `NivoraTutorialCore.mjs`, plus a short `talk` loop (cells 0, 12, 13)
+while an idle step's text is typed. Each step asks for a pose: it waves in the welcome, types at the laptop for the command
+palette, celebrates at the end. The tour is in **Spanish**, whatever the language of the interface, and names the interface's own
+labels (New Tab, Add to Essentials, Compact Mode, Join 2 Tabs, Settings) as they are on screen, in English; it introduces itself
+as "Adri" (one string, `tour-hello-title`).
+
+It walks through the sections: tabs, the command palette, Essentials, spaces, the sidebar and compact mode, Glance, split
+view, the Library and the menu with Settings, 11 steps in all. A spotlight glides from one target to the next and the rest of
+the window is dimmed; the bubble types its text. Every edge is built from 4 px and 2 px steps (notched corners), and the easings
+are `steps()`. Arrow keys move, Esc leaves, and the buttons do the same. It starts by itself in the first window of a profile with
+`nivora.tutorial.seen` false and sets it when it ends or is skipped; the command palette ("Hacer el tutorial"),
+`Settings > Look and Feel > Repetir el tutorial` and a `nivora-start-tour` notification start it again. It never starts under
+test automation or headless. The steps, the animations and the layout maths are `NivoraTutorialCore.mjs` (unit tested); the
+text is `browser/nivora.ftl`.
+
+**Checked on a build:** it starts alone on a fresh profile; all 11 steps were looked at (the spotlight, the bubble on the right of
+the target with its tail, the centred steps; with the earlier placeholder mascot, **not yet with the owner's character**); finishing sets the pref; a second request does not stack a second tour;
+arrows and Esc work; the Settings button and the palette command start it. **Not checked:** the typing and Umbra's blink as
+movement (stills only), a browser test (none was written), other window sizes, and a profile that already had windows open when the
+module started.
+
+### 10.3 The "managed by your organization" notice
+
+It was caused by `policies.json` (update policy). The build has no updater (`AppConstants.MOZ_UPDATER` is false, checked in the
+running browser), so the file turned nothing off, and it is no longer installed. The notice should disappear on the first
+install of a package built without it (**not yet seen**: it needs that install).
+
+### 10.4 "Repetir el tutorial" did nothing (found on 2026-10-29)
+
+On the first installed package the button was drawn but did nothing. The cause was not the button: the profile's compiled-script
+cache (see `docs/DEVELOPMENT.md`) still held the scripts of an earlier package, whose settings script had no handler for it and
+whose commands module did not start the tour. It was reproduced by reusing a profile between two builds and fixed at the root
+(the package's install script clears that cache). The same investigation found a second, real weakness, also fixed: a tour left
+"active" but no longer on screen (a window closed in the middle of it, or the tour showing in another window or workspace) made
+every later request be ignored silently. Now a request made while a tour is showing in the same window restarts it, one made from
+another window closes the old tour and opens a new one there, a tour whose window closes is dropped without being marked as
+seen, and Settings sends its own window with the request so the tour opens where it was asked for. Checked with real mouse clicks
+(a virtual pointer through uinput) on a copy of the owner's preferences and spaces, with a stale tour and with the tour open in
+another state. **Not checked:** the owner's real profile after the new package is installed.
+

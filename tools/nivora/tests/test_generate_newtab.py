@@ -51,6 +51,11 @@ class ShippedBackgroundTest(unittest.TestCase):
         css = (ROOT / "src" / "nivora" / "theme" / "nivora-polish.inc.css").read_text(encoding="utf-8")
         self.assertIn("content/browser/nivora/nivora-newtab.webp", jar)
         self.assertIn("chrome://browser/content/nivora/nivora-newtab.webp", css)
+        self.assertIn("content/browser/nivora/nivora-newtab-glass.webp", jar)
+        self.assertIn("chrome://browser/content/nivora/nivora-newtab-glass.webp", css)
+        with Image.open(gn.GLASS_OUT) as glass:
+            self.assertEqual(glass.size, (1280, 720))
+        self.assertLess(gn.GLASS_OUT.stat().st_size, 40 * 1024)
 
     def test_the_preference_that_gates_it_is_defined_and_in_the_settings_schema(self):
         yaml = (ROOT / "prefs" / "nivora" / "nivora.yaml").read_text(encoding="utf-8")
@@ -59,6 +64,8 @@ class ShippedBackgroundTest(unittest.TestCase):
         self.assertIn("- name: nivora.ui.newtab-background", yaml)
         self.assertIn('pref: "nivora.ui.newtab-background"', schema)
         self.assertIn('-moz-pref("nivora.ui.newtab-background")', css)
+        self.assertIn("- name: nivora.ui.glass", yaml)
+        self.assertIn('pref: "nivora.ui.glass"', schema)
 
 
 if __name__ == "__main__":

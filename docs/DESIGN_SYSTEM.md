@@ -102,4 +102,5 @@ Zen's three window-layout screenshots in the Look and Feel pane are replaced by 
   duration, distance and curve from the motion tokens; never write `0.2s` or a `cubic-bezier` in a rule.
   Animate `transform` and `opacity` (a script that must move neighbours may animate a margin). Fade and move
   as two animations so a surface is opaque before it has stopped; leave faster than you arrived; do not blur
-  anything larger than a button. Never leave motion on when `--nivora-motion-scale` is 0.
+  anything larger than a button, except the frosted-glass surfaces of [ANIMATIONS.md](ANIMATIONS.md) section 10 (the
+  command palette, the cards of the settings page, hovered controls). Never leave motion on when `--nivora-motion-scale` is 0.

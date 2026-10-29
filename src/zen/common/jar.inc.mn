@@ -34,6 +34,8 @@
 *       content/browser/zen-styles/zen-backdrop-filters.svg                     (../../zen/common/styles/zen-backdrop-filters.svg)
 
         content/browser/nivora/nivora-newtab.webp                               (../../nivora/theme/images/nivora-newtab.webp)
+        content/browser/nivora/nivora-newtab-glass.webp                         (../../nivora/theme/images/nivora-newtab-glass.webp)
+        content/browser/nivora/nivora-guide.png                                 (../../nivora/theme/images/nivora-guide.png)
 
         content/browser/zen-styles/zen-panels/bookmarks.css                     (../../zen/common/styles/zen-panels/bookmarks.css)
         content/browser/zen-styles/zen-panels/print.css                         (../../zen/common/styles/zen-panels/print.css)

@@ -53,6 +53,19 @@
 --nivora-glow: color-mix(in srgb, var(--nivora-pure-white) 22%, transparent);
 --nivora-hover-fill: color-mix(in srgb, var(--nivora-pure-white) 6%, transparent);
 --nivora-press-fill: color-mix(in srgb, var(--nivora-pure-white) 11%, transparent);
+/* Glass: the tint laid over a blurred copy of the new tab's picture (which is itself darkened to 70 %). Measured on
+ * the palette over the brightest part of that picture: primary text about 10:1, secondary about 6.8:1, muted
+ * about 3.6:1 (under the 4.5:1 of the rest of the system, only at that one spot). See docs/ANIMATIONS.md. */
+--nivora-glass-tint: color-mix(in srgb, var(--nivora-surface-raised) 66%, transparent);
+--nivora-glass-card: color-mix(in srgb, var(--nivora-surface-2) 52%, transparent);
+
+/* Glass under the pointer: a light top edge fading into the hover fill. Blur is added where the surface
+ * has something of its own behind it (see docs/ANIMATIONS.md section 10). */
+--nivora-glass-hover: linear-gradient(180deg, var(--nivora-sheen), var(--nivora-hover-fill) 70%);
+
+/* The first-run tour: the scrim that dims the window around what is being shown. */
+--nivora-scrim: color-mix(in srgb, var(--nivora-obsidian-950) 76%, transparent);
+
 /* The one shadow: a floating surface (the palette) lifts off the page. Nothing else casts one. On a page
  * this dark a black shadow cannot be seen, so the surface also carries a hairline and a faint outer glow. */
 --nivora-elevation: 0 0 0 1px var(--nivora-hairline),

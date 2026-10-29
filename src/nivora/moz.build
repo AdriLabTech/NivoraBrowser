@@ -12,6 +12,8 @@ EXTRA_JS_MODULES.nivora += [
     "modules/NivoraSettings.sys.mjs",
     "modules/NivoraSettingsCore.mjs",
     "modules/NivoraTabsCore.mjs",
+    "modules/NivoraTutorial.sys.mjs",
+    "modules/NivoraTutorialCore.mjs",
 ]
 
 DIRS += [

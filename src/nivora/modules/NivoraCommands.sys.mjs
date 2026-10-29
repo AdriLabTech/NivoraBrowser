@@ -20,6 +20,7 @@ import { findDuplicateTabs } from "resource:///modules/nivora/NivoraTabsCore.mjs
 import { NivoraSettings } from "resource:///modules/nivora/NivoraSettings.sys.mjs";
 import { t } from "resource:///modules/nivora/NivoraL10n.sys.mjs";
 import { NivoraMotion } from "resource:///modules/nivora/NivoraMotion.sys.mjs";
+import { NivoraTutorial } from "resource:///modules/nivora/NivoraTutorial.sys.mjs";
 
 const ICONS = "chrome://browser/skin/zen-icons/";
 
@@ -124,6 +125,14 @@ const SPECS = [
     },
   },
   {
+    id: "nivora:take-tour",
+    l10nId: "nivora-action-take-tour",
+    category: "settings",
+    icon: `${ICONS}help.svg`,
+    // The first-run tour (NivoraTutorial.sys.mjs), again.
+    run: () => NivoraTutorial.start(),
+  },
+  {
     id: "nivora:toggle-animations",
     l10nId: "nivora-action-toggle-animations",
     category: "settings",
@@ -204,6 +213,12 @@ try {
   NivoraMotion.init();
 } catch (e) {
   log.error("motion could not start", e);
+}
+
+try {
+  NivoraTutorial.init();
+} catch (e) {
+  log.error("tour could not start", e);
 }
 
 /**

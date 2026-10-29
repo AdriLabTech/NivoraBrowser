@@ -12,7 +12,8 @@ and the geometry is original. A one-level noise dither keeps the long dark gradi
 8-bit display.
 
 Usage: generate_newtab.py [--out FILE] [--width N]
-       (default: src/nivora/theme/images/nivora-newtab.webp, 2560 wide, 16:9)
+       (default: src/nivora/theme/images/nivora-newtab.webp, 2560 wide, 16:9, and next to it nivora-newtab-glass.webp,
+       the same picture blurred, 1280 wide)
 Requires Pillow.
 """
 
@@ -21,7 +22,7 @@ import math
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -31,6 +32,10 @@ import check_contrast as cc  # noqa: E402
 
 TOKENS = ROOT / "src" / "nivora" / "theme" / "nivora-tokens.inc.css"
 DEFAULT_OUT = ROOT / "src" / "nivora" / "theme" / "images" / "nivora-newtab.webp"
+# The same picture, blurred. The command palette over the new tab and the cards of the settings page use it as
+# the "glass": the browser cannot blur the page behind a surface (see docs/ANIMATIONS.md section 10), but the
+# picture is ours, so a surface can show its own blurred copy, aligned with the original.
+GLASS_OUT = DEFAULT_OUT.with_name("nivora-newtab-glass.webp")
 def lut(fn):
     """A 256-entry table from a function of the normalised value 0..1 to 0..255."""
     return [max(0, min(255, round(255 * fn(i / 255)))) for i in range(256)]
@@ -95,6 +100,12 @@ def render(width):
     return out
 
 
+def render_glass(width):
+    """The picture, blurred hard and darker (it sits behind text), at `width` (it has no detail left, so it can be small)."""
+    image = render(width)
+    return ImageEnhance.Brightness(image.filter(ImageFilter.GaussianBlur(width * 0.014))).enhance(0.7)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
@@ -104,6 +115,10 @@ def main(argv=None):
     args.out.parent.mkdir(parents=True, exist_ok=True)
     image.save(args.out, "WEBP", quality=88, method=6)
     print(f"wrote {args.out} ({image.size[0]}x{image.size[1]}, {args.out.stat().st_size // 1024} KiB)")
+    glass = render_glass(1280)
+    glass_out = args.out.with_name(GLASS_OUT.name)
+    glass.save(glass_out, "WEBP", quality=90, method=6)
+    print(f"wrote {glass_out} ({glass.size[0]}x{glass.size[1]}, {glass_out.stat().st_size // 1024} KiB)")
     return 0
 
 

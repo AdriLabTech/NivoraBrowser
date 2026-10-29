@@ -121,6 +121,12 @@ zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 
 pane-zen-theme-title = Theme Settings
 
+nivora-tour-settings-title = Tutorial de bienvenida
+nivora-tour-settings-header = Tutorial de Nivora
+nivora-tour-settings-description = Una guía en pixel art te enseña la barra lateral, la paleta de comandos, los espacios, Glance, la vista dividida y el resto.
+nivora-tour-settings-button =
+    .label = Repetir el tutorial
+
 zen-vertical-tabs-title = Sidebar and tabs layout
 zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout

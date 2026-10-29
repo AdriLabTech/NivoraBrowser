@@ -21,3 +21,13 @@
 # painted by nivora-polish.inc.css while the selected tab is the empty one. false leaves Zen's plain canvas.
 - name: nivora.ui.newtab-background
   value: true
+
+# Glass: the command palette over the new tab and the cards of the settings page show a blurred copy of the
+# new tab's picture, a frosted-glass look (docs/ANIMATIONS.md section 10). false leaves them plain.
+- name: nivora.ui.glass
+  value: true
+
+# The first-run tour (NivoraTutorial.sys.mjs). It is set to true when the tour ends or is skipped, so it
+# starts by itself only once; Settings > Look and Feel and the command palette start it again.
+- name: nivora.tutorial.seen
+  value: false

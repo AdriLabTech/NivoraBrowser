@@ -1,0 +1,203 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - the first-run tour (NivoraTutorial.sys.mjs).
+ *
+ * The guide, the pixel-art character of the Claude Code plugin for Ryoku, tells where things are in a speech bubble
+ * while the rest of the window is dimmed around the thing being shown. Pixel art is square: the sprite is drawn at
+ * three times its size with no smoothing,
+ * and everything else that has an edge (the bubble, the buttons) is built from 4 px and 2 px steps, so a corner
+ * is a notch, not a curve. Colors come from the roles; durations from the motion tokens (0 with motion off), and
+ * the choppy easings are `steps()`, which is how a pixel-art character moves. */
+
+.nivora-tour {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  -moz-user-select: none;
+  font-size: 13px;
+}
+
+/* The spotlight: a box around the target whose enormous shadow is the scrim. With no target it is a point in
+ * the middle, so the whole window is dimmed. It glides from one target to the next. */
+.nivora-tour-spot {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 100vmax var(--nivora-scrim),
+    0 0 0 2px var(--nivora-hairline-strong),
+    0 0 40px -6px var(--nivora-glow);
+  pointer-events: none;
+  transition:
+    left var(--nivora-d-slow) var(--nivora-spring-smooth),
+    top var(--nivora-d-slow) var(--nivora-spring-smooth),
+    width var(--nivora-d-slow) var(--nivora-spring-smooth),
+    height var(--nivora-d-slow) var(--nivora-spring-smooth);
+}
+
+.nivora-tour-spot[data-lit="false"] {
+  border-radius: 0;
+  box-shadow: 0 0 0 100vmax var(--nivora-scrim);
+}
+
+/* The bubble. Its edge is box-shadows at 4 px, which leaves the corners notched. */
+.nivora-tour-bubble {
+  --nivora-tour-edge: var(--nivora-control-border);
+  --nivora-tour-fill: color-mix(in srgb, var(--nivora-surface-raised) 92%, transparent);
+  position: absolute;
+  box-sizing: border-box;
+  width: 460px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  column-gap: 18px;
+  padding: 18px 20px 14px;
+  background: var(--nivora-tour-fill);
+  backdrop-filter: blur(12px) saturate(1.2);
+  color: var(--nivora-text-primary);
+  box-shadow:
+    0 -4px 0 0 var(--nivora-tour-edge),
+    0 4px 0 0 var(--nivora-tour-edge),
+    -4px 0 0 0 var(--nivora-tour-edge),
+    4px 0 0 0 var(--nivora-tour-edge),
+    10px 10px 0 0 color-mix(in srgb, var(--nivora-obsidian-950) 70%, transparent);
+  animation: nivora-tour-pop var(--nivora-d-base) steps(5, end) backwards;
+}
+
+@keyframes nivora-tour-pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(8px * var(--nivora-lift)));
+  }
+}
+
+/* The tail: a small notched block on the side that faces the spotlight. */
+.nivora-tour-bubble::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--nivora-tour-fill);
+  display: none;
+}
+
+.nivora-tour-bubble[data-side="right"]::before {
+  display: block;
+  left: -8px;
+  top: 40px;
+  box-shadow: -4px 0 0 0 var(--nivora-tour-edge), 0 -4px 0 0 var(--nivora-tour-edge), 0 4px 0 0 var(--nivora-tour-edge);
+}
+
+.nivora-tour-bubble[data-side="left"]::before {
+  display: block;
+  right: -8px;
+  top: 40px;
+  box-shadow: 4px 0 0 0 var(--nivora-tour-edge), 0 -4px 0 0 var(--nivora-tour-edge), 0 4px 0 0 var(--nivora-tour-edge);
+}
+
+.nivora-tour-bubble[data-side="below"]::before {
+  display: block;
+  top: -8px;
+  left: 44px;
+  box-shadow: 0 -4px 0 0 var(--nivora-tour-edge), -4px 0 0 0 var(--nivora-tour-edge), 4px 0 0 0 var(--nivora-tour-edge);
+}
+
+.nivora-tour-bubble[data-side="above"]::before {
+  display: block;
+  bottom: -8px;
+  left: 44px;
+  box-shadow: 0 4px 0 0 var(--nivora-tour-edge), -4px 0 0 0 var(--nivora-tour-edge), 4px 0 0 0 var(--nivora-tour-edge);
+}
+
+/* The guide: a sheet of 53 cells of 40 x 46 pixels in 10 columns, shown at 3x (120 x 138). The cell is chosen by the
+ * script, which sets `background-position`; the sheet is 1200 x 828 here. */
+.nivora-tour-mascot {
+  width: 120px;
+  height: 138px;
+  background: url("chrome://browser/content/nivora/nivora-guide.png") 0 0 / 1200px 828px no-repeat;
+  image-rendering: pixelated;
+}
+
+.nivora-tour-text {
+  min-width: 0;
+}
+
+.nivora-tour-title {
+  margin: 2px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.nivora-tour-body {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--nivora-text-secondary);
+  white-space: pre-wrap;
+}
+
+.nivora-tour-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.nivora-tour-count {
+  margin-inline-end: auto;
+  color: var(--nivora-text-muted);
+  font-size: 12px;
+}
+
+/* A pixel button: 2 px notches instead of a border and a radius. */
+.nivora-tour-button {
+  appearance: none;
+  border: none;
+  margin: 0;
+  padding: 7px 14px;
+  background: var(--nivora-surface-2);
+  color: var(--nivora-text-primary);
+  font: inherit;
+  cursor: pointer;
+  box-shadow:
+    0 -2px 0 0 var(--nivora-tour-edge),
+    0 2px 0 0 var(--nivora-tour-edge),
+    -2px 0 0 0 var(--nivora-tour-edge),
+    2px 0 0 0 var(--nivora-tour-edge);
+  transition:
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    translate var(--nivora-d-micro) steps(2, end);
+}
+
+.nivora-tour-button:hover:not(:disabled) {
+  background-image: var(--nivora-glass-hover);
+  translate: 0 calc(-2px * var(--nivora-lift));
+}
+
+.nivora-tour-button:active:not(:disabled) {
+  translate: 0 calc(2px * var(--nivora-lift));
+}
+
+.nivora-tour-button:disabled {
+  color: var(--nivora-text-muted);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.nivora-tour-button:focus-visible {
+  outline: 2px solid var(--nivora-focus-ring);
+  outline-offset: 5px;
+}
+
+.nivora-tour-primary {
+  background: var(--nivora-selected);
+  color: var(--nivora-surface-base);
+  font-weight: 700;
+}
+
+.nivora-tour-skip {
+  background: transparent;
+  color: var(--nivora-text-muted);
+  box-shadow: none;
+}

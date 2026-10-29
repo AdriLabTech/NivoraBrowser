@@ -5,6 +5,21 @@
 <script type="text/javascript" src="chrome://browser/content/preferences/zen-settings.js"/>
 <html:template id="template-paneZenLooks">
 
+<hbox id="nivoraTourCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="nivora-tour-settings-title"/>
+</hbox>
+
+<groupbox id="nivoraTourGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+  <label><html:h2 data-l10n-id="nivora-tour-settings-header"/></label>
+  <description class="description-deemphasized" data-l10n-id="nivora-tour-settings-description" />
+  <hbox>
+    <button id="nivoraTourReplay" data-l10n-id="nivora-tour-settings-button"/>
+  </hbox>
+</groupbox>
+
 <hbox id="zenVerticalTabsCategory"
       class="subcategory"
       hidden="true"

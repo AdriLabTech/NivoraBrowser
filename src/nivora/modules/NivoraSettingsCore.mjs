@@ -319,6 +319,7 @@ export const SETTINGS_SCHEMA = defineSchema([
   { pref: "zen.theme.border-radius", type: "int", group: "appearance", min: -1, max: 24 },
   { pref: "nivora.ui.hide-zen-services", type: "bool", group: "appearance" },
   { pref: "nivora.ui.newtab-background", type: "bool", group: "appearance" },
+  { pref: "nivora.ui.glass", type: "bool", group: "appearance" },
   // Layout and density
   { pref: "zen.view.sidebar-expanded", type: "bool", group: "layout" },
   { pref: "zen.view.use-single-toolbar", type: "bool", group: "layout" },

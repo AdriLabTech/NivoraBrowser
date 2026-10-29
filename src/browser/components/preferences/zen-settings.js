@@ -662,6 +662,11 @@ var gZenLooksAndFeel = {
     }
     this.__hasInitialized = true;
     gZenMarketplaceManager.init();
+    // Nivora: the first-run tour again (NivoraTutorial.sys.mjs listens for this notification).
+    // The notification carries the browser window this page is in, so the tour opens there.
+    document.getElementById("nivoraTourReplay")?.addEventListener("command", () => {
+      Services.obs.notifyObservers(window.browsingContext?.topChromeWindow ?? null, "nivora-start-tour");
+    });
     for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
       Services.prefs.addObserver(pref, this);
     }

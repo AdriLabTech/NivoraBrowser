@@ -143,6 +143,39 @@
   }
 }
 
+/* ---- Glass --------------------------------------------------------------------------------------- */
+
+/* Over the new tab the palette is frosted glass: the browser cannot blur the page behind it (a backdrop filter
+ * does not see the page), but the picture behind is ours, so the palette paints a blurred copy of it, placed by
+ * NivoraMotion.sys.mjs exactly over the original (--nivora-glass-size and -pos), under a tint and a light top
+ * edge. Over a real page it stays the plain surface. Zen's own "acrylic" rule carries !important; this one wins
+ * by specificity. */
+@media -moz-pref("nivora.ui.glass") and -moz-pref("nivora.ui.newtab-background") {
+  :root:root[zen-has-empty-tab="true"] #urlbar[zen-floating-urlbar="true"][open] > .urlbar-background {
+    background:
+      linear-gradient(180deg, var(--nivora-sheen), transparent 40%),
+      linear-gradient(var(--nivora-glass-tint), var(--nivora-glass-tint)),
+      url("chrome://browser/content/nivora/nivora-newtab-glass.webp") var(--nivora-glass-pos, 50% 46%) / var(--nivora-glass-size, cover) no-repeat !important;
+  }
+}
+
+/* Glass under the pointer. A hovered tab, button, space icon or palette row gets the light top edge and a soft
+ * blur of what is behind it (the sidebar's own surface and, over the new tab, nothing the browser can blur: the
+ * blur is cheap here and keeps the look the same everywhere). Pressed and selected states keep their own fills. */
+@media -moz-pref("nivora.ui.glass") {
+  :root .tabbrowser-tab:hover:not([selected]) .tab-background,
+  :root .toolbarbutton-1:hover:not([disabled]):not([open]):not(#tabs-newtab-button),
+  :root #zen-workspaces-button toolbarbutton:hover,
+  :root .tabbrowser-tab[zen-essential="true"]:hover:not([selected]) .tab-background {
+    background-image: var(--nivora-glass-hover);
+    backdrop-filter: blur(10px) saturate(1.25);
+  }
+
+  :root #urlbar .urlbarView-row:not([selected]):hover .urlbarView-row-inner {
+    background-image: var(--nivora-glass-hover);
+  }
+}
+
 /* ---- Spaces -------------------------------------------------------------------------------------- */
 
 /* The row of space icons: the one under the pointer rises, the active one carries a small dot. */
