@@ -24,7 +24,6 @@ Releases or the AUR. Publishing is the maintainer's action.
 | Path | Content |
 |---|---|
 | `/opt/nivora/` | The application exactly as `mach package` leaves it, including Firefox's own license notices |
-| `/opt/nivora/distribution/policies.json` | `DisableAppUpdate: true` and the related policies: no in-app updating |
 | `/usr/bin/nivora` | Symlink to `/opt/nivora/nivora` |
 | `/usr/share/applications/nivora.desktop` | Launcher; handles `http`, `https` and the usual document and media types; "New Window" and "New Private Window" actions |
 | `/usr/share/icons/hicolor/<size>/apps/nivora.png` | 16 to 512 px, from the generated mark |
@@ -44,6 +43,7 @@ build environment): **unverified until `pacman` resolves them on Arch**.
 | Kind | Location | Notes |
 |---|---|---|
 | Application | `/opt/nivora` | owned by the package; replaced on upgrade |
+| Install script | `nivora-browser-bin.install` | Removes the compiled-script cache of every user (`~/.cache/nivora/*/startupCache`) on install and upgrade, because a package that only repackages the interface keeps the build ID Firefox compares (docs/DEVELOPMENT.md) |
 | Profile (settings, bookmarks, history, cookies, passwords, extensions) | `~/.config/nivora/` (or `~/.nivora/` with `MOZ_LEGACY_HOME=1`) | Verified by test F-10: separate from Zen's and Firefox's |
 | Caches | the profile's cache directory under `~/.cache` | disposable |
 | Logs | none persistent by default | `MOZ_LOG` for debugging |

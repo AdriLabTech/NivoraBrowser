@@ -196,7 +196,7 @@ use that in window rules (on Hyprland, `hyprctl clients` shows it; on sway, `swa
 | Run **Toggle Animations** from the palette | All of Nivora's motion stops at once (and returns when you run it again) |
 | Open and close a few tabs (**Ctrl+T**, **Ctrl+W**) | New tabs spring into the sidebar; closed ones step aside and the others close the gap |
 | Open `about:preferences` and click different categories | Each category assembles card by card |
-| Open `about:policies` | `DisableAppUpdate` is `true`: there is no in-app updating |
+| Open Settings | No "Your browser is being managed by your organization" notice (the build has no updater and ships no enterprise policy) |
 | Play a video; play a sound; save a file; open a link from another application | Video and sound work, the file dialog appears, links open in a new tab. (H.264 may need `ffmpeg`; file dialogs through portals need `xdg-desktop-portal`) |
 | Check that Zen's and Firefox's own profiles are untouched | `ls -la ~/.zen ~/.mozilla` shows no change in modification times caused by Nivora |
 | Compact mode, spaces, split view, Glance | They work as in Zen. They were exercised by Zen's own test groups in a container, not by hand on a desktop |

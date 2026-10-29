@@ -6,7 +6,7 @@
 # Assemble the files `makepkg` needs from a built browser:
 #   nivora-<ver>.linux-x86_64.tar.xz       the application (top-level directory `nivora/`)
 #   nivora-licenses-<ver>.tar.xz           LICENSE, LICENSES.md, licenses/
-#   PKGBUILD, nivora.desktop, io.github.adrilabtech.nivora.metainfo.xml, policies.json
+#   PKGBUILD, nivora-browser-bin.install, nivora.desktop, io.github.adrilabtech.nivora.metainfo.xml
 # with the real checksums written into the PKGBUILD. Nothing is installed or published.
 #
 # Usage: make_arch_package.sh <dist-directory> <output-directory>
@@ -35,9 +35,9 @@ cp "$root/LICENSE" "$root/docs/LICENSES.md" "$stage/nivora-licenses/"
 cp -a "$root/licenses" "$stage/nivora-licenses/licenses"
 tar -C "$stage" -cJf "$out/nivora-licenses-$version.tar.xz" nivora-licenses
 
+cp "$root/packaging/arch/nivora-browser-bin.install" "$out/"
 cp "$root/packaging/linux/nivora.desktop" \
-   "$root/packaging/linux/io.github.adrilabtech.nivora.metainfo.xml" \
-   "$root/packaging/linux/distribution/policies.json" "$out/"
+   "$root/packaging/linux/io.github.adrilabtech.nivora.metainfo.xml" "$out/"
 
 browser_sum=$(sha256sum "$out/nivora-$version.linux-x86_64.tar.xz" | cut -d' ' -f1)
 licenses_sum=$(sha256sum "$out/nivora-licenses-$version.tar.xz" | cut -d' ' -f1)

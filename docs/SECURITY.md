@@ -49,7 +49,7 @@ registry) and must be reviewed against section 6.
 
 | Service | Used for | Nivora treatment | State |
 |---|---|---|---|
-| `updates.zen-browser.app` | Application updates (MAR) | Host removed from `surfer.json`; surfer writes a non-resolving placeholder (`localhost:7648`). `app.update.auto=false`; the distribution policy `DisableAppUpdate` is verified active in the packaged build (`about:policies`) | Verified: not in the build, not resolved on first start |
+| `updates.zen-browser.app` | Application updates (MAR) | Host removed from `surfer.json`; surfer writes a non-resolving placeholder (`localhost:7648`). `app.update.auto=false`; the build has no updater at all (`--disable-updater`: `AppConstants.MOZ_UPDATER` is false, checked in the running browser 2026-10-29, and there is no update manager or service), which is why no `DisableAppUpdate` policy is shipped (it made Settings say the browser is managed by an organization). A release build must keep `--disable-updater` in the packaged build (`about:policies`) | Verified: not in the build, not resolved on first start |
 | `share.zen-browser.app` | Sharing spaces/folders/boosts | `zen.share.base-url` set to empty | Feature has no backend; UI entry points still visible |
 | `zen-browser.app/*` injection | Mods marketplace site talks to the browser | `zen.injections.match-urls` = `about:preferences` only | Default checked in the built browser (`browser_nivora_defaults.js`; development builds of Zen use `http://localhost/*`, so the test accepts that outside official builds) |
 | `zen-browser.github.io/theme-store` | Fetching installed mods and updates | `zen.mods.auto-update=false`; requests only happen for mods the user installs | Residual: user-initiated installs still contact it |

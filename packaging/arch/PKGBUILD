@@ -31,25 +31,24 @@ optdepends=('libnotify: desktop notifications'
 provides=("nivora-browser=${pkgver}")
 conflicts=('nivora-browser')
 options=('!strip' '!debug')
+install=nivora-browser-bin.install
 source=("nivora-${pkgver}.linux-x86_64.tar.xz"
         "nivora-licenses-${pkgver}.tar.xz"
         "nivora.desktop"
-        "io.github.adrilabtech.nivora.metainfo.xml"
-        "policies.json")
+        "io.github.adrilabtech.nivora.metainfo.xml")
 sha256sums=('REPLACE_WITH_SHA256_OF_THE_BROWSER_TARBALL'
             'REPLACE_WITH_SHA256_OF_THE_LICENSES_TARBALL'
-            'SKIP'
             'SKIP'
             'SKIP')
 
 package() {
-  # Application files stay together under /opt/nivora; the updater is disabled by policy because
-  # pacman is the update channel (docs/decisions/0004).
+  # Application files stay together under /opt/nivora. There is no in-app updater (the build is made
+  # with --disable-updater) and no enterprise policy file: such a file, even one that only turns
+  # updates off, makes Settings say the browser is "managed by your organization". pacman is the update
+  # channel (docs/decisions/0004).
   install -d "${pkgdir}/opt/nivora" "${pkgdir}/usr/bin"
   cp -a "${srcdir}/nivora/." "${pkgdir}/opt/nivora/"
   ln -s /opt/nivora/nivora "${pkgdir}/usr/bin/nivora"
-
-  install -Dm644 "${srcdir}/policies.json" "${pkgdir}/opt/nivora/distribution/policies.json"
 
   install -Dm644 "${srcdir}/nivora.desktop" "${pkgdir}/usr/share/applications/nivora.desktop"
   install -Dm644 "${srcdir}/io.github.adrilabtech.nivora.metainfo.xml" \

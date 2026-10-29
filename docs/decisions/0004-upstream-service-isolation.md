@@ -42,5 +42,9 @@ Zen's binaries, replacing Nivora with Zen.
   tracked in the roadmap.
 - Packaging should ship `distribution/policies.json` with `DisableAppUpdate: true`, as Zen's AppImage
   skeleton (`build/AppDir/distribution/policies.json`) already does, until an update service exists.
+  **Superseded 2026-10-29:** the Linux package no longer ships it. The build has no updater
+  (`--disable-updater`, `AppConstants.MOZ_UPDATER` is false), so the policy turned off nothing, and any
+  policies file makes Settings say the browser is managed by an organization. A release configuration
+  must keep `--disable-updater` (SECURITY.md).
 - A future Nivora update service needs: signing keys, a host in `surfer.json`, `app.update.auto`
   reconsidered, and a threat model.

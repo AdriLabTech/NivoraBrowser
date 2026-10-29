@@ -59,7 +59,7 @@ class ArchPackageTest(unittest.TestCase):
         for name in (f"nivora-{cls.version}.linux-x86_64.tar.xz", f"nivora-licenses-{cls.version}.tar.xz"):
             with tarfile.open(cls.out / name) as archive:
                 archive.extractall(cls.srcdir)
-        for name in ("nivora.desktop", "io.github.adrilabtech.nivora.metainfo.xml", "policies.json"):
+        for name in ("nivora.desktop", "io.github.adrilabtech.nivora.metainfo.xml"):
             (cls.srcdir / name).write_bytes((cls.out / name).read_bytes())
         env = dict(os.environ, srcdir=str(cls.srcdir), pkgdir=str(cls.pkgdir))
         cls.package = subprocess.run(
@@ -89,9 +89,42 @@ class ArchPackageTest(unittest.TestCase):
         self.assertTrue(link.is_symlink())
         self.assertEqual(os.readlink(link), "/opt/nivora/nivora")
 
-    def test_updates_are_disabled_by_policy(self):
-        policy = json.loads((self.pkgdir / "opt/nivora/distribution/policies.json").read_text())
-        self.assertIs(policy["policies"]["DisableAppUpdate"], True)
+    def test_no_enterprise_policy_is_installed(self):
+        """A policies.json makes Settings say "managed by your organization"; the build has no updater to turn off."""
+        self.assertFalse((self.pkgdir / "opt/nivora/distribution/policies.json").exists())
+        self.assertNotIn("policies.json", (self.out / "PKGBUILD").read_text())
+
+    def test_the_install_script_is_delivered_with_the_pkgbuild(self):
+        self.assertTrue((self.out / "nivora-browser-bin.install").is_file())
+        self.assertIn("install=nivora-browser-bin.install", (self.out / "PKGBUILD").read_text())
+
+    def test_installing_or_upgrading_clears_the_compiled_script_cache_of_every_user_and_nothing_else(self):
+        """The cache is removed so a package that repackages only the interface cannot run the previous one's scripts."""
+        with tempfile.TemporaryDirectory() as tmp:
+            homes = Path(tmp)
+            for user in ("ana", "luis"):
+                profile = homes / user / ".cache" / "nivora" / "abc.default"
+                (profile / "startupCache").mkdir(parents=True)
+                (profile / "startupCache" / "scriptCache-current.bin").write_bytes(b"old")
+                (profile / "cache2").mkdir()
+                (profile / "cache2" / "entry").write_bytes(b"web cache stays")
+                (homes / user / ".config" / "nivora").mkdir(parents=True)
+                (homes / user / ".config" / "nivora" / "prefs.js").write_text("user_pref(\"a\", 1);")
+            (homes / "other" / ".cache" / "firefox" / "x" / "startupCache").mkdir(parents=True)
+            for hook in ("post_install", "post_upgrade"):
+                for user in ("ana", "luis"):
+                    (homes / user / ".cache" / "nivora" / "abc.default" / "startupCache").mkdir(exist_ok=True)
+                result = subprocess.run(
+                    ["bash", "-c", f"set -e; source '{ROOT / 'packaging' / 'arch' / 'nivora-browser-bin.install'}'; {hook}"],
+                    capture_output=True, text=True, env=dict(os.environ, NIVORA_PURGE_HOMES=" ".join(str(h) for h in sorted(homes.iterdir()))),
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                for user in ("ana", "luis"):
+                    profile = homes / user / ".cache" / "nivora" / "abc.default"
+                    self.assertFalse((profile / "startupCache").exists(), f"{hook}: {user}")
+                    self.assertTrue((profile / "cache2" / "entry").exists(), "the web cache is not touched")
+                    self.assertTrue((homes / user / ".config" / "nivora" / "prefs.js").exists(), "the profile is not touched")
+                self.assertTrue((homes / "other" / ".cache" / "firefox" / "x" / "startupCache").exists(), "other browsers are not touched")
 
     def test_desktop_file_is_complete(self):
         parser = configparser.ConfigParser(interpolation=None, strict=True)

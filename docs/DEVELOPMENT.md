@@ -80,3 +80,18 @@ working directory cannot be imported.
 import is not there until you import again (or link it by hand: `ln -s "$PWD/src/<path>"
 engine/<path>`). A mochitest manifest that lists a file the engine cannot see fails with "lists test
 that does not exist". A file that replaces a Firefox file of the same path is handled the same way.
+
+## Compiled-script cache: a repackaged interface can run the previous one's scripts
+
+Firefox keeps the JavaScript it has compiled in `startupCache` (in the profile's cache directory) and discards it only when
+its build ID changes. That ID is compiled into the binary (`compatibility.ini` shows it, not the `BuildID` of `application.ini`),
+so every package made with `surfer build --ui` and `mach package` has the **same** one. Run a new package with a profile that
+ran the old one and Firefox executes the old compiled scripts next to the new files: a button drawn by the new page does nothing
+because its handler is the cached old one, and a function's printed source no longer matches what runs. This cost a day of
+confusing results on this project (a first-run tour that never started and a button that did nothing).
+
+- **When testing:** delete `startupCache` of a profile you reuse between builds (or use a new profile each time).
+- **For users:** `packaging/arch/nivora-browser-bin.install` removes `~/.cache/nivora/*/startupCache` of every user on install and
+  upgrade, and a test (`test_arch_package.py`) checks that it removes only that. A full rebuild changes the compiled ID and needs
+  no help.
+

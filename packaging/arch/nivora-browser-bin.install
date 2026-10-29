@@ -1,0 +1,26 @@
+# Pacman install script for nivora-browser-bin.
+#
+# Firefox keeps the JavaScript it has compiled in a cache inside each profile's cache directory, and throws that cache
+# away only when its own build ID changes. The build ID is compiled into the binary, and a package that only repackages
+# the interface keeps the same one, so after an update Firefox can run the compiled scripts of the previous package next
+# to the new files: a button that is drawn by the new page does nothing because its handler comes from the old cache.
+# The cache holds nothing that cannot be rebuilt, so it is removed on install and on upgrade, for every user.
+# NIVORA_PURGE_HOMES overrides where the home directories are (used by the tests).
+
+_purge_nivora_caches() {
+    local home profile
+    for home in ${NIVORA_PURGE_HOMES:-/home/* /root}; do
+        for profile in "$home"/.cache/nivora/*/; do
+            [ -d "${profile}startupCache" ] && rm -rf -- "${profile}startupCache"
+        done
+    done
+    return 0
+}
+
+post_install() {
+    _purge_nivora_caches
+}
+
+post_upgrade() {
+    _purge_nivora_caches
+}
