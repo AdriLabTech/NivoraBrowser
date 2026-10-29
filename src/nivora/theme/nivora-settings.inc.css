@@ -1,0 +1,199 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Nivora - the settings page (about:preferences).
+ *
+ * Preprocessed into the end of zen-theme.css (through nivora-ui.inc.css), so it reaches every chrome page,
+ * the settings among them. Two parts: what is not shown, and how what is shown looks and moves.
+ * The settings page builds its panes from custom elements in the light DOM, so a rule here reaches into
+ * them, and Firefox's design-system variables (--card-*, --toggle-*, --page-nav-*) can be set from here:
+ * this sheet is imported without a cascade layer, so it wins over the layered tokens. */
+
+/* ---- What is not shown ---------------------------------------------------------------------------- */
+
+/* Mozilla account, Sync, Backup and Zen's Mods marketplace. Account, Sync and Backup are groups of the
+ * "Account and sync" pane; the pane's button is hidden and so are those groups, which leaves the pane
+ * (reachable as about:preferences#sync) with only "Import data" and the default-browser prompt.
+ * The settings redesign forces that button visible, so no preference can hide it. */
+#category-sync,
+#category-zen-marketplace {
+  display: none !important;
+}
+
+setting-group:is(
+  [groupid="account"],
+  [groupid="accountDisabled"],
+  [groupid="sync"],
+  [groupid="profiles"],
+  [groupid="backup"],
+  [groupid="referrals"]
+) {
+  display: none !important;
+}
+
+/* ---- Surfaces ------------------------------------------------------------------------------------- */
+
+:root {
+  --card-background-color: var(--nivora-surface-2);
+  --card-border: 1px solid var(--nivora-hairline);
+  --card-border-radius: 14px;
+  --card-box-shadow: inset 0 1px 0 var(--nivora-sheen);
+  --box-border: 1px solid var(--nivora-hairline);
+  --box-border-radius: 12px;
+
+  /* A link is the text color, underlined: the interface carries no hue. */
+  --link-color: var(--nivora-text-primary);
+  --link-color-hover: var(--nivora-selected);
+  --link-color-active: var(--nivora-text-secondary);
+}
+
+/* Zen's own panes (Look and Feel, Tab Management, Keyboard Shortcuts) are still the old layout: a title
+ * and a bare groupbox. They get the same card as the panes of the redesign, and the title becomes a small
+ * label above it. */
+#mainPrefPane > groupbox.highlighting-group[data-category] {
+  background: var(--nivora-surface-2);
+  border: 1px solid var(--nivora-hairline);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 var(--nivora-sheen);
+  padding: 18px 22px;
+  margin-block: 4px 30px;
+  transition: border-color var(--nivora-d-base) var(--nivora-ease-out);
+}
+
+#mainPrefPane > groupbox.highlighting-group[data-category]:hover {
+  border-color: var(--nivora-hairline-strong);
+}
+
+#mainPrefPane > .subcategory[data-category] h1 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--nivora-text-muted);
+}
+
+/* The three window-layout thumbnails show a white page; the one in use is at full brightness and the
+ * others are dimmed, and rise a little under the pointer. */
+img[src*="zen-images/layouts"] {
+  filter: brightness(0.55) contrast(1.05);
+  transition:
+    filter var(--nivora-d-base) var(--nivora-ease-out),
+    transform var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+hbox:hover > img[src*="zen-images/layouts"] {
+  filter: brightness(0.8) contrast(1.05);
+  transform: translateY(calc(-2px * var(--nivora-lift)));
+}
+
+hbox.selected > img[src*="zen-images/layouts"] {
+  filter: brightness(1);
+}
+
+/* ---- Navigation ----------------------------------------------------------------------------------- */
+
+:root {
+  --page-nav-button-background-color-hover: var(--nivora-hover-fill);
+  --page-nav-button-background-color-active: var(--nivora-press-fill);
+  --page-nav-button-background-color-selected: var(--nivora-press-fill);
+  --page-nav-button-text-color: var(--nivora-text-secondary);
+  --page-nav-button-text-color-hover: var(--nivora-text-primary);
+  --page-nav-button-text-color-selected: var(--nivora-selected);
+  --page-nav-button-indicator-background-color: var(--nivora-selected);
+  --page-nav-button-indicator-width: 3px;
+  --page-nav-button-border-radius: 10px;
+}
+
+@keyframes nivora-nav-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-8px * var(--nivora-lift)));
+  }
+}
+
+/* The categories arrive one after another when the page opens. */
+moz-page-nav-button {
+  animation:
+    nivora-fade-in var(--nivora-d-fast) var(--nivora-ease-out) backwards,
+    nivora-nav-in var(--nivora-d-base) var(--nivora-spring-snappy) backwards;
+  transition: transform var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+moz-page-nav-button:nth-child(2) { animation-delay: calc(var(--nivora-stagger-tight) * 1); }
+moz-page-nav-button:nth-child(3) { animation-delay: calc(var(--nivora-stagger-tight) * 2); }
+moz-page-nav-button:nth-child(4) { animation-delay: calc(var(--nivora-stagger-tight) * 3); }
+moz-page-nav-button:nth-child(5) { animation-delay: calc(var(--nivora-stagger-tight) * 4); }
+moz-page-nav-button:nth-child(6) { animation-delay: calc(var(--nivora-stagger-tight) * 5); }
+moz-page-nav-button:nth-child(7) { animation-delay: calc(var(--nivora-stagger-tight) * 6); }
+moz-page-nav-button:nth-child(n + 8) { animation-delay: calc(var(--nivora-stagger-tight) * 7); }
+
+moz-page-nav-button:hover {
+  transform: translateX(calc(2px * var(--nivora-lift)));
+}
+
+/* ---- Switches ------------------------------------------------------------------------------------- */
+
+:root {
+  --toggle-background-color: var(--nivora-separator-strong);
+  --toggle-background-color-hover: var(--nivora-control-border);
+  --toggle-background-color-active: var(--nivora-control-border);
+  --toggle-background-color-pressed: var(--nivora-selected);
+  --toggle-background-color-pressed-hover: var(--nivora-text-primary);
+  --toggle-background-color-pressed-active: var(--nivora-text-secondary);
+  --toggle-border-color: var(--nivora-control-border);
+  --toggle-border-color-hover: var(--nivora-text-secondary);
+  --toggle-border-color-active: var(--nivora-text-secondary);
+  --toggle-dot-background-color: var(--nivora-text-secondary);
+  --toggle-dot-background-color-hover: var(--nivora-text-primary);
+  --toggle-dot-background-color-active: var(--nivora-text-primary);
+  --toggle-dot-background-color-on-pressed: var(--nivora-surface-base);
+}
+
+/* The dot slides on a spring, and stretches a little while the switch is pressed. */
+moz-toggle::part(button) {
+  transition:
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    border-color var(--nivora-d-fast) var(--nivora-ease-out);
+}
+
+moz-toggle::part(button)::before {
+  transition:
+    translate var(--nivora-d-base) var(--nivora-spring-settle),
+    scale var(--nivora-d-base) var(--nivora-spring-settle),
+    background-color var(--nivora-d-fast) var(--nivora-ease-out);
+}
+
+moz-toggle::part(button):active::before {
+  scale: calc(1 + 0.22 * var(--nivora-lift)) 1;
+  transition-duration: var(--nivora-d-micro);
+}
+
+/* ---- Buttons -------------------------------------------------------------------------------------- */
+
+moz-button::part(button) {
+  transition:
+    background-color var(--nivora-d-fast) var(--nivora-ease-out),
+    border-color var(--nivora-d-fast) var(--nivora-ease-out),
+    transform var(--nivora-d-base) var(--nivora-spring-snappy);
+}
+
+moz-button::part(button):active {
+  transform: scale(calc(1 - 0.03 * var(--nivora-lift)));
+  transition-duration: var(--nivora-d-micro);
+}
+
+/* ---- Links ---------------------------------------------------------------------------------------- */
+
+:root a[href],
+:root a[is="text-link"],
+:root .text-link {
+  text-decoration-line: underline;
+  text-decoration-color: var(--nivora-hairline-strong);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--nivora-d-fast) var(--nivora-ease-out);
+}
+
+:root :is(a[href], a[is="text-link"], .text-link):hover {
+  text-decoration-color: currentColor;
+}
