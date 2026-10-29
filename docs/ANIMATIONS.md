@@ -284,9 +284,37 @@ panes move on the smooth spring (340 ms) and the panes without the keyboard get 
 split and the Essentials drop zone become dashed hairlines that fade in; the tab list of a folder highlights on
 hover and cascades in.
 
-**Status: implemented only.** The tree was edited without a build in reach. The selectors were checked against
-Zen's stylesheets in `src/zen`, not against a running window; the static checks (unit tests, contrast, spring
-generator) pass; no browser test was written or run for these rules. Open questions for the first look:
-whether the palette's shadow is clipped by its container, whether the close button's rotation looks right
-while a tab is also changing width, and whether Firefox's own `:focus-visible` outline on toolbar buttons
-combines well with `nivora-focus-in`.
+**Status.** Built and looked at (2026-10-29): the first build was run on a laptop screen and screenshots of the main window,
+the palette, the settings and a page were looked at; the tab outline, the palette's hairline and the settings changes showed
+as intended, and the palette's exit was caught half way in a frame. **Not seen** (a still image cannot show motion): the
+close button's turn, the new-tab plus, the hover growth of icons, the favicon growth, the spaces' hover and the focus ring
+drawing in. The static checks (unit tests, contrast, spring generator) pass; no browser test was written for these rules.
+Two defects the screenshots found: a black shadow cannot be seen on this dark page (fixed in section 9), and the
+"managed by your organization" notice in the settings, caused by the update policy of `policies.json`, is not fixed.
+
+## 9. Third round: settings, new tab, loading
+
+- **Settings page** ([`nivora-settings.inc.css`](../src/nivora/theme/nivora-settings.inc.css)). Not shown: the *Account and
+  sync* and *Mods* categories (their buttons are hidden by CSS: the settings redesign forces the Sync button visible, so no
+  preference hides it) and, inside the Sync pane, the account, sync, backup, profiles and referrals groups. The pane stays
+  reachable as `about:preferences#sync` with only *Import data* and the default-browser prompt, which is the one place the import
+  wizard is offered. Shown: cards and boxes with a hairline and a light top edge; links in the text color, underlined; the
+  navigation highlights from the roles and its categories arrive one after another; switches are a graphite track with a white
+  "on" state, their dot slides on the `settle` spring and stretches while pressed; buttons press on a spring.
+- **New tab background** (`nivora-polish.inc.css`, `tools/nivora/generate_newtab.py`). An original image, a total eclipse (black
+  disc, thin corona, one faint ring, vignette), generated from the neutral palette, 2560 x 1440 WebP, about 20 KiB. Zen's new tab
+  is a blank page (`about:blank`) over Zen's own background of the `browser` element, so the image is that element's background
+  while the selected tab is the empty one (`:root[zen-has-empty-tab="true"]`), and it fades in when the tab opens.
+  Firefox's own new tab was not used: it is a built bundle and its wallpapers come from Mozilla's servers. A user sheet was tried
+  first and dropped: it is registered per document and `about:blank` is shared by many frames. `nivora.ui.newtab-background` =
+  false takes it away (it is in the settings schema).
+- **Loading.** A band of light sweeps across a loading tab (`[busy]`) on a 2.5 s loop, together with the icon's breathing.
+- **Elevation** carries a hairline and a faint outer glow: the first build showed that a black shadow cannot be seen on a page
+  this dark.
+
+**Status of this round.** Built and looked at on the same laptop screen, through Marionette: the settings navigation without
+Account/Sync/Mods, Look and Feel as the landing pane, the cards of Zen's panes, the dimmed layout thumbnails, the new tab with its
+background and the palette over it, and a loading tab being swept (the sweep was seen in three frames, with the color of
+`--nivora-glow`; the first version, with `--nivora-sheen`, was too faint to see). **Not seen:** the settings navigation's
+entrance, the switches' dot spring and stretch, the buttons' press, because a still image cannot show them. Switches were not
+on screen in any pane that was opened.

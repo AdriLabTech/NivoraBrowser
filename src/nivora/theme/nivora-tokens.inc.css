@@ -53,9 +53,12 @@
 --nivora-glow: color-mix(in srgb, var(--nivora-pure-white) 22%, transparent);
 --nivora-hover-fill: color-mix(in srgb, var(--nivora-pure-white) 6%, transparent);
 --nivora-press-fill: color-mix(in srgb, var(--nivora-pure-white) 11%, transparent);
-/* The one shadow: a floating surface (the palette) lifts off the page. Nothing else casts one. */
---nivora-elevation: 0 18px 44px -12px color-mix(in srgb, var(--nivora-obsidian-950) 85%, transparent),
-  0 2px 6px color-mix(in srgb, var(--nivora-obsidian-950) 55%, transparent);
+/* The one shadow: a floating surface (the palette) lifts off the page. Nothing else casts one. On a page
+ * this dark a black shadow cannot be seen, so the surface also carries a hairline and a faint outer glow. */
+--nivora-elevation: 0 0 0 1px var(--nivora-hairline),
+  0 18px 44px -12px color-mix(in srgb, var(--nivora-obsidian-950) 85%, transparent),
+  0 2px 6px color-mix(in srgb, var(--nivora-obsidian-950) 55%, transparent),
+  0 0 72px -28px var(--nivora-glow);
 
 /* Motion. Every animation in Nivora picks its duration, travel and curve from here, so the whole
  * interface moves with one character: things arrive on a spring that settles within the duration, and

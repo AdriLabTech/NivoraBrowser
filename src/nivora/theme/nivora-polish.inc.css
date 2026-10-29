@@ -83,6 +83,31 @@
   animation: nivora-breathe var(--nivora-d-ambient) var(--nivora-ease-in-out) infinite;
 }
 
+/* The selected tab, while it loads, is also swept by a band of light, slowly and on a loop: a page that is
+ * still arriving is a different thing from one that has stopped. The tab's own selection pop (nivora-tab-select
+ * in the motion file) stays in the list of animations, so loading does not cancel it. */
+@keyframes nivora-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+:root .tabbrowser-tab[busy] .tab-background {
+  background-image: linear-gradient(100deg, transparent 30%, var(--nivora-glow) 50%, transparent 70%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: nivora-sweep calc(var(--nivora-d-ambient) * 1.4) linear infinite;
+}
+
+:root .tabbrowser-tab[busy] .tab-background[selected] {
+  animation:
+    nivora-tab-select var(--nivora-d-base) var(--nivora-spring-settle),
+    nivora-sweep calc(var(--nivora-d-ambient) * 1.4) linear infinite;
+}
+
 /* The close button turns a quarter on its way in, and the new-tab plus does the same on hover. */
 :root #tabbrowser-tabs .tabbrowser-tab .tab-content > .tab-close-button {
   rotate: calc(-90deg * var(--nivora-lift));
@@ -103,6 +128,19 @@
 
 :root #tabs-newtab-button:hover .toolbarbutton-icon {
   rotate: calc(90deg * var(--nivora-lift));
+}
+
+/* ---- New tab ------------------------------------------------------------------------------------- */
+
+/* The new tab is Zen's empty tab, a blank page, and the page's canvas is Zen's own background of the
+ * `browser` element. While the selected tab is that one, the element wears the default background (an eclipse,
+ * tools/nivora/generate_newtab.py) and fades in when the tab opens. It is a rule of the browser's own
+ * stylesheet: a blank page is shared by many frames, so a user sheet could not be limited to the tab. */
+@media -moz-pref("nivora.ui.newtab-background") {
+  :root[zen-has-empty-tab="true"] #tabbrowser-tabpanels .browserSidebarContainer.deck-selected browser[type="content"] {
+    background: var(--nivora-surface-base) url("chrome://browser/content/nivora/nivora-newtab.webp") 50% 46% / cover no-repeat !important;
+    animation: nivora-fade-in var(--nivora-d-slow) var(--nivora-ease-out) backwards;
+  }
 }
 
 /* ---- Spaces -------------------------------------------------------------------------------------- */

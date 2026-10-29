@@ -33,6 +33,8 @@
         content/browser/zen-styles/zen-sidebar-notification.css                 (../../zen/common/styles/zen-sidebar-notification.css)
 *       content/browser/zen-styles/zen-backdrop-filters.svg                     (../../zen/common/styles/zen-backdrop-filters.svg)
 
+        content/browser/nivora/nivora-newtab.webp                               (../../nivora/theme/images/nivora-newtab.webp)
+
         content/browser/zen-styles/zen-panels/bookmarks.css                     (../../zen/common/styles/zen-panels/bookmarks.css)
         content/browser/zen-styles/zen-panels/print.css                         (../../zen/common/styles/zen-panels/print.css)
         content/browser/zen-styles/zen-panels/dialog.css                        (../../zen/common/styles/zen-panels/dialog.css)

@@ -65,6 +65,8 @@ git diff --stat "$ROOT"..HEAD -- . ':!src/nivora' ':!prefs/nivora' ':!tools/nivo
 | `prefs/zen/workspaces.yaml`, `prefs/zen/glance.yaml` | `zen.workspaces.switch-animation-duration` 250 -> 340, `zen.glance.animation-duration` 350 -> 420 | Softer springs, sized to settle inside the time, for the two largest transitions |
 | `prefs/zen/welcome.yaml`, `src/zen/welcome/jar.inc.mn`, `src/zen/welcome/welcome-background.mp4` (removed) | `zen.welcome-screen.seen` true in every build (Zen set it only when `MOZILLA_OFFICIAL` was undefined); the 15 MB video of the wizard is no longer packaged | The wizard is Zen's (name, video) and would run on the first start of a release build. `ZenWelcome.mjs` still names the video: it only loads when the pref is false |
 | `prefs/nivora/bloat.yaml` (new) | Pocket, sponsored new-tab content, trending searches, Firefox Relay, breach alerts, Monitor / Lockwise / proxy promotions in the Privacy Report, shopping assistant, What's new panel, webcompat reporter: off, not locked | What was still on after `privatefox/` and `firefox/ai.yaml`. Names not checked against a running Firefox 158 |
+| `src/zen/common/jar.inc.mn` | One line: `nivora-newtab.webp` served as `chrome://browser/content/nivora/` | The new tab's default background (ANIMATIONS.md section 9). Firefox's new tab is a built bundle and its wallpapers come from Mozilla's Remote Settings; Zen's new tab is a blank page, so the background is a rule on Zen's `browser` element (`nivora-polish.inc.css`) |
+| `src/browser/components/preferences/preferences-js.patch` | One more hunk: the settings page opens on `paneZenLooks` (Look and Feel) instead of `paneSync` | Firefox's redesign makes Account and sync the landing pane, and Nivora hides it |
 
 ### Inherited files removed
 
